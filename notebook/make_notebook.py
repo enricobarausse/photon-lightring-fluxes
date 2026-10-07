@@ -328,7 +328,7 @@ photonMode[l_, m_, rsA_: -40, rB_: 40, pg_: 12] := Module[{parity, w, Qin, Qup, 
 md = photonMode[5, 5]; Print["l = 5, m = 5: Edot_I = ", md["Flux"]["I"], "  Edot_H = ", md["Flux"]["H"]];
 """)
 T("Subsubsection", "Toolkit cross-check at l <= 5 (commented out)")
-T("Text", "This cell needs the Black Hole Perturbation Toolkit (ReggeWheeler and Teukolsky packages) and is commented out. It checks the integrator against the MST solutions of the ReggeWheeler package at l = 5 (the two agree to 10^-7, Sec. III D), and the null source in the Teukolsky equation (last paragraph of Sec. II): with the photon orbit, Upsilon_t = r0^2 p^t = 27, the Teukolsky fluxes coincide with the Zerilli / Regge-Wheeler ones to the precision of the Toolkit's solutions, between nine and twenty significant digits for l <= 5 (the cell runs l = m = 5).")
+T("Text", "This cell needs the Black Hole Perturbation Toolkit (ReggeWheeler and Teukolsky packages) and is commented out. It checks the integrator against the MST solutions of the ReggeWheeler package at l = 5 (the two agree to 10^-7, Sec. III D; toolkit_checks/schwarzschild_toolkit.wls runs the same comparison at l = 2, 3, 5, where the agreement degrades to 10^-5 at l = 2), and the null source in the Teukolsky equation (last paragraph of Sec. II): with the photon orbit, Upsilon_t = r0^2 p^t = 27, the Teukolsky fluxes coincide with the Zerilli / Regge-Wheeler ones to the precision of the Toolkit's solutions, between nine and twenty significant digits for l <= 5 (the cell runs l = m = 5).")
 In(r"""
 (* << ReggeWheeler`
 Module[{R, J, PsiIn, dPsiIn, PsiUp, dPsiUp, W, P, dP, ZI, ZH, w = N[5 OmegaLR, 40]},
