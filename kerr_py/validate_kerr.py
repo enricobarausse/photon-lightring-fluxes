@@ -1,17 +1,19 @@
 """Validation of kerrflux.py against the Black Hole Perturbation Toolkit at l <= 5.
 
-Compares the fluxes of Mode.solve() with the Teukolsky-package (MST, 40 digits) values
-stored in toolkit_reference.txt (columns a, sign, l, j, l*Edot_I, l*Edot_H; a = 0, 1/2, 9/10,
-sign = +1 prograde / -1 retrograde, single m = l - j) for every row with l <= 5. The reference
-values were produced by toolkit_checks/kerr_toolkit.wls. The Python fluxes agree with the Toolkit
-to ~1e-7 (a = 0) and to 1e-4 ... 3e-3 for a != 0 at these small l (flux at infinity; the horizon
-flux to ~1e-6); the agreement at l = 10 ... 50 with the Toolkit integrator of the companion
-notebook is better, and the production values at l >= 100 are validated through the analytic
-limit (Sec. IV). The Toolkit cross-check of the null source quoted in Secs. II and V of the paper
-(Zerilli/Regge-Wheeler vs Teukolsky to 9-20 digits at l <= 5) was done with the Toolkit's own
-solvers (toolkit_checks/schwarzschild_toolkit.wls), not with this code.
-
-    python validate_kerr.py          (about ten seconds)
+Computes:  compares the fluxes of Mode.solve() with the Teukolsky-package (MST, 40 digits) values
+           stored in toolkit_reference.txt for every row with l <= 5. The Python fluxes agree with
+           the Toolkit to 2e-6 ... 2e-4 at a = 0 and to 1e-4 ... 3e-3 for a != 0 at these small l (flux at
+           infinity, limited by the WKB boundary data; the horizon flux to better than 1e-6); the agreement at l = 10 ... 50 with the Toolkit
+           integrator of the companion notebook is better, and the production values at l >= 100
+           are validated through the analytic limit (Sec. IV). The Toolkit cross-check of the null
+           source quoted in Secs. II and V of the paper (Zerilli/Regge-Wheeler vs Teukolsky to 9-17
+           digits at l <= 5) was done with the Toolkit's own solvers
+           (toolkit_checks/schwarzschild_toolkit.wls), not with this code.
+Inputs:    toolkit_reference.txt (columns a, sign, l, j, l*Edot_I, l*Edot_H; a = 0, 1/2, 9/10,
+           sign = +1 prograde / -1 retrograde, single m = l - j). The reference values were
+           produced by toolkit_checks/kerr_toolkit.wls.
+Run:       python validate_kerr.py
+Cost:      about ten seconds.
 """
 import os
 

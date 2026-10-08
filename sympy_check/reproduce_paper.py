@@ -6,55 +6,70 @@ numbers of
     E. Barausse, "Gravitational radiation from a photon on the light ring: multipole fluxes and the
     logarithmic divergence"   (equation numbers as in the submitted version of the paper)
 
-The symbolic parts use sympy, the numerical ones mpmath (arbitrary precision) and scipy/numpy.
-Nothing here depends on Mathematica, on the companion notebook or on the Black Hole Perturbation
-Toolkit. The only formulae transcribed from the notebook source (notebook/make_notebook.py) are, as
-allowed by the task: the jump conditions as linear combinations of the source coefficients A, C, F
-(function jumpsZRW), the circular-orbit Teukolsky source projection alpha_lm of Hughes (2000)
-(function alphaExpand), and the Chrzanowski-Misner / Breuer et al. 1973 formulae of Section 7.
-Everything else is derived here from the equations written in the paper.
+The symbolic parts use sympy, the numerical ones mpmath (arbitrary precision) and scipy/numpy. Nothing here
+depends on Mathematica, on the companion notebook or on the Black Hole Perturbation Toolkit. The only
+formulae transcribed from the notebook source (notebook/make_notebook.py) are: the
+jump conditions as linear combinations of the source coefficients A, C, F (function jumpsZRW), the
+circular-orbit Teukolsky source projection alpha_lm of Hughes (2000) (function alphaExpand), and the
+Chrzanowski-Misner / Breuer et al. 1973 formulae of Section V of the notebook. Everything else is derived here from the
+equations written in the paper.
 
-Conventions (identical to the paper unless stated):
-  * G = c = 1 and M = 1 in the code; the paper's powers of M are restored by dimensional analysis and
-    are noted in the labels.
-  * Fluxes are per unit E^2 (E = Killing energy of the photon), for a single m > 0 and a single
-    (l, m) mode, with j = l - m. The physical flux per multipole is twice the sum over m > 0.
+Conventions (identical to the paper unless stated)
+--------------------------------------------------
+  * G = c = 1 and M = 1 in the code; the paper's powers of M are restored by dimensional analysis and are
+    noted in the labels.
+  * Fluxes are per unit E^2 (E = Killing energy of the photon), for a single m > 0 and a single (l, m) mode,
+    with j = l - m. The physical flux per multipole is twice the sum over m > 0.
   * Jumps: [Psi] = Psi(r0+) - Psi(r0-), [d_r Psi] likewise; tortoise-coordinate jump
-    [d_r* Psi] = f(r0) [d_r Psi]. The angular factors Y, dY stand for conj(Y_lm) and
-    conj(d_theta Y_lm) at (theta, phi) = (pi/2, 0), where both are real.
+    [d_r* Psi] = f(r0) [d_r Psi]. The angular factors Y, dY stand for conj(Y_lm) and conj(d_theta Y_lm) at
+    (theta, phi) = (pi/2, 0), where both are real.
   * delta: the paper's delta (r0 = 3M(1 + delta)); Breuer et al.'s delta' = 3 delta.
   * eta_j = j + 1/2; F(eta) = e^{-pi eta/2}/(cosh(pi eta) |Gamma(3/4 + i eta/2)|^2);
     G(eta) = e^{-pi eta/2}/(cosh(pi eta) |Gamma(1/4 + i eta/2)|^2)   (G is our shorthand, not the paper's).
   * sigma_j: Edot^{inf,H}_{l,l-j} = (kappa_j/l) [1 +- sigma_j/sqrt(l) + O(1/l)].
 
-Stored numerical data used (never regenerated):
-  * ../photon_big_results.m    Schwarzschild run, rows {l, j, Edot_I, Edot_H, u(0), u'(0)}, l = 10..12800
-  * ../kerr_py/kerr_results.json   Kerr Teukolsky runs, rows {a, sign, l, j, FluxI, FluxH, lam, ...}, l <= 800
-  * ../timelike_results.m      timelike orbits, rows {r0, l, Edot_I/E^2, Edot_H/E^2}, l = m
-  * ../toolkit_checks/schwarzschild_toolkit_results.m   Black Hole Perturbation Toolkit run at l <= 5, rows
-        {l, m, method, Edot_I, Edot_H} with method "RW-MST" (Zerilli/RW with MST solutions), "Teuk" (the null
-        source in the Toolkit's Teukolsky solver), "MP" (the production integrator), "NI" (arbitrary precision)
-  * ../schwarzschild/asym_check_results.m   decomposition of sqrt(l)(I-H)/(I+H) at j = 0 into the barrier
-        asymmetry A1, the cross term A2 and the O(1/l) remainder A3, from the production integrator, l = 100..6400
-  * ../kerr_py/check_odd_BRTV_results.txt   exact Teukolsky fluxes of timelike orbits vs the 1973 formulae
-  * ../notebook/toolkit_harmonics.m   Toolkit spheroidal harmonics, rows {a, sign, l, j, Lambda, |S(pi/2)|^2, |S'(pi/2)|^2}
+Inputs: stored numerical data (never regenerated)
+-------------------------------------------------
+  * ../photon_big_results.m
+        Schwarzschild run, rows {l, j, Edot_I, Edot_H, u(0), u'(0)}, l = 10..12800
+  * ../kerr_py/kerr_results.json
+        Kerr Teukolsky runs, rows {a, sign, l, j, FluxI, FluxH, lam, ...}, l <= 800
+  * ../timelike_results.m
+        timelike orbits, rows {r0, l, Edot_I/E^2, Edot_H/E^2}, l = m
+  * ../toolkit_checks/schwarzschild_toolkit_results.m
+        Black Hole Perturbation Toolkit run at l <= 5, rows {l, m, method, Edot_I, Edot_H} with method
+        "RW-MST" (Zerilli/RW with MST solutions), "Teuk" (the null source in the Toolkit's Teukolsky
+        solver), "MP" (the production integrator), "NI" (arbitrary precision)
+  * ../schwarzschild/asym_check_results.m
+        decomposition of sqrt(l)(I-H)/(I+H) at j = 0 into the barrier asymmetry A1, the cross term A2 and
+        the O(1/l) remainder A3, from the production integrator, l = 100..6400
+  * ../kerr_py/check_odd_BRTV_results.txt
+        exact Teukolsky fluxes of timelike orbits vs the 1973 formulae
+  * ../notebook/toolkit_harmonics.m
+        Toolkit spheroidal harmonics, rows {a, sign, l, j, Lambda, |S(pi/2)|^2, |S'(pi/2)|^2}
   The last four are optional: a missing file produces NOT CHECKED lines instead of failures. The spectral
-  spheroidal-harmonic solver of ../kerr_py/swsh.py (numpy + mpmath; validated against the Toolkit at l <= 6)
-  is imported for the Lambda and S(pi/2) asymptotics of Sec. IV.
-Numbers recomputed here rather than read from the repository, with a small independent Zerilli/Regge-Wheeler
-integrator (scipy DOP853 in the tortoise coordinate, iterated-Riccati WKB boundary data; function zrw_mode),
-which is validated against the stored data and against the Toolkit MST fluxes at l <= 5 (5e-8): the four
-exact odd-mode ratios of Sec. V (3.15, 3.48, 3.64, 3.77), and the exact v(0), v'(0) at l = 6400 that the
-decomposition of sigma_0 at the end of Sec. III D needs (both are also read from the stored files above
-and the two are compared). A scalar version of the same integrator (scalar_mode) provides the exact scalar
-flux with which Sec. IV establishes that the 1973-74 formulae collect the modes m and -m.
+  spheroidal-harmonic solver of ../kerr_py/swsh.py (numpy + mpmath; validated against the Toolkit at
+  l <= 6) is imported for the Lambda and S(pi/2) asymptotics of Sec. IV.
 
-Structure: one function per section of the paper (section_II ... section_VI), each printing lines
+Numbers recomputed here rather than read from the repository, with a small independent
+Zerilli/Regge-Wheeler integrator (scipy DOP853 in the tortoise coordinate, iterated-Riccati WKB boundary
+data; function zrw_mode), which is validated against the stored data and against the Toolkit MST fluxes at
+l <= 5 (5e-8): the four exact odd-mode ratios of Sec. V (3.15, 3.48, 3.64, 3.77), and the exact v(0),
+v'(0) at l = 6400 that the decomposition of sigma_0 at the end of Sec. III D needs (both are also read from
+the stored files above and the two are compared). A scalar version of the same integrator (scalar_mode)
+provides the exact scalar flux with which Sec. IV establishes that the 1973-74 formulae collect the modes
+m and -m.
+
+Structure and output
+--------------------
+One function per section of the paper (section_II ... section_VI), each printing lines
     quantity -> recomputed -> paper value -> deviation -> PASS/FAIL
 through the Report class; identities print "0 (symbolic)"; informational lines (no quantitative claim in
 the paper) are marked "info"; a missing optional data file gives NOT CHECKED with the reason.
 
-Run:  ../venv/bin/python reproduce_paper.py   (writes report.txt next to this file; ~4-5 minutes)
+Run
+---
+    ../venv/bin/python reproduce_paper.py   (writes report.txt next to this file; about four minutes)
 """
 import os, re, sys, json, time, math
 import numpy as np
@@ -109,7 +124,8 @@ class Report:
             ok = dev <= tol
         if ok: self.npass += 1
         else: self.nfail += 1; self.fails.append((name, v, p, dev))
-        # the max-deviation statistic covers the quantitative checks only (tolerance <= 5%), not order-of-magnitude statements
+        # the max-deviation statistic covers the quantitative checks only (tolerance <= 5%), not
+        # order-of-magnitude statements
         if kind == 'rel' and p != 0 and ok and tol <= 0.05 and dev > self.maxdev:
             self.maxdev = dev; self.maxdev_name = name
         tag = 'PASS' if ok else 'FAIL'
@@ -137,7 +153,8 @@ class Report:
 
 
 def is_zero(expr):
-    """Return a short description if sympy expr is zero (symbolically, or numerically at random points), else None."""
+    """Return a short description if sympy expr is zero (symbolically, or numerically at random points),
+    else None."""
     e = sp.nsimplify(expr) if expr == 0 else expr
     try:
         s = sp.simplify(e)
@@ -188,7 +205,7 @@ def source_ACF(l, m, r0, E0, L0, Y, dY):
 
 def jumps(l, m, r0, E0, L0, Y, dY, even):
     """[Psi], [d_r Psi] at r0 as linear combinations of A, C, F (Sago, Nakano & Sasaki 2003 / Toolkit
-    conventions; formulae transcribed from the companion notebook's jumpsZRW, as permitted)."""
+    conventions; formulae transcribed from the companion notebook's jumpsZRW)."""
     r0, E0, L0 = map(sp.sympify, (r0, E0, L0))
     A, C, F = source_ACF(l, m, r0, E0, L0, Y, dY)
     if even:
@@ -213,7 +230,7 @@ def jumps_num(l, m, r0, E0, L0, Yv, dYv):
     return float(P), float(dP)
 
 def c_pm(l, m):
-    """Flux normalization c_+ (Zerilli) or c_- (Regge-Wheeler), text after Eq. (4)."""
+    """Flux normalisation c_+ (Zerilli) or c_- (Regge-Wheeler), text after Eq. (4)."""
     if (l + m) % 2 == 0: return (l - 1)*(l + 2)/(4*math.pi*l*(l + 1))
     return l*(l + 1)/(16*math.pi*(l - 1)*(l + 2))
 
@@ -304,7 +321,7 @@ def _integrate(V, w, rs_from, x_from, rs_to, Q0, amp=1.0, rtol=1e-11):
     return y[0] + 1j*y[1], y[2] + 1j*y[3]
 
 def zrw_mode(l, m, r0, E0, L0, Omega, rsA=-40.0, rB=40.0):
-    """Fluxes (Edot_I, Edot_H) per unit E0^2-normalization of a circular orbit source with energy E0,
+    """Fluxes (Edot_I, Edot_H) per unit E0^2-normalisation of a circular orbit source with energy E0,
     angular momentum L0, radius r0, orbital frequency Omega, mode (l, m): Eq. (4) and the flux formula.
     Returns also u(0), u'(0), v(0), v'(0) (unit incident amplitude) and the jumps P, dP."""
     even = (l + m) % 2 == 0
@@ -312,8 +329,9 @@ def zrw_mode(l, m, r0, E0, L0, Omega, rsA=-40.0, rB=40.0):
     w = m*Omega
     xA = x_of_rstar(rsA); rs0 = rstar_of_r(r0)
     QA = riccati_Q(V, w, xA, -1); QB = riccati_Q(V, w, rB - 2, +1)
-    # WKB amplitudes: Psi = exp(i int Q dr*), so |Psi(r_B)| = exp(+int_{r_B}^inf Im Q dr*) gives unit amplitude at
-    # infinity, and |Psi(r_A)| = exp(-int_{-inf}^{r_A} Im Q dr*) unit amplitude at the horizon (dr* = dx/f, f = x/(x+2))
+    # WKB amplitudes: Psi = exp(i int Q dr*), so |Psi(r_B)| = exp(+int_{r_B}^inf Im Q dr*) gives unit
+    # amplitude at infinity, and |Psi(r_A)| = exp(-int_{-inf}^{r_A} Im Q dr*) unit amplitude at the horizon
+    # (dr* = dx/f, f = x/(x+2))
     ampB = math.exp(quad(lambda x: riccati_Q(V, w, x, +1).imag*(x + 2)/x, rB - 2, np.inf, limit=200)[0])
     ampA = math.exp(-quad(lambda x: riccati_Q(V, w, x, -1).imag*(x + 2)/x, 0.0, xA, limit=200)[0])   # ~1 - O(1e-9)
     PsiIn, dPsiIn = _integrate(V, w, rsA, xA, rs0, QA, ampA)
@@ -333,7 +351,8 @@ def zrw_mode(l, m, r0, E0, L0, Omega, rsA=-40.0, rB=40.0):
 # Conventions (as in BCHM 1973 and in the companion notebook): field equation
 #   Box Phi = 4 pi q Int dtau delta^4(x - z(tau))/sqrt(-g),  stress tensor (1/4 pi)(dPhi dPhi - g (dPhi)^2/2);
 # with Phi = sum (u_lm(r)/r) Y_lm e^{-i omega t}, omega = m Omega, the radial function obeys
-#   u'' + (omega^2 - V0) u = S0 delta(r* - r0*),   V0 = f (l(l+1)/r^2 + 2M/r^3),   S0 = 4 pi conj(Y_lm(pi/2,0))/(u^t r0),
+#   u'' + (omega^2 - V0) u = S0 delta(r* - r0*),   V0 = f (l(l+1)/r^2 + 2M/r^3),
+#   S0 = 4 pi conj(Y_lm(pi/2,0))/(u^t r0),
 # the solution is u = u_in(r<) u_up(r>) S0/W, and the flux at infinity is (1/4 pi) omega^2 |Z|^2 with
 # Z = u_in(r0) S0/W. Everything is per q^2; a single m > 0.
 # ---------------------------------------------------------------------------------------------
@@ -341,9 +360,9 @@ def V_scalar_num(l, x):
     rr = x + 2; return x/rr*(l*(l + 1)/rr**2 + 2/rr**3)
 
 def scalar_mode(l, m, r0, rsA=-40.0, rB=None):
-    """Flux at infinity, per q^2, of the (l, m) mode of a scalar charge on the circular geodesic of radius r0
-    (Schwarzschild, M = 1): u^t = (1 - 3M/r0)^{-1/2}, Omega = r0^{-3/2}. The outgoing data are imposed at
-    rB, outside the evanescent region (rB >~ 8/omega), with the Riccati-WKB wavenumber."""
+    """Flux at infinity, per q^2, of the (l, m) mode of a scalar charge on the circular geodesic of
+    radius r0 (Schwarzschild, M = 1): u^t = (1 - 3M/r0)^{-1/2}, Omega = r0^{-3/2}. The outgoing data are
+    imposed at rB, outside the evanescent region (rB >~ 8/omega), with the Riccati-WKB wavenumber."""
     V = lambda x: V_scalar_num(l, x)
     w = m*r0**-1.5; ut = 1/math.sqrt(1 - 3/r0)
     S0 = 4*math.pi*np.conj(sph_harm_y(l, m, math.pi/2, 0.0))/(ut*r0)
@@ -372,8 +391,9 @@ def load_mathematica_list(path):
     return eval(s, {'__builtins__': {}})
 
 def load_mathematica_file(path):
-    """Mathematica Put[] output with comments, line continuations, strings, rationals and arbitrary-precision
-    numbers (0.0186...`20.): returns (nested lists, list of the precision marks found, as floats)."""
+    """Mathematica Put[] output with comments, line continuations, strings, rationals and
+    arbitrary-precision numbers (0.0186...`20.): returns (nested lists, list of the precision marks found,
+    as floats)."""
     txt = open(path).read()
     s = re.sub(r'\(\*.*?\*\)', '', txt, flags=re.S)        # comments
     s = re.sub(r'\\\s*\n', '', s)                            # line continuations inside long numbers
@@ -451,12 +471,14 @@ def section_II():
               'tests Eq. (2), jumps, Eq. (4), c_pm')
     rep.check('integrator vs stored Teukolsky null-source fluxes (a=0), l=10,20, j<=3', worst_teuk, '0', 1e-5, 'abs',
               'Sec. II last paragraph: Teukolsky = Zerilli/RW')
-    # ---- stored Toolkit cross-check at l <= 5 (toolkit_checks/schwarzschild_toolkit_results.m, rows {l, m, method, Edot_I, Edot_H}):
-    # "RW-MST" = Zerilli/RW fluxes with the Toolkit's MST solutions and the null source of Sec. II; "Teuk" = the same null
-    # stress-energy tensor in the Toolkit's Teukolsky solver (the check quoted at the end of Sec. II and in Sec. V);
-    # "MP" = the production integrator of Sec. III D; "NI" = an arbitrary-precision direct integration (not quoted).
+    # ---- stored Toolkit cross-check at l <= 5 (toolkit_checks/schwarzschild_toolkit_results.m,
+    # rows {l, m, method, Edot_I, Edot_H}):
+    # "RW-MST" = Zerilli/RW fluxes with the Toolkit's MST solutions and the null source of Sec. II;
+    # "Teuk" = the same null stress-energy tensor in the Toolkit's Teukolsky solver (the check quoted at the
+    # end of Sec. II and in Sec. V); "MP" = the production integrator of Sec. III D; "NI" = an
+    # arbitrary-precision direct integration (not quoted).
     if SCHW_TK is None:
-        rep.unavailable('Teukolsky vs Zerilli/RW agreement to 9-20 digits at l<=5 (Toolkit MST solutions)', 'toolkit_checks/schwarzschild_toolkit_results.m not found')
+        rep.unavailable('Teukolsky vs Zerilli/RW agreement to 9-17 digits at l<=5 (Toolkit MST solutions)', 'toolkit_checks/schwarzschild_toolkit_results.m not found')
         rep.unavailable('production integrator vs Toolkit: 1e-7 at l = 5, 1e-5 at l = 2 (Sec. III D)', 'toolkit_checks/schwarzschild_toolkit_results.m not found')
     else:
         TK = {(lv, mv, meth): (EI, EH) for lv, mv, meth, EI, EH in SCHW_TK[0]}
@@ -480,7 +502,8 @@ def section_II():
             else: rep.info(f'  ... production integrator (MP) vs Toolkit MST at l = {lv} (not quoted)', w)
         rep.info('  ... arbitrary-precision direct integration (NI) vs Toolkit MST, max rel. dev. over all stored (l, m) (not quoted)',
                  max(abs(TK[(lv, mv, 'NI')][k]/TK[(lv, mv, 'RW-MST')][k] - 1) for lv, mv in pairs for k in (0, 1)))
-        # this script's integrator against the Toolkit MST fluxes (wider domain than the default, so that the WKB data are accurate)
+        # this script's integrator against the Toolkit MST fluxes (wider domain than the default, so that the
+        # WKB data are accurate)
         w = 0
         for lv, mv in pairs:
             md = zrw_mode(lv, mv, 3.0, 1.0, b, 1/b, rsA=-80.0, rB=120.0)
@@ -516,10 +539,10 @@ def section_IIIA():
     rep.check('photon: A (energy density) contribution / (4 pi Y)', float(leadA.subs(ph)/(4*pi*Y)), '-1', 0)
     rep.check('photon: F (azimuthal pressure) contribution / (4 pi Y)', float(leadF.subs(ph)/(4*pi*Y)), '1', 0)
     rep.ident('photon: A + F contributions cancel (p.p = 0)', (leadA + leadF).subs(ph))
-    # Abstract, Introduction, Sec. VI B: "without this cancellation the flux per multipole would grow like l" (a factor l^2
-    # with respect to a generic source). With a generic O(l^0) derivative jump J0 Y (e.g. the massive-particle term
-    # -4 pi Y mu^2/(E r0)) in place of the photon's -8 pi (2j+1) Y/(l M), the even flux l c_+/4 |u(0)|^2 ([d_r* Psi])^2,
-    # with |u(0)|^2 ~ l^{1/2} (Eq. 8) and |Y|^2 ~ l^{1/2}, grows like l.
+    # Abstract, Introduction, Sec. VI B: "without this cancellation the flux per multipole would grow like l"
+    # (a factor l^2 with respect to a generic source). With a generic O(l^0) derivative jump J0 Y (e.g. the
+    # massive-particle term -4 pi Y mu^2/(E r0)) in place of the photon's -8 pi (2j+1) Y/(l M), the even flux
+    # l c_+/4 |u(0)|^2 ([d_r* Psi])^2, with |u(0)|^2 ~ l^{1/2} (Eq. 8) and |Y|^2 ~ l^{1/2}, grows like l.
     J0, Fs, cs = sp.symbols('J_0 F c_j', positive=True)
     u0sq = sp.sqrt(l/2)*pi*Fs/sp.sqrt(2); cplus = (l - 1)*(l + 2)/(4*pi*l*(l + 1)); Ysq = cs*sp.sqrt(l)/(2*pi**sp.Rational(3, 2))
     flux_gen = cplus/4*u0sq*(J0/3)**2*Ysq                       # [d_r* Psi] = J0 Y/3, |Y|^2 -> Ysq
@@ -559,11 +582,13 @@ def section_IIIB():
         ser = series_in_l(eta, 2)
         rep.ident(f'{name}: Eq. (7) eta_j = j + 1/2 + O(1/l)', sp.simplify(ser.coeff(eps, 0) - j - sp.Rational(1, 2)))
         rep.ident(f'{name}: eta_j has no O(l) term', ser.coeff(eps, -1))
-        # Secs. II and III B: V = l^2 f/r^2 + O(l) as a function of r (not only its Taylor coefficients at r = 3M)
+        # Secs. II and III B: V = l^2 f/r^2 + O(l) as a function of r (not only its Taylor coefficients
+        # at r = 3M)
         rep.ident(f'{name}: V = l^2 f/r^2 + O(l) for every r: lim V/l^2 = f/r^2', sp.simplify(sp.limit(V/l**2, l, sp.oo) - f_schw(r)/r**2))
         rep.ident(f'{name}: (V - l^2 f/r^2)/l -> f/r^2 for every r (the remainder is O(l), not larger)',
                   sp.simplify(sp.limit((V - l**2*f_schw(r)/r**2)/l, l, sp.oo) - f_schw(r)/r**2))
-        # the expansion of Sec. III B is about r = 3M, the maximum of the leading term: the linear term dV/dr* at 3M is O(l^0)
+        # the expansion of Sec. III B is about r = 3M, the maximum of the leading term: the linear term dV/dr*
+        # at 3M is O(l^0)
         V1 = Dst(V).subs(r, 3)
         rep.ident(f'{name}: linear term dV/dr* at r = 3M is O(l^0): lim = 2/(243 M^3)', sp.limit(V1, l, sp.oo) - sp.Rational(2, 243))
         rep.ident(f'{name}: in Weber\'s variable the linear term V1 z/(2k)^{{3/4}} is O(l^{{-3/2}}) z (negligible): l^{{3/2}} V1/(2k)^{{3/4}} -> 1/sqrt6',
@@ -604,8 +629,9 @@ def section_IIIB():
               sp.simplify(sp.diff(l**sp.Rational(1, 3)*(sp.sqrt(k2)/V3lead)**sp.Rational(1, 3), l)))
     rep.ident('parabolic region in z: (2k)^{1/4} (sqrt(k)/V3)^{1/3} ~ l^{1/6}  (|z| << l^{1/6})',
               sp.simplify(sp.diff(l**sp.Rational(-1, 6)*(2*k2)**sp.Rational(1, 4)*(sp.sqrt(k2)/V3lead)**sp.Rational(1, 3), l)))
-    # the hypothesis of the footnote, "for |x| >> k^{-1/4} the quadratic term dominates, p0 ~ (k/2)^{1/2} x": with
-    # omega^2 - V0 = eps = -eta sqrt(2k) (Eq. 7) and eta = O(1), the ratio of the constant to the quadratic term is O(1/(sqrt(k) x^2))
+    # the hypothesis of the footnote, "for |x| >> k^{-1/4} the quadratic term dominates, p0 ~ (k/2)^{1/2} x":
+    # with omega^2 - V0 = eps = -eta sqrt(2k) (Eq. 7) and eta = O(1), the ratio of the constant to the
+    # quadratic term is O(1/(sqrt(k) x^2))
     eta_s = sp.symbols('eta', positive=True)
     eps_s = -eta_s*sp.sqrt(2*kk3)
     rep.ident('footnote hypothesis: (omega^2 - V0)/(k x^2/2) = -2 sqrt2 eta/(sqrt(k) x^2), i.e. O(1) only for |x| ~ k^{-1/4}',
@@ -697,9 +723,10 @@ def section_IIIB():
     mdI = weber_model(0.5, 0.0, 'In')
     rep.check('|v(0)|^2 = |u(0)|^2 (parabolic barrier, g = 0)', mdU['u0sq']/mdI['u0sq'], '1', 1e-8)
     rep.check("|v'(0)|^2 = |u'(0)|^2 (parabolic barrier, g = 0)", mdU['Du0sq']/mdI['Du0sq'], '1', 1e-8)
-    # d_r* v(0) = -d_r* u(0) (sign, not only modulus; it fixes the opposite signs of the cross term in the two fluxes): the up
-    # solution, defined by its own boundary conditions (incident from z -> -inf), has v'(0)/v(0) = -u'(0)/u(0); the ratio does
-    # not depend on the normalisation of either solution. (With v(z) = u(-z) the relation is exact.)
+    # d_r* v(0) = -d_r* u(0) (sign, not only modulus; it fixes the opposite signs of the cross term in the two
+    # fluxes): the up solution, defined by its own boundary conditions (incident from z -> -inf), has
+    # v'(0)/v(0) = -u'(0)/u(0); the ratio does not depend on the normalisation of either solution.
+    # (With v(z) = u(-z) the relation is exact.)
     for eta in (0.5, 1.5):
         mU = weber_model(eta, 0.0, 'Up'); mI = weber_model(eta, 0.0, 'In')
         rep.check(f"d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = {eta}",
@@ -800,9 +827,10 @@ def section_IIIC():
     rep.check('kappa agrees with the 2021 fit 0.064 +- 0.001', 2*sumk, '0.064', 1e-3/0.064)
     rep.info('kappa_{j+1}/kappa_j for j = 0..3 (fall-off ~ e^{-pi j}; e^{-pi} = 0.0432)',
              ', '.join(f'{float(kappa_j(jv + 1)/kappa_j(jv)):.4f}' for jv in range(4)))
-    # "The kappa_j fall off roughly like e^{-pi j} (up to powers of j)": with Stirling's |Gamma(x+iy)|^2 ~ 2 pi |y|^{2x-1} e^{-pi|y|},
-    # F(eta) ~ e^{-pi eta}/(pi sqrt(eta/2)) and G(eta) ~ e^{-pi eta} sqrt(eta/2)/pi, and with c_j ~ sqrt(2/(pi j)), d_j ~ sqrt(2j/pi),
-    # Eqs. (11) and (12) both give kappa_j -> (8/(9 pi)) e^{-pi/2} j e^{-pi j} [1 + O(1/j)], the same for even and odd j.
+    # "The kappa_j fall off roughly like e^{-pi j} (up to powers of j)": with Stirling's
+    # |Gamma(x+iy)|^2 ~ 2 pi |y|^{2x-1} e^{-pi|y|}, F(eta) ~ e^{-pi eta}/(pi sqrt(eta/2)) and
+    # G(eta) ~ e^{-pi eta} sqrt(eta/2)/pi, and with c_j ~ sqrt(2/(pi j)), d_j ~ sqrt(2j/pi), Eqs. (11) and
+    # (12) both give kappa_j -> (8/(9 pi)) e^{-pi/2} j e^{-pi j} [1 + O(1/j)], the same for even and odd j.
     mp.mp.dps = 60
     kap_lim = 8/(9*mp.pi)*mp.exp(-mp.pi/2)
     r200 = kappa_j(200)*mp.exp(200*mp.pi)/200; r400 = kappa_j(400)*mp.exp(400*mp.pi)/400
@@ -832,7 +860,8 @@ def section_IIIC():
         eta = mp.mpf(jv) + mp.mpf(1)/2
         phi = mp.arg(mp.exp(1j*mp.pi/4)*mp.gamma(mp.mpf(1)/4 + 1j*eta/2)/mp.gamma(mp.mpf(3)/4 + 1j*eta/2))
         F = Fpar(eta); G = Gpar(eta)
-        # Eqs. (8)-(9): |u'(0)|^2/|u(0)|^2 = (2k)^{1/2} (sqrt2 pi G)/(pi F/sqrt2) = (2k)^{1/2} 2G/F, (2k)^{1/4} = sqrt(2l/27)
+        # Eqs. (8)-(9): |u'(0)|^2/|u(0)|^2 = (2k)^{1/2} (sqrt2 pi G)/(pi F/sqrt2) = (2k)^{1/2} 2G/F,
+        # (2k)^{1/4} = sqrt(2l/27)
         if jv % 2 == 0:   # (I-H)/(I+H) = -2 (P/dP) |u'|/|u| cos(phi),  P/dP -> -3/((2j+1) l)
             return float(6/(2*jv + 1)*mp.sqrt(mp.mpf(2)/27)*mp.sqrt(2*G/F)*mp.cos(phi))
         # odd: (I-H)/(I+H) = -2 (dP/P) |u|/|u'| cos(phi), dP/P = -1/9
@@ -872,8 +901,9 @@ def section_IIIC():
     rep.info('horizon fraction with the asymptotic formulae at l_max = 1e3, 1e4, 1e6 (approaches 1/2 only logarithmically)',
              ', '.join(f'{horizon_fraction(n):.3f}' for n in (1000, 10000, 1000000)))
     # Secs. III C and VII: "the fraction approaches 1/2 only logarithmically". With the asymptotic formulae,
-    # f_H = 1/2 - (sigma_bar/2) sum_l l^{-3/2} / sum_l l^{-1}: the numerator converges to zeta(3/2) - 1 while the denominator
-    # is the harmonic sum ~ ln l_max, so (1/2 - f_H) sum_{l<=l_max} 1/l -> sigma_bar (zeta(3/2) - 1)/2 = 0.4918.
+    # f_H = 1/2 - (sigma_bar/2) sum_l l^{-3/2} / sum_l l^{-1}: the numerator converges to zeta(3/2) - 1 while
+    # the denominator is the harmonic sum ~ ln l_max, so
+    # (1/2 - f_H) sum_{l<=l_max} 1/l -> sigma_bar (zeta(3/2) - 1)/2 = 0.4918.
     rep.ident('sum_{l>=2} l^{-3/2} = zeta(3/2) - 1', sp.summation(l**sp.Rational(-3, 2), (l, 2, sp.oo)) - (sp.zeta(sp.Rational(3, 2)) - 1))
     Hsum = lambda n: float(np.sum(1/np.arange(2, n + 1.0)))
     hf_const = 0.61*(float(mp.zeta(1.5)) - 1)/2
@@ -889,7 +919,8 @@ def section_IIID():
     rep.note('The raw fluxes are NOT recomputed (production run); the quoted numbers are re-derived from the stored rows.')
     ls = sorted(set(rw[0] for rw in BIG))
     mean = {lv: sum(rw[2] + rw[3] for rw in BIG if rw[0] == lv)/2 for lv in ls}   # single-m mean flux, j<=4
-    # three-term fit of l x mean over 400 <= l <= 12800 in powers of l^-1/2 (the l^-1/2 term cancels in the mean)
+    # three-term fit of l x mean over 400 <= l <= 12800 in powers of l^-1/2 (the l^-1/2 term cancels in the
+    # mean)
     Lfit = np.array([lv for lv in ls if lv >= 400], float)
     yfit = np.array([lv*mean[lv] for lv in Lfit])
     Amat = np.vstack([np.ones_like(Lfit), 1/Lfit, Lfit**-1.5]).T
@@ -906,7 +937,8 @@ def section_IIID():
     rep.check('l=12800: |l x mean flux / kappa_0 - 1| <= 1e-4 (paper: kappa_0 to 1e-4)', abs(12800*(big_row(12800, 0)[2] + big_row(12800, 0)[3])/2/float(kappa_j(0)) - 1), '1e-4', 0, 'max')
     rw = big_row(12800, 1)
     rep.check('l=12800: |l x mean flux / kappa_1 - 1| <= 2e-5 (paper: kappa_1 to 2e-5; Sec. V: Eq. (12) to 2e-5)', abs(12800*(rw[2] + rw[3])/2/float(kappa_j(1)) - 1), '2e-5', 0, 'max')
-    # consistency: stored u(0), u'(0) + our jumps reproduce the stored Edot_I  (checks the stored normalisation u = Psi_in/A_inc)
+    # consistency: stored u(0), u'(0) + our jumps reproduce the stored Edot_I  (checks the stored
+    # normalisation u = Psi_in/A_inc)
     worst = 0
     for lv in (400, 6400, 12800):
         for jv in range(5):
@@ -927,8 +959,10 @@ def section_IIID():
                   note='tolerance 2/sqrt(l): O(l^-1/2) cubic corrections')
     # asymmetry decomposition at l = 6400, j = 0 ("the largest l for which we computed v as well"): the stored
     # file has u(0), u'(0) but not v(0), v'(0), so u and v are recomputed with the independent integrator
-    # (~20 s) and checked against the stored u. With I0 = |u dP - P u'|^2, H0 = |v dP - P v'|^2, den = (|u|^2+|v|^2) dP^2:
-    #   sqrt(l)(I0-H0)/(I0+H0) = A1 (barrier asymmetry, |u|^2-|v|^2) + A2 (cross term) + A3 (O(1/l), |u'|^2-|v'|^2)
+    # (~20 s) and checked against the stored u. With I0 = |u dP - P u'|^2, H0 = |v dP - P v'|^2,
+    # den = (|u|^2+|v|^2) dP^2:
+    #   sqrt(l)(I0-H0)/(I0+H0) = A1 (barrier asymmetry, |u|^2-|v|^2) + A2 (cross term)
+    #                            + A3 (O(1/l), |u'|^2-|v'|^2)
     lv = 6400; rw = big_row(lv, 0)
     md = zrw_mode(lv, lv, 3.0, 1.0, 3*math.sqrt(3), 1/(3*math.sqrt(3)))
     rep.check('l=6400, j=0: independent integrator vs stored Edot_I, Edot_H, u(0), u\'(0) (max rel. dev.)',
@@ -948,7 +982,8 @@ def section_IIID():
     rat_uv = (v0/Dv0)/(u0/Du0)
     rep.check("l=6400, j=0: (v(0)/v'(0))/(u(0)/u'(0)) = -1 + O(l^-1/2) from the exact solutions (d_r* v(0) = -d_r* u(0), Sec. III B)",
               abs(rat_uv + 1), '0', 1e-2, 'abs', note=f'ratio = {rat_uv:.5f}')
-    # the same decomposition from the production integrator, stored in schwarzschild/asym_check_results.m (rows {l, sqrt(l)(I-H)/(I+H), A1, A2, A3})
+    # the same decomposition from the production integrator, stored in schwarzschild/asym_check_results.m
+    # (rows {l, sqrt(l)(I-H)/(I+H), A1, A2, A3})
     if ASYM is None:
         rep.unavailable('stored decomposition of sigma_0 (asym_check_results.m): cross term 1.0389 and barrier asymmetry -0.231 at l = 6400', 'schwarzschild/asym_check_results.m not found')
     else:
@@ -974,8 +1009,9 @@ def section_IIID():
     rep.check('l=100: (I-H)/mean, stored data (paper: ~12%)', (SI - SH)/((SI + SH)/2), '0.12', 0.25)
     rep.info('l x mean flux / kappa at l = 100, 400, 12800 (Fig. 1: mean on the dashed line from l ~ 100)',
              ', '.join(f'{lv*mean[lv]/float(mp.fsum(kappa_j(jv) for jv in range(40))):.5f}' for lv in (100, 400, 12800)))
-    # Fig. 1 text: "their mean sits on the dashed line already at l ~ 100"; Sec. III C: the sum of the two fluxes approaches its
-    # limit with relative corrections O(1/l), the l^-1/2 term cancelling (the data are summed over j <= 4, hence sum_{j<=4} kappa_j)
+    # Fig. 1 text: "their mean sits on the dashed line already at l ~ 100"; Sec. III C: the sum of the two
+    # fluxes approaches its limit with relative corrections O(1/l), the l^-1/2 term cancelling (the data are
+    # summed over j <= 4, hence sum_{j<=4} kappa_j)
     sumk4 = float(mp.fsum(kappa_j(jv) for jv in range(5)))
     dev_mean = {lv: lv*mean[lv]/sumk4 - 1 for lv in ls}
     rep.check('|l x mean flux / sum_{j<=4} kappa_j - 1| <= 1% for every stored l >= 100 (the mean on the dashed line from l ~ 100)',
@@ -1022,10 +1058,12 @@ def section_IV():
     rep.ident('Upsilon_t^ = (r0^2+a^2) P0/Delta_0 + a(b-a) = r0^2 (r0+3)/(r0-1)', UpsS - r0**2*(r0 + 3)/(r0 - 1))
     rep.ident('Upsilon_t^(a=0) = 27', UpsS.subs(r0, 3) - 27)
     # "The orbital frequency is Omega = 1/b": from the equatorial geodesic equations with E = 1, L = b,
-    # Sigma dphi/dlambda = (b - a) + a P/Delta and Sigma dt/dlambda = a (b - a) + (r^2 + a^2) P/Delta = Upsilon_t^
+    # Sigma dphi/dlambda = (b - a) + a P/Delta and
+    # Sigma dt/dlambda = a (b - a) + (r^2 + a^2) P/Delta = Upsilon_t^
     dphidt = ((bS - aS) + aS*P0/D0)/UpsS
     rep.ident('Omega = 1/b: dphi/dt = [(b-a) + a P0/Delta_0]/Upsilon_t^ = 1/b on the Kerr light ring (geodesic equations, every r0)', sp.simplify(dphidt - 1/bS))
-    # "it is the Kerr version of the null condition L^2/r0^3 = E^2/(r0-2M)": at a = 0, R~ = r^4 - Delta b^2 with b = L/E
+    # "it is the Kerr version of the null condition L^2/r0^3 = E^2/(r0-2M)": at a = 0, R~ = r^4 - Delta b^2
+    # with b = L/E
     Lsym, Esym_ = sp.symbols('L E', positive=True)
     Rt_a0 = r0**4 - (r0**2 - 2*r0)*(Lsym/Esym_)**2
     rep.ident('R~(r0) at a = 0 equals r0^4 (r0-2M)/E^2 [E^2/(r0-2M) - L^2/r0^3]: R~(r0) = 0 is the null condition of Eq. (6)',
@@ -1039,11 +1077,12 @@ def section_IV():
     rep.ident('k~ = d^2/dr*^2 [R~/(r^2+a^2)^2] at r0 (curvature of Re Q/omega^2)', DstK(DstK(RtS/(r**2 + aS**2)**2)).subs(r, r0) - ktS)
     betab = sp.sqrt(3)*r0
     rep.ident('Omega_theta = lambda_L: beta_b/Ups = sqrt(R~\'\'/(2 Ups^2))', betab/UpsS - sp.sqrt(Rpp/(2*UpsS**2)))
-    # Omega_theta and lambda_L from the geodesic equations (E = 1): the polar equation Sigma^2 (dtheta/dlambda)^2 =
-    # Theta = Q + cos^2(theta) (a^2 - b^2/sin^2(theta)) with Q = 0, expanded about the equator (theta = pi/2 + psi),
-    # is a harmonic oscillator of frequency beta_b/Sigma in lambda, i.e. beta_b/Upsilon_t in t (dt/dlambda = Ups/Sigma);
-    # the radial equation Sigma^2 (dr/dlambda)^2 = R~ ~ (1/2) R~''(r0) x^2 gives the growth rate sqrt(R~''/2)/Sigma in
-    # lambda, i.e. lambda_L = sqrt(R~''/(2 Ups^2)) in t.
+    # Omega_theta and lambda_L from the geodesic equations (E = 1): the polar equation
+    # Sigma^2 (dtheta/dlambda)^2 = Theta = Q + cos^2(theta) (a^2 - b^2/sin^2(theta)) with Q = 0, expanded
+    # about the equator (theta = pi/2 + psi), is a harmonic oscillator of frequency beta_b/Sigma in lambda,
+    # i.e. beta_b/Upsilon_t in t (dt/dlambda = Ups/Sigma); the radial equation
+    # Sigma^2 (dr/dlambda)^2 = R~ ~ (1/2) R~''(r0) x^2 gives the growth rate sqrt(R~''/2)/Sigma in lambda,
+    # i.e. lambda_L = sqrt(R~''/(2 Ups^2)) in t.
     Theta = sp.cos(sp.pi/2 + psi)**2*(aS**2 - bS**2/sp.sin(sp.pi/2 + psi)**2)
     coef2 = sp.series(Theta, psi, 0, 4).removeO().coeff(psi, 2)
     rep.ident('polar equation about the equator: Theta = -(b^2 - a^2) psi^2 + O(psi^4) = -beta_b^2 psi^2',
@@ -1053,7 +1092,8 @@ def section_IV():
     rep.ident('radial equation about r0: R~ = (R~\'\'(r0)/2) x^2 + O(x^3) with R~\'\'(r0)/2 = 3 r0^2',
               sp.simplify(sp.series(RtS.subs(r, r0 + xW), xW, 0, 3).removeO() - 3*r0**2*xW**2))
     rep.ident('Schwarzschild: lambda_L = sqrt(R~\'\'/(2 Ups^2)) = 1/(3 sqrt3 M) = Omega', sp.sqrt(Rpp/(2*UpsS**2)).subs(r0, 3) - 1/(3*sp.sqrt(3)))
-    # eta_j from Re Q = omega^2 R~/(r^2+a^2)^2 - (2j+1) omega beta_b Delta/(r^2+a^2)^2:  eps = Re Q(r0), k = omega^2 k~
+    # eta_j from Re Q = omega^2 R~/(r^2+a^2)^2 - (2j+1) omega beta_b Delta/(r^2+a^2)^2:
+    # eps = Re Q(r0), k = omega^2 k~
     w = sp.symbols('omega', positive=True)
     epsQ = -(2*j + 1)*w*betab*D0/(r0**2 + aS**2)**2
     rep.ident('Eq. (17): eta_j = -eps/sqrt(2k) = j + 1/2 for every r0', sp.simplify(-epsQ/sp.sqrt(2*w**2*ktS) - j - sp.Rational(1, 2)))
@@ -1071,7 +1111,8 @@ def section_IV():
     schro = tosym(DstG(DstG(Yf(r))) + Qexpr*Yf(r))
     ypp = sp.solve(schro, y2)[0]
     resid = tosym(teuk(Dl**sp.Rational(-s, 2)*(r**2 + a**2)**sp.Rational(-1, 2)*Yf(r))).subs(y2, ypp)
-    # the residual is a rational function of r, a, omega, m, lambda (times y0, y1): test it exactly at random rational points
+    # the residual is a rational function of r, a, omega, m, lambda (times y0, y1): test it exactly at random
+    # rational points
     rng = np.random.default_rng(7); worst = 0
     for _ in range(6):
         pt = {r: sp.Rational(int(rng.integers(30, 90)), 10), a: sp.Rational(int(rng.integers(-9, 10)), 10), w: sp.Rational(int(rng.integers(1, 50)), 7),
@@ -1093,8 +1134,8 @@ def section_IV():
     rep.ident('Im Q = 0 at the light ring: -2(r0-M)P0 + 4 r0 Delta_0 = 0 for every spin', -2*(r0 - 1)*P0 + 4*r0*D0)
     dImQ = sp.diff((-2*(r - 1)*(r**2 + aS**2 - aS*bS) + 4*r*Delta(r, aS)), r).subs(r, r0)
     rep.ident('Im Q odd in x at leading order: d/dr[-2(r-M)P + 4 r Delta] at r0 = 3 r0 (r0-M) (nonzero for r0 > M)', sp.simplify(dImQ - 3*r0*(r0 - 1)))
-    # Im Q = O(omega x/M^2) against the curvature term O(omega^2 x^2/M^4): in Weber's variable z = (2k)^{1/4} x,
-    # k = omega^2 k~, the equation divided by sqrt(2k) has Im Q/sqrt(2k) = O(omega^{-1/2}) z
+    # Im Q = O(omega x/M^2) against the curvature term O(omega^2 x^2/M^4): in Weber's variable
+    # z = (2k)^{1/4} x, k = omega^2 k~, the equation divided by sqrt(2k) has Im Q/sqrt(2k) = O(omega^{-1/2}) z
     f0K = D0/(r0**2 + aS**2)                                   # dr/dr* at r0: x_r = f0 x
     ImQ_lin = s*w*3*r0*(r0 - 1)*f0K/(r0**2 + aS**2)**2         # Im Q = ImQ_lin x + O(x^2)
     weber_term = (ImQ_lin*xW/sp.sqrt(2*w**2*ktS)).subs(xW, zW/(2*w**2*ktS)**sp.Rational(1, 4))
@@ -1122,12 +1163,14 @@ def section_IV():
     rep.check('Lambda - (m-a omega)^2 - (2j+1) omega beta_b = O(1): bounded (max |.| < 20) over stored a=+-0.5,+-0.9, l=100..800, j<=3 eigenvalues',
               worst_abs, '0', 20, 'abs', note=f'max |remainder| = {worst_abs:.2f} (j = 3), relative to Lambda: {worst_rel:.1e}')
     rep.check('  ... and l-independent: max |remainder(800) - remainder(400)|', worst_conv, '0', 0.1, 'abs')
-    # The expansion of the angular equation about the equator (the origin of Lambda and of |S(pi/2)|^2). In the
-    # Toolkit convention the angular equation is (1/sin) d/dtheta (sin dS/dtheta) + [g^2 cos^2 - m^2/sin^2 - 2 g s cos
-    # - 2 m s cos/sin^2 - s^2 cot^2 + s + A] S = 0, g = a omega, A = Lambda - g^2 + 2 m g. With theta = pi/2 + psi the
-    # bracket is (A + s - m^2) + 2 s (g + m) psi - (m^2 - g^2 + s^2) psi^2 + O(psi^3): a harmonic oscillator of
-    # frequency sqrt(m^2 - g^2) = omega beta_b at large omega, whose j-th eigenvalue (2j+1) omega beta_b gives
-    # A = m^2 + (2j+1) omega beta_b + O(1), i.e. Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1).
+    # The expansion of the angular equation about the equator (the origin of Lambda and of |S(pi/2)|^2).
+    # In the Toolkit convention the angular equation is
+    #   (1/sin) d/dtheta (sin dS/dtheta)
+    #   + [g^2 cos^2 - m^2/sin^2 - 2 g s cos - 2 m s cos/sin^2 - s^2 cot^2 + s + A] S = 0,
+    # g = a omega, A = Lambda - g^2 + 2 m g. With theta = pi/2 + psi the bracket is
+    # (A + s - m^2) + 2 s (g + m) psi - (m^2 - g^2 + s^2) psi^2 + O(psi^3): a harmonic oscillator of
+    # frequency sqrt(m^2 - g^2) = omega beta_b at large omega, whose j-th eigenvalue (2j+1) omega beta_b
+    # gives A = m^2 + (2j+1) omega beta_b + O(1), i.e. Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1).
     gS, As_ = sp.symbols('g A', real=True)
     th = sp.pi/2 + psi
     bracket = gS**2*sp.cos(th)**2 - mm**2/sp.sin(th)**2 - 2*gS*s*sp.cos(th) - 2*mm*s*sp.cos(th)/sp.sin(th)**2 - s**2*sp.cot(th)**2 + s + As_
@@ -1137,9 +1180,12 @@ def section_IV():
     rep.ident('oscillator frequency^2 = m^2 - a^2 omega^2 = omega^2 beta_b^2 for m = omega b', sp.simplify((w*bb)**2 - (a*w)**2 - w**2*(bb**2 - a**2)))
     rep.ident('j-th eigenvalue (2j+1) omega beta_b: A = m^2 - s + (2j+1) omega beta_b + O(1) gives Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1)',
               sp.simplify(((w*bb)**2 - s + (2*j_ + 1)*w*bbs) + (a*w)**2 - 2*(w*bb)*(a*w) - ((w*bb - a*w)**2 + (2*j_ + 1)*w*bbs) + s))
-    # the harmonic coefficients c_j, d_j of Sec. III C from the normalised Hermite functions h_j(x) of the oscillator:
-    # |S(pi/2)|^2 = h_j(0)^2 sqrt(omega beta_b)/(2 pi) = c_j sqrt(omega beta_b)/(2 pi^{3/2}), with h_j(0)^2 sqrt(pi) = c_j,
-    # and |dS/dtheta(pi/2)|^2 = h_j'(0)^2 (omega beta_b)^{3/2}/(2 pi) = d_j (omega beta_b)^{3/2}/pi^{3/2}, h_j'(0)^2 sqrt(pi)/2 = d_j
+    # the harmonic coefficients c_j, d_j of Sec. III C from the normalised Hermite functions h_j(x) of the
+    # oscillator:
+    #   |S(pi/2)|^2 = h_j(0)^2 sqrt(omega beta_b)/(2 pi) = c_j sqrt(omega beta_b)/(2 pi^{3/2}),
+    #   with h_j(0)^2 sqrt(pi) = c_j, and
+    #   |dS/dtheta(pi/2)|^2 = h_j'(0)^2 (omega beta_b)^{3/2}/(2 pi) = d_j (omega beta_b)^{3/2}/pi^{3/2},
+    #   h_j'(0)^2 sqrt(pi)/2 = d_j
     xh = sp.symbols('x_h', real=True)
     worst_h = 0
     for jv in range(0, 13):
@@ -1184,7 +1230,8 @@ def section_IV():
         JHv = JH(d)
         e2JH = (d['r0']**2 + d['r0'] + 4*mp.sqrt(4 - d['r0']) - 8)**4/d['r0']**8
         worstJH = max(worstJH, abs(mp.exp(2*JHv)/e2JH - 1))
-        # horizon/infinity ratio built from the Wronskian at the horizon, J_H and the Teukolsky-Press factor (large-omega limit)
+        # horizon/infinity ratio built from the Wronskian at the horizon, J_H and the Teukolsky-Press factor
+        # (large-omega limit)
         OmH = d['a']/(2*rp); kap = 1 - d['b']*OmH
         NH = (2*rp)*d['D0']**s*mp.exp(-2*JHv)/((2*rp)**2*kap**2)
         alphaH = 256*(2*rp)**5*kap**5/(d['b'] - d['a'])**8
@@ -1202,8 +1249,9 @@ def section_IV():
     worstOm = min(float(1/sp.sqrt(rv)/(rv + 3)*2 - sp.sqrt(rv)*(3 - rv)/2/(2*(1 + (rv - 1)*sp.sqrt(4 - rv)/2))) for rv in [sp.Rational(k, 100) for k in range(101, 400)])
     rep.check('Omega - Omega_H > 0 on 1 < r0 < 4 (min over a grid)', float(worstOm > 0), '1', 0, note=f'min = {worstOm:.3e}; -> 0 only as r0 -> 1 (a -> 1)')
     rep.ident('Omega - Omega_H = (r0-1)[...]: vanishes at r0 = 1', (1/bS - aS/(2*(1 + (r0 - 1)*sp.sqrt(4 - r0)/2))).subs(r0, 1))
-    # symbolic proof: with s = sqrt(4 - r0) (0 < s < sqrt3 on 1 < r0 < 4), Omega - Omega_H = (2 r+ - a b)/(2 b r+) and 2 r+ - a b is a
-    # polynomial in s whose real roots are all outside the interval except s = sqrt3 (r0 = M, a = M), where it vanishes
+    # symbolic proof: with s = sqrt(4 - r0) (0 < s < sqrt3 on 1 < r0 < 4),
+    # Omega - Omega_H = (2 r+ - a b)/(2 b r+) and 2 r+ - a b is a polynomial in s whose real roots are all
+    # outside the interval except s = sqrt3 (r0 = M, a = M), where it vanishes
     sS = sp.symbols('s', positive=True)
     r0s = 4 - sS**2; aSs = sp.sqrt(r0s)*(3 - r0s)/2; bSs = sp.sqrt(r0s)*(r0s + 3)/2; rps = 1 + (r0s - 1)*sS/2
     polyOm = sp.expand(2*rps - aSs*bSs)
@@ -1238,24 +1286,27 @@ def section_IV():
     rep.check('Ahat_j = (2j+1) Ahat_0 for j = 4, 6, ..., 12 (exact expressions evaluated at r0 = 2.3 and 3.7 to 30 digits)', worstA, '0', 1e-25, 'abs')
     rep.check('Bhat independent of j for j = 5, 7, ..., 11 (same evaluation)', worstB, '0', 1e-25, 'abs')
     rep.check('source cancellations (omega^2, omega^{3/2}) for j = 4 ... 12', worstC, '0', 1e-25, 'abs')
-    # "The null geodesic enters alpha_lm only through E, L = bE and Upsilon_t, so that alpha_lm propto E^2": with p^mu -> E p^mu
-    # (L = bE) the source projection is homogeneous of degree 2 in E (Upsilon_t -> E Upsilon_t divides Z, so Z propto E, fluxes propto E^2)
+    # "The null geodesic enters alpha_lm only through E, L = bE and Upsilon_t, so that alpha_lm propto E^2":
+    # with p^mu -> E p^mu (L = bE) the source projection is homogeneous of degree 2 in E (Upsilon_t -> E
+    # Upsilon_t divides Z, so Z propto E, fluxes propto E^2)
     aG, bG, bwG, EG_ = sp.symbols('a b b_w E', positive=True)
     g0 = alpha_expand_general(aG, bG, r0, 0); gE = alpha_expand_general(aG, bG, r0, 0, Esym=EG_)
     rep.ident('alpha_lm propto E^2: alpha(E p^mu)/alpha(p^mu) = E^2 (symbolic in a, b, r0; even j)', sp.simplify(gE['alpha']/g0['alpha'] - EG_**2))
     g1 = alpha_expand_general(aG, bG, r0, 1); g1E = alpha_expand_general(aG, bG, r0, 1, Esym=EG_)
     rep.ident('alpha_lm propto E^2 (odd j)', sp.simplify(g1E['alpha']/g1['alpha'] - EG_**2))
-    # "both cancellations are consequences of the null condition R~(r0) = 0": the same expansion with the orbit data free
-    # (a, b = L/E and r0 independent, so that R~(r0) = P0^2 - Delta_0 (b-a)^2 is not zero), keeping omega = m/b
+    # "both cancellations are consequences of the null condition R~(r0) = 0": the same expansion with the
+    # orbit data free (a, b = L/E and r0 independent, so that R~(r0) = P0^2 - Delta_0 (b-a)^2 is not zero),
+    # keeping omega = m/b
     RtG = (r0**2 + aG**2 - aG*bG)**2 - (r0**2 - 2*r0 + aG**2)*(bG - aG)**2
     DG = r0**2 - 2*r0 + aG**2
     rep.ident('orbit data free, omega = m/b: the O(omega^2) coefficient of alpha is -S Y(0) (b-a)^2 R~(r0)/[8 sqrt(r0^2+a^2) Delta_0], i.e. propto the null condition (even j)',
               sp.simplify(g0['w2'] + g0['S']*g0['Y0']*(bG - aG)**2*RtG/(8*sp.sqrt(r0**2 + aG**2)*DG)))
     rep.ident('orbit data free, omega = m/b: the O(omega^{3/2}) coefficient vanishes identically (even j)', g0['w32'])
     rep.ident('orbit data free: both coefficients vanish identically for odd j (S(pi/2) = O(1/omega) S\'(pi/2))', g1['w2'] + g1['w32'])
-    # ... and the frequency condition omega = m/b, i.e. Omega = 1/b, is itself equivalent to the null condition: with the wave
-    # frequency decoupled from the orbit (m = omega b_w) the O(omega^{3/2}) term is propto (b - b_w), and for a circular orbit
-    # with E = 1, L = b at r0 the geodesic equations give dphi/dt - 1/b = -R~(r0)/[r0 b (r0^3 + a^2 r0 + 2a^2 - 2ab)]
+    # ... and the frequency condition omega = m/b, i.e. Omega = 1/b, is itself equivalent to the null
+    # condition: with the wave frequency decoupled from the orbit (m = omega b_w) the O(omega^{3/2}) term is
+    # propto (b - b_w), and for a circular orbit with E = 1, L = b at r0 the geodesic equations give
+    # dphi/dt - 1/b = -R~(r0)/[r0 b (r0^3 + a^2 r0 + 2a^2 - 2ab)]
     gw = alpha_expand_general(aG, bG, r0, 0, bwave=bwG)
     rep.ident('wave frequency decoupled (m = omega b_w): O(omega^{3/2}) coefficient = i S y1 r0^2 (a-b) sqrt(r0^2+a^2) (b - b_w)/(4 Delta_0): vanishes iff Omega = 1/b',
               sp.simplify(gw['w32'] - I*gw['S']*gw['y1']*r0**2*(aG - bG)*sp.sqrt(r0**2 + aG**2)*(bG - bwG)/(4*DG)))
@@ -1314,12 +1365,14 @@ def section_IV():
     rep.check('g(a = 0.83) close to the maximum (paper: maximum near a/M = 0.83)', gnum(0.83)/(6*math.sqrt(3) - 9), '1', 1e-3)
     # k~ -> 0 as r0 -> 1 (barrier flattens)
     rep.check('k~ -> 0 as r0 -> M (barrier flattens): k~(r0=1.001)', float(ktS.subs(r0, sp.Rational(1001, 1000))), '0', 1e-11, 'abs')
-    # Table I caption: at a = 0.99 (prograde) "the barrier is so flat that the asymptotic regime sets in only at l >> 800". The two
-    # odd O(l^-1/2) perturbations of Weber's equation are the cubic term g z^3, g = V3/[6 (2k)^{5/4}] with V3 = -omega^2 d^3/dr*^3
-    # [R~/(r^2+a^2)^2] at r0 (Re Q = omega^2 R~/(r^2+a^2)^2 at leading order), and the Im Q term i s c1 omega^{-1/2} z/(2k~)^{3/4}
-    # with Im Q = s omega c1 x (c1 = 3 r0 (r0-M) f0/(r0^2+a^2)^2, see above); both scale as omega^{-1/2} = (b/l)^{1/2} times a
-    # spin-dependent coefficient. The l at which the a = 0.99 coefficients equal their a = 0 (or a = 0.9) values at l = 800 is
-    # 800 x (coefficient ratio)^2 (the corrections to the mean flux are the squares, O(1/l)).
+    # Table I caption: at a = 0.99 (prograde) "the barrier is so flat that the asymptotic regime sets in only
+    # at l >> 800". The two odd O(l^-1/2) perturbations of Weber's equation are the cubic term g z^3,
+    # g = V3/[6 (2k)^{5/4}] with V3 = -omega^2 d^3/dr*^3 [R~/(r^2+a^2)^2] at r0
+    # (Re Q = omega^2 R~/(r^2+a^2)^2 at leading order), and the Im Q term i s c1 omega^{-1/2} z/(2k~)^{3/4}
+    # with Im Q = s omega c1 x (c1 = 3 r0 (r0-M) f0/(r0^2+a^2)^2, see above); both scale as
+    # omega^{-1/2} = (b/l)^{1/2} times a spin-dependent coefficient. The l at which the a = 0.99 coefficients
+    # equal their a = 0 (or a = 0.9) values at l = 800 is 800 x (coefficient ratio)^2 (the corrections to the
+    # mean flux are the squares, O(1/l)).
     R3 = DstK(DstK(DstK(RtS/(r**2 + aS**2)**2))).subs(r, r0)
     gcub = -R3/(6*(2*ktS)**sp.Rational(5, 4))*sp.sqrt(bS)            # cubic coefficient x l^{1/2} (omega = l/b at j = 0)
     cimq = s*3*r0*(r0 - 1)*f0K/(r0**2 + aS**2)**2/(2*ktS)**sp.Rational(3, 4)*sp.sqrt(bS)   # Im Q coefficient x l^{1/2}
@@ -1358,7 +1411,7 @@ def section_IV():
         SI = sum(rw['FluxI'] for rw in kerr_rows(av, sg, 800)); SH = sum(rw['FluxH'] for rw in kerr_rows(av, sg, 800))
         rep.check(f'sqrt(l)(I-H)/(I+H) at l = 800, a = {av} (paper: {asym_paper[av]}{"; the asymptotic sigma_bar of Sec. III C" if av == 0 else ""})',
                   math.sqrt(800)*(SI - SH)/(SI + SH), asym_paper[av], 1e-2)
-    # ---- Chrzanowski-Misner null limit (their formulae transcribed as in the notebook, Sec. 7)
+    # ---- Chrzanowski-Misner null limit (their formulae transcribed as in Section V of the notebook)
     rr_, m_, g2 = sp.symbols('r m gamma2', positive=True)
     mcrit = (2*sp.sqrt(3)/pi)*(rr_ + 3)/sp.sqrt(rr_)*g2                                   # CM Eq. (2.35b)
     PCM = 2*sp.sqrt(pi)*(1/g2)*(rr_ - 1)*sp.sqrt(3*rr_)/(rr_**2*(rr_ + 3)**2)*(mcrit/m_)*sp.exp(-pi/2)   # CM Eq. (4.28), eps = 1, k = 0, per E^2
@@ -1369,16 +1422,18 @@ def section_IV():
     ratioCM = float(nullCM.subs(rr_, 3))/float(kappa_j(0))
     rep.info('CM constant / kappa_0 (single-m kappa_0)', ratioCM)
     # "Their power at a given frequency collects the modes m and -m (we checked this on the scalar formula of
-    #  Ref. [BCHM], which their master formula reproduces, against an exact scalar flux)": BCHM 1973 Eq. (5.4),
+    #  Ref. [BCHM], which their master formula reproduces, against an exact scalar flux)":
+    #  BCHM 1973 Eq. (5.4),
     #  P_m = (1/(27 pi^{5/2})) (m/m_crit) e^{-pi eps/4} |Gamma(1/4 + i eps/4)|^2 with m_crit = 4/(pi delta'),
     #  eps = 1 + (4/pi) m/m_crit = 1 + m delta', for a scalar charge on the circular orbit r0 = (3 + delta') M
-    #  (their delta' = 3 x the delta of this paper), per q^2, against the exact single-m scalar flux of scalar_mode.
+    #  (their delta' = 3 x the delta of this paper), per q^2, against the exact single-m scalar flux of
+    #  scalar_mode.
     def bchm54(mv, dB):
         mcrit = 4/(mp.pi*dB); e = 1 + (4/mp.pi)*mv/mcrit
         return (1/(27*mp.pi**mp.mpf(2.5)))*(mv/mcrit)*mp.exp(-mp.pi*e/4)*abs(mp.gamma(mp.mpf(1)/4 + 1j*e/4))**2
-    # validation of the scalar integrator in the weak field: a scalar charge on a circular orbit of radius r0 >> M
-    # radiates the dipole power q^2 acc^2/3 = q^2 M^2/(3 r0^4) (acc = M/r0^2), shared equally by m = +1 and m = -1,
-    # so the single-m flux at l = m = 1 tends to M^2/(6 r0^4), with O(M/r0) corrections
+    # validation of the scalar integrator in the weak field: a scalar charge on a circular orbit of radius
+    # r0 >> M radiates the dipole power q^2 acc^2/3 = q^2 M^2/(3 r0^4) (acc = M/r0^2), shared equally by
+    # m = +1 and m = -1, so the single-m flux at l = m = 1 tends to M^2/(6 r0^4), with O(M/r0) corrections
     wf = {rv: scalar_mode(1, 1, rv)*6*rv**4 for rv in (50.0, 100.0, 200.0, 400.0)}
     rep.check('scalar integrator, weak field: single-m flux at l = m = 1, r0 = 100 M, over M^2/(6 r0^4) = 0.955', wf[100.0], '0.955', 1e-3)
     rep.info('  ... tends to 1 as 1 - c M/r0 with c -> 5.0: (1 - ratio) r0/M at r0/M = 50, 100, 200, 400',
@@ -1416,11 +1471,14 @@ def section_IV():
     rep.check('1/0.2347 = 4 x 1.065 (paper)', 1/wkb_exact, '4.26', 2e-3)
     rep.check('4 x 0.2347 = 0.94 (paper: the Stirling factor that remains per |m|)', 4*wkb_exact, '0.9386', 5e-4)
     rep.check('8 x 0.2347 = 1.877 (per single m)', 8*wkb_exact, '1.877', 5e-4)
-    # ---- Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1), |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^{3/2}) [and |S'(pi/2)|^2 ->
-    # d_j (omega beta_b)^{3/2}/pi^{3/2}, S'/S -> (2j+1) s (a+b)/beta_b, S/S' -> -s (a+b)/(omega beta_b^2), the inputs of alpha_expand]
-    # "checked against the Toolkit's harmonics": here against the spectral spheroidal-harmonic solver of kerr_py (swsh.py, itself
-    # validated against the Toolkit at l <= 6 and the source of the eigenvalues stored with the Kerr runs), and against the stored
-    # Toolkit harmonics (notebook/toolkit_harmonics.m) when that file exists. Retrograde orbits: a -> -|a|, m > 0.
+    # ---- Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1),
+    # |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^{3/2})
+    # [and |S'(pi/2)|^2 -> d_j (omega beta_b)^{3/2}/pi^{3/2}, S'/S -> (2j+1) s (a+b)/beta_b,
+    # S/S' -> -s (a+b)/(omega beta_b^2), the inputs of alpha_expand]
+    # "checked against the Toolkit's harmonics": here against the spectral spheroidal-harmonic solver of
+    # kerr_py (swsh.py, itself validated against the Toolkit at l <= 6 and the source of the eigenvalues
+    # stored with the Kerr runs), and against the stored Toolkit harmonics (notebook/toolkit_harmonics.m)
+    # when that file exists. Retrograde orbits: a -> -|a|, m > 0.
     def harm_targets(aa, lv, jv):
         rv = 2*(1 + math.cos(2/3*math.acos(-aa))); bv = math.sqrt(rv)*(rv + 3)/2; bbv = math.sqrt(3)*rv
         mv = lv - jv; wv = mv/bv
@@ -1464,8 +1522,9 @@ def section_IV():
     if HARM_TK is None:
         rep.unavailable('Lambda and |S(pi/2)|^2 asymptotics against the stored Toolkit harmonics (notebook/toolkit_harmonics.m)', 'file not found (not yet produced)')
     else:
-        # rows {a, sign, l, j, Lambda, S2, dS2} with S2 = |S(pi/2)|^2, dS2 = |S'(pi/2)|^2 (S normalised to unity on the sphere); the stored
-        # Lambda and |S|^2 do not depend on whether the retrograde case is represented as (a, -m, -omega) or (-a, m, omega)
+        # rows {a, sign, l, j, Lambda, S2, dS2} with S2 = |S(pi/2)|^2, dS2 = |S'(pi/2)|^2 (S normalised to
+        # unity on the sphere); the stored Lambda and |S|^2 do not depend on whether the retrograde case is
+        # represented as (a, -m, -omega) or (-a, m, omega)
         TKH = {}
         for rw in HARM_TK:
             av, sg, lv, jv = float(rw[0]), int(rw[1]), int(rw[2]), int(rw[3])
@@ -1499,11 +1558,13 @@ def section_IV():
 
 
 def alpha_expand(a, b, bb, D0, P0, jv, s=-2):
-    """Large-omega expansion of the circular-orbit Teukolsky source projection alpha_lm (Hughes 2000, Toolkit
-    conventions) for the null source, transcribed from the companion notebook (alphaExpand). Unknowns: Y(0) and
-    Y'(0) = omega^{1/2} y1 at the light ring; S0 = S(pi/2) with S'(pi/2)/S0 = (2j+1) s (a+b)/beta_b (even j),
-    S0/S'(pi/2) = -s (a+b)/(omega beta_b^2) (odd j); S'' from the angular equation. Returns the coefficients of
-    omega^2, omega^{3/2} (must vanish), Ahat_j (coefficient of omega S0 Y(0)) and Bhat (of omega^{1/2} S0' y1)."""
+    """Large-omega expansion of the circular-orbit Teukolsky source projection alpha_lm (Hughes 2000,
+    Toolkit conventions) for the null source, transcribed from the companion notebook (alphaExpand).
+
+    Unknowns: Y(0) and Y'(0) = omega^{1/2} y1 at the light ring; S0 = S(pi/2) with
+    S'(pi/2)/S0 = (2j+1) s (a+b)/beta_b (even j), S0/S'(pi/2) = -s (a+b)/(omega beta_b^2) (odd j); S'' from
+    the angular equation. Returns the coefficients of omega^2, omega^{3/2} (must vanish), Ahat_j
+    (coefficient of omega S0 Y(0)) and Bhat (of omega^{1/2} S0' y1)."""
     w, u, SS, YY0, yy1, lam0, rr = sp.symbols('omega u S Y0 y1 lambda_0 r', positive=True)
     m = w*b; c = a*w; lam = (m - c)**2 + (2*jv + 1)*w*bb + lam0; A = lam - c**2 + 2*m*c; Kt = w*P0; L = -m + c
     if jv % 2 == 0: S0 = SS; dS0 = (2*jv + 1)*s*(a + b)/bb*SS
@@ -1535,12 +1596,14 @@ def alpha_expand(a, b, bb, D0, P0, jv, s=-2):
 
 
 def alpha_expand_general(a, b, r0, jv, s=-2, Esym=1, bwave=None):
-    """The same expansion as alpha_expand, but with the orbit data free: spin a, impact parameter b = L/E and radius r0 are
-    independent symbols (the orbit need not be a null geodesic, so R~(r0) = P0^2 - Delta_0 (b-a)^2 is not zero), the particle
-    momentum is multiplied by Esym (p^mu -> E p^mu, L = bE), and the wave frequency is omega = m/b_w with b_w = b unless given
-    (b_w = 1/Omega; Omega = 1/b for the light ring). The angular relations S'/S follow from the equatorial oscillator with the
-    wave's m and omega, as in alpha_expand. Returns the coefficients of omega^2, omega^{3/2}, omega, omega^{1/2}, the full
-    alpha and the symbols S, Y0, y1 used."""
+    """The same expansion as alpha_expand, but with the orbit data free.
+
+    Spin a, impact parameter b = L/E and radius r0 are independent symbols (the orbit need not be a null
+    geodesic, so R~(r0) = P0^2 - Delta_0 (b-a)^2 is not zero), the particle momentum is multiplied by Esym
+    (p^mu -> E p^mu, L = bE), and the wave frequency is omega = m/b_w with b_w = b unless given
+    (b_w = 1/Omega; Omega = 1/b for the light ring). The angular relations S'/S follow from the equatorial
+    oscillator with the wave's m and omega, as in alpha_expand. Returns the coefficients of omega^2,
+    omega^{3/2}, omega, omega^{1/2}, the full alpha and the symbols S, Y0, y1 used."""
     w, u, SS, YY0, yy1, lam0, rr = sp.symbols('omega u S Y0 y1 lambda_0 r', positive=True)
     if bwave is None: bwave = b
     D0 = r0**2 - 2*r0 + a**2; P0 = r0**2 + a**2 - a*b; Pw = r0**2 + a**2 - a*bwave; bb = sp.sqrt(bwave**2 - a**2)
@@ -1594,10 +1657,11 @@ def section_V():
     xs = sp.symbols('x', positive=True)
     rep.ident('reflection identity |Gamma(1/4+ix) Gamma(3/4+ix)|^2 = 2 pi^2/cosh(2 pi x) (from Gamma(z)Gamma(1-z) = pi/sin(pi z))',
               sp.simplify(sp.expand_complex(sp.Abs(pi/sp.sin(pi*(sp.Rational(1, 4) + I*xs)))**2) - 2*pi**2/sp.cosh(2*pi*xs)))
-    # "the second term inside the modulus [of Eq. (22)] is the m^{-1/2} cross term of the flux at infinity": expanding the modulus,
-    # |A + B|^2 = |A|^2 (1 + 2 Re(B/A) + ...) with A = (eta+1/2) Gamma(1/4+i eta/2), B = sqrt2 (1-i) Gamma(3/4+i eta/2)/sqrt(3m), the relative
-    # O(m^-1/2) term of Eq. (22) at eta = 1/2 is m^{-1/2} x 2 Re[sqrt2 (1-i) Gamma(3/4+i/4)/(sqrt3 Gamma(1/4+i/4))], to be compared with the
-    # cross term of sigma_0 (from the phase of Eq. 14, Sec. III C), which enters the flux at infinity with the + sign
+    # "the second term inside the modulus [of Eq. (22)] is the m^{-1/2} cross term of the flux at infinity":
+    # expanding the modulus, |A + B|^2 = |A|^2 (1 + 2 Re(B/A) + ...) with A = (eta+1/2) Gamma(1/4+i eta/2),
+    # B = sqrt2 (1-i) Gamma(3/4+i eta/2)/sqrt(3m), the relative O(m^-1/2) term of Eq. (22) at eta = 1/2 is
+    # m^{-1/2} x 2 Re[sqrt2 (1-i) Gamma(3/4+i/4)/(sqrt3 Gamma(1/4+i/4))], to be compared with the cross term
+    # of sigma_0 (from the phase of Eq. 14, Sec. III C), which enters the flux at infinity with the + sign
     cross22 = 2*mp.re(mp.sqrt(2)*(1 - 1j)*mp.gamma(mp.mpf(3)/4 + 1j/4)/(mp.sqrt(3)*mp.gamma(mp.mpf(1)/4 + 1j/4)))
     rep.check('Eq. (22): relative m^{-1/2} term 2 Re[sqrt2 (1-i) Gamma(3/4+i/4)/(sqrt3 Gamma(1/4+i/4))] vs the cross term of sigma_0 from Eq. (14) (sign included)',
               cross22, SIGMA[('cross', 0)], 1e-8, note=f'{float(cross22):.7f}')
@@ -1609,9 +1673,10 @@ def section_V():
     rep.check('kappa with all odd kappa_j divided by 4: 0.0580', 2*mp.fsum(kappa_j(jv)/(1 if jv % 2 == 0 else 4) for jv in range(40)), '0.0580', 1e-3)
     rep.check('our kappa, 0.0637', 2*mp.fsum(kappa_j(jv) for jv in range(40)), '0.0637', 1e-3)
     rep.check('0.0580 is outside the 2021 fit 0.064 +- 0.001, 0.0637 is inside', float(abs(0.0580 - 0.064) > 0.001 and abs(0.0637 - 0.064) <= 0.001), '1', 0)
-    # Sec. VI A: "Eq. (24) is the leading term of Eq. (22)" for every eta: with mu^2/E^2 -> 9 delta and the cross term dropped, l x Eq. (22)/E^2
-    # -> e^{-pi eta/2} (eta+1/2)^2 |Gamma(1/4+i eta/2)|^2/(18 pi^{3/2}), and l x Eq. (24)/E^2 = kappa_0 (eta+1/2)^2 F(eta)/F(1/2); the two agree
-    # identically because of the reflection identity (F(eta) = e^{-pi eta/2} |Gamma(1/4+i eta/2)|^2/(2 pi^2))
+    # Sec. VI A: "Eq. (24) is the leading term of Eq. (22)" for every eta: with mu^2/E^2 -> 9 delta and the
+    # cross term dropped, l x Eq. (22)/E^2 -> e^{-pi eta/2} (eta+1/2)^2 |Gamma(1/4+i eta/2)|^2/(18 pi^{3/2}),
+    # and l x Eq. (24)/E^2 = kappa_0 (eta+1/2)^2 F(eta)/F(1/2); the two agree identically because of the
+    # reflection identity (F(eta) = e^{-pi eta/2} |Gamma(1/4+i eta/2)|^2/(2 pi^2))
     def lP22_lead(eta): return mp.exp(-mp.pi*eta/2)*(eta + mp.mpf(1)/2)**2*abs(mp.gamma(mp.mpf(1)/4 + 1j*eta/2))**2/(18*mp.pi**mp.mpf(1.5))
     def lEq24(eta): return kappa_j(0)*(eta + mp.mpf(1)/2)**2*Fpar(eta)/Fpar(mp.mpf(1)/2)
     rep.check('Eq. (24) = leading term of Eq. (22) (cross term dropped, mu^2/E^2 -> 9 delta) at eta = 1/2, 1, 2, 5: max |ratio - 1|',
@@ -1644,7 +1709,8 @@ def section_V():
     rep.check('same fits on the four quoted values: two-term', np.linalg.lstsq(A2, yq, rcond=None)[0][0], '4.05', 5e-3)
     rep.check('even formula accurate to O(m^-1/2): |exact/Eq.(22) - 1| x sqrt(m) bounded (m = 400)', abs(even_ratios[400] - 1)*math.sqrt(400), '0', 2.0, 'abs',
               note='values: ' + ', '.join(f'm={k}: {v:.4f}' for k, v in even_ratios.items()))
-    # the same ratios from the stored Teukolsky run of kerr_py/check_odd_BRTV.py (columns r0, m, parity, exact, BRTV, ratio; r0 = 3.0003 is delta = 1e-4)
+    # the same ratios from the stored Teukolsky run of kerr_py/check_odd_BRTV.py (columns r0, m, parity,
+    # exact, BRTV, ratio; r0 = 3.0003 is delta = 1e-4)
     if BRTV_STORED is None:
         rep.unavailable('stored Teukolsky odd-mode ratios 3.15, 3.48, 3.64, 3.77 (check_odd_BRTV_results.txt)', 'kerr_py/check_odd_BRTV_results.txt not found')
     else:
@@ -1676,7 +1742,8 @@ def section_VI():
     V0t = V_Z(l, r).subs(r, 3); kt = -Dst(Dst(V_Z(l, r))).subs(r, 3)
     etat = series_in_l(((V0t - l**2/r0t**3)/sp.sqrt(2*kt)).subs(dd, sig*eps), 1)
     rep.ident('eta = 1/2 + 3 l delta/2 for m = l', sp.simplify(etat.coeff(eps, 0) - sp.Rational(1, 2) - 3*sig/2))
-    # Eq. (24) assembled: flux = (c+/4)|u(0)|^2 [d_r* Psi]^2 with eta shifted -> kappa_0/l (eta+1/2)^2 F(eta)/F(1/2)
+    # Eq. (24) assembled: flux = (c+/4)|u(0)|^2 [d_r* Psi]^2 with eta shifted -> kappa_0/l (eta+1/2)^2
+    # F(eta)/F(1/2)
     Fs, etas = sp.symbols('F eta', positive=True)
     rep.ident('Eq. (24): (1 + 3 l delta/2)^2 = (eta + 1/2)^2', sp.simplify((1 + 3*sig/2)**2 - (sp.Rational(1, 2) + 3*sig/2 + sp.Rational(1, 2))**2))
     # Eq. (24) vs stored timelike fluxes (per E^2, l = m), gamma = 5, 10, 20
@@ -1711,11 +1778,13 @@ def section_VI():
     sumk = mp.fsum(kappa_j(jv) for jv in range(40))
     rep.check('4 sum_j kappa_j = 0.127 (coefficient of ln gamma in each flux)', 4*sumk, '0.127', 3e-3)
     rep.check('  ... consistent with the 2021 slope k_1 = 0.12 +- 0.01', float(abs(float(4*sumk) - 0.12) <= 0.01), '1', 0)
-    # "Summing Eq. (24) and its j >= 1 analogues over l and m up to the cut-off at l ~ gamma^2, each of the two fluxes is kappa ln gamma^2 + const = 0.127 ln gamma".
-    # The m-sum needs the timelike formula for j > 0, obtained as Eq. (24): for m = l - j the barrier parameter is
-    # eta_j = j + 1/2 + 3 l delta/2, the even derivative jump is -8 pi Y (2j+1 + 3 l delta/2)/(l M) (its O(l^0) massive term adds to
-    # the O(1/l) term) and the odd jump [Psi] has no O(l delta) correction, so
-    #   Edot_{l,l-j} = (kappa_j/l) [(2j+1 + 3 l delta/2)/(2j+1)]^2 F(eta_j)/F(j+1/2)   (even j),   (kappa_j/l) G(eta_j)/G(j+1/2)   (odd j)
+    # "Summing Eq. (24) and its j >= 1 analogues over l and m up to the cut-off at l ~ gamma^2, each of the
+    # two fluxes is kappa ln gamma^2 + const = 0.127 ln gamma". The m-sum needs the timelike formula for
+    # j > 0, obtained as Eq. (24): for m = l - j the barrier parameter is eta_j = j + 1/2 + 3 l delta/2, the
+    # even derivative jump is -8 pi Y (2j+1 + 3 l delta/2)/(l M) (its O(l^0) massive term adds to the O(1/l)
+    # term) and the odd jump [Psi] has no O(l delta) correction, so
+    #   Edot_{l,l-j} = (kappa_j/l) [(2j+1 + 3 l delta/2)/(2j+1)]^2 F(eta_j)/F(j+1/2)   (even j),
+    #   Edot_{l,l-j} = (kappa_j/l) G(eta_j)/G(j+1/2)                                 (odd j)
     dPj = jumps(l, l - j, r0t, E0t, L0t, Y, 0, True)[1]/E0t
     serj = series_in_l(dPj.subs(dd, sig*eps), 2)
     rep.ident('timelike, m = l - j (even j): [d_r Psi]/E = -8 pi Y (2j+1 + 3 l delta/2)/(l M), no O(l^0) term',
@@ -1736,8 +1805,9 @@ def section_VI():
         if jv % 2 == 0: return kjf[jv]/lv*((2*jv + 1 + 1.5*lv*d)/(2*jv + 1))**2*Fnp(eta)/F0[jv]
         return kjf[jv]/lv*Gnp(eta)/G0[jv]
     def S_total(gam, jmax=4, L1=20000):
-        """2 x sum_{j<=jmax} sum_{l>=2} Edot_{l,l-j} (both signs of m) for r0 = 3M(1+delta), delta = 1/(9 gamma^2): exact sum to l = L1,
-        Euler-Maclaurin integral beyond (the summand is smooth there), cut where eta_j = 60 (e^{-60 pi} ~ 1e-82)."""
+        """2 x sum_{j<=jmax} sum_{l>=2} Edot_{l,l-j} (both signs of m) for r0 = 3M(1+delta),
+        delta = 1/(9 gamma^2): exact sum to l = L1, Euler-Maclaurin integral beyond (the summand is smooth
+        there), cut where eta_j = 60 (e^{-60 pi} ~ 1e-82)."""
         d = 1/(9*gam**2); tot = 0; lcut = 59.5/(1.5*d)
         for jv in range(jmax + 1):
             tot += np.sum(summand(np.arange(2, min(L1, int(lcut)) + 1.0), jv, d))
@@ -1751,9 +1821,11 @@ def section_VI():
               note='the constant, S - kappa ln gamma^2, at gamma = 100, 1000: ' + ', '.join(f'{Stot[g] - float(2*sumk)*math.log(g**2):+.5f}' for g in (100, 1000)) + ' (happens to be ~1e-4)')
     S0t = {g: S_total(g, jmax=0) for g in (100, 1000)}
     rep.check('  ... with Eq. (24) alone (j = 0, both signs of m) the slope would be 4 kappa_0 = 0.111: the 0.127 needs all j', (S0t[1000] - S0t[100])/math.log(10), float(4*kappa_j(0)), 1e-3)
-    # "A pure exponential in l/gamma^2, fitted to l Edot over a finite range of l, necessarily returns a smaller effective coefficient, which explains the value
-    # 0.42 +- 0.02": the local coefficient -d ln(l Edot_ll)/d(l/gamma^2) of Eq. (24) is below pi/6 for every finite l/gamma^2 (it tends to
-    # pi/6 from below), and fits of ln(l Edot) = a - c_1 l/gamma^2 over the ranges of the 2021 fit (l <~ 400, gamma <~ 18) give c_1 ~ 0.35-0.43
+    # "A pure exponential in l/gamma^2, fitted to l Edot over a finite range of l, necessarily returns a
+    # smaller effective coefficient, which explains the value 0.42 +- 0.02": the local coefficient
+    # -d ln(l Edot_ll)/d(l/gamma^2) of Eq. (24) is below pi/6 for every finite l/gamma^2 (it tends to pi/6
+    # from below), and fits of ln(l Edot) = a - c_1 l/gamma^2 over the ranges of the 2021 fit (l <~ 400,
+    # gamma <~ 18) give c_1 ~ 0.35-0.43
     def log_lEdot24(lv, gam):      # ln of l Edot_ll/(kappa_0 E^2/M^2) from Eq. (24), without underflow
         eta = 0.5 + lv/(6*gam**2)
         return 2*np.log(eta + 0.5) - np.pi*eta/2 - logcosh(np.pi*eta) - 2*np.real(loggamma(0.75 + 0.5j*eta)) - math.log(F0[0])
@@ -1768,7 +1840,8 @@ def section_VI():
     rep.check('pure-exponential fits of l Eq. (24), ln(l Edot) = a - c_1 l/gamma^2, over l <= 400 at gamma = 5, 10, 18 (the 2021 ranges): all c_1 < pi/6',
               float(all(v < math.pi/6 for v in fits.values())), '1', 0, note='; '.join(f'gamma={k[0]}, l={k[1]}..{k[2]}: {v:.3f}' for k, v in fits.items()))
     rep.check('  ... and of the order of the 2021 value 0.42: mean of the four fits', float(np.mean(list(fits.values()))), '0.42', 0.1)
-    # the same fit on the stored exact fluxes at infinity (timelike_results.m, l <= 400, as in the 2021 fit of the Teukolsky fluxes)
+    # the same fit on the stored exact fluxes at infinity (timelike_results.m, l <= 400, as in the 2021 fit of
+    # the Teukolsky fluxes)
     sfits = {}
     for rv in sorted(set(rw[0] for rw in TIMELIKE)):
         d = (rv - 3)/3; gam = math.sqrt((1 + 3*d)**2/(9*d*(1 + d)))
@@ -1794,8 +1867,9 @@ def section_VI():
               note='order-of-magnitude statement: recomputed 1.4e17, i.e. log10 = 17.1')
     rep.check('M87*: Delta E/E = 4.2 (E/M) ln l_max ~ 1e-77 per orbit', 4.2*EG/MG*math.log(lmax), '1e-77', 2.0,
               note=f'recomputed {4.2*EG/MG*math.log(lmax):.1e}; with l_max = 1e18: {4.2*EG/MG*math.log(1e18):.1e}')
-    # Sec. VI B: "the flux is proportional to ln(E M/m_Pl^2)": with G, c, hbar restored, l_max ~ E r0/(hbar c) with r0 = 3 G M/c^2 and
-    # m_Pl^2 = hbar c/G gives l_max = 3 (E/c^2) M/m_Pl^2, so ln l_max = ln(E M/m_Pl^2) + ln 3 in G = c = 1 units
+    # Sec. VI B: "the flux is proportional to ln(E M/m_Pl^2)": with G, c, hbar restored,
+    # l_max ~ E r0/(hbar c) with r0 = 3 G M/c^2 and m_Pl^2 = hbar c/G gives l_max = 3 (E/c^2) M/m_Pl^2, so
+    # ln l_max = ln(E M/m_Pl^2) + ln 3 in G = c = 1 units
     Gs, cs_, hbs, Es, Ms = sp.symbols('G c hbar E M', positive=True)
     mPl2 = hbs*cs_/Gs
     rep.ident('l_max = E r0/(hbar c) with r0 = 3 G M/c^2 equals 3 (E/c^2) M/m_Pl^2, m_Pl^2 = hbar c/G', sp.simplify(Es*(3*Gs*Ms/cs_**2)/(hbs*cs_) - 3*(Es/cs_**2)*Ms/mPl2))

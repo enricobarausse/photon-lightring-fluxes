@@ -1,15 +1,15 @@
 """Fig. 1 of "Gravitational radiation from a photon on the light ring" (E. Barausse):
 flux per multipole from a photon on the Schwarzschild light ring, from the stored data.
 
-Input: ../photon_big_results.m (the run of schwarzschild/run_big.wls), rows
-{l, j, Edot_I, Edot_H, u(0), u'(0)} for a single m = l - j, per E^2 (M = 1).
-Plotted: l times the flux summed over the five dominant m (j <= 4) and over +-m
-(a factor 2), to infinity (circles), into the horizon (squares) and their mean (diamonds);
-the analytic coefficient kappa = 2 sum_j kappa_j = 0.063653 of Eq. (kappa) (dashed),
-computed here from Eqs. (keven)-(kodd); and kappa (1 +- sigmabar/sqrt(l)) with
-sigmabar = 0.610, the m-summed O(l^-1/2) asymmetry of Sec. III C (dotted).
-
-    python make_fig1.py      (run from the figures/ directory, or from anywhere) -> fig1.pdf
+Inputs:    ../photon_big_results.m (the run of schwarzschild/run_big.wls), rows
+           {l, j, Edot_I, Edot_H, u(0), u'(0)} for a single m = l - j, per E^2 (M = 1).
+Plotted:   l times the flux summed over the five dominant m (j <= 4) and over +-m (a factor 2), to
+           infinity (circles), into the horizon (squares) and their mean (diamonds); the analytic
+           coefficient kappa = 2 sum_j kappa_j = 0.063653 of Eq. (13) (dashed), computed here
+           from Eqs. (11)-(12); and kappa (1 +- sigmabar/sqrt(l)) with sigmabar = 0.610, the
+           m-summed O(l^-1/2) asymmetry of Sec. III C (dotted).
+Outputs:   fig1.pdf
+Run:       python make_fig1.py      (run from the figures/ directory, or from anywhere)
 """
 import os
 import re
@@ -38,7 +38,7 @@ def read_results(path=DATA):
 
 
 def kappa_j(j):
-    """Analytic kappa_j of Eqs. (keven)-(kodd), eta_j = j + 1/2."""
+    """Analytic kappa_j of Eqs. (11)-(12), eta_j = j + 1/2."""
     eta = j + 0.5
     if j % 2 == 0:
         cj = binom(j, j/2)*2.0**(-j)

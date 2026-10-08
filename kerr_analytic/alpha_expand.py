@@ -1,7 +1,7 @@
 """Analytic large-l coefficients kappa_j(a) for a photon on the Kerr light ring.
 
 Supports Sec. IV of "Gravitational radiation from a photon on the light ring" (E. Barausse):
-Eq. (kappakerr), its odd counterpart, the spin factor g(a) = kappa_0(a)/kappa_0(0) and the
+Eq. (19), its odd counterpart, the spin factor g(a) = kappa_0(a)/kappa_0(0) and the
 ingredients listed in Table I (r0, b, Upsilon_t, ktilde, |Ahat_0|, N, kappa_0, g). The driver
 run_kerr.py writes kerr_kappa_analytic.json (and the g(a) grids of the other JSON files).
 
@@ -18,9 +18,9 @@ What is computed (M = 1, E = 1, L = b, single m = l - j > 0; a < 0 = retrograde 
   and omega^(3/2) terms vanish for a null source (the cancellations of Sec. IV), leaving
   alpha = E^2 Ahat_j omega S0 Y(0) + ... for even j and alpha = E^2 Bhat omega^(1/2) S0' y1
   + ... for odd j.
-* J_inf, h_inf, J_hor: the WKB amplitude integrals of Eq. (N) and of the horizon side;
+* J_inf, h_inf, J_hor: the WKB amplitude integrals of Eq. (18) and of the horizon side;
   ktilde(d): the barrier curvature of the real part of the potential.
-* kappa_kerr(a, j): assembles kappa_j(a) for the flux to infinity, Eq. (kappakerr) (even j)
+* kappa_kerr(a, j): assembles kappa_j(a) for the flux to infinity, Eq. (19) (even j)
   and its odd analogue, the ratio of the horizon to the infinity normalisation (ratioHI,
   which equals 1), the coefficient a_j = (2j+1) beta_b Delta_0/((r0^2+a^2)^2 sqrt(2 ktilde))
   and N_0 (the amplitude factor N of the paper). F(x) is the barrier-top function of
@@ -106,9 +106,9 @@ def chop(expr, tol=1e-25):
     return expr.xreplace({n: 0 for n in expr.atoms(sp.Float) if abs(n) < tol})
 
 
-# --- WKB amplitude integrals (Eq. (N) of the paper) and barrier curvature ---
+# --- WKB amplitude integrals (Eq. (18) of the paper) and barrier curvature ---
 def qdrs(a, b, rr):
-    """q dr*/dr: imaginary part of sqrt(Q) along the resonant mode, Eq. (N)."""
+    """q dr*/dr: imaginary part of sqrt(Q) along the resonant mode, Eq. (18)."""
     Dl = rr**2 - 2*rr + a**2; P = (rr**2 + a**2) - a*b; Rt = P**2 - Dl*(b - a)**2
     return s*(-2*(rr - 1)*P + 4*rr*Dl)/(2*Dl*mp.sqrt(Rt))
 
@@ -180,7 +180,7 @@ def kappa_kerr(a, j, verbose=True):
         print(f"   omega^(1/2) coeff = {chop(co.get(sp.Rational(1,2), 0))}")
     a_, r0, b, bb, Ups, D0 = d['a'], d['r0'], d['b'], d['betab'], d['Ups'], d['D0']
     kt = ktilde(d); J0 = J_inf(d); JH = J_hor(d); hinf = h_inf(d)
-    N0 = r0**(2*s)*mp.exp(-2*s*hinf)*mp.exp(-2*J0)                 # amplitude factor N, Eq. (N)
+    N0 = r0**(2*s)*mp.exp(-2*s*hinf)*mp.exp(-2*J0)                 # amplitude factor N, Eq. (18)
     rp = 1 + mp.sqrt(1 - a_**2); OmH = a_/(2*rp); kap = 1 - b*OmH
     NH = (2*rp)*D0**s*mp.exp(-2*JH)/((2*rp)**2*kap**2)
     alphaH = 256*(2*rp)**5*kap*kap**2*kap**2/(b - a_)**8           # Teukolsky-Press factor at large l

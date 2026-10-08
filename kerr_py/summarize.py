@@ -1,10 +1,9 @@
 """Tabulate kerr_results.json: fluxes per multipole for each spin, summed over j.
 
-    python summarize.py [kerr_results.json]
-
-For each case prints, per l, l*Edot_I and l*Edot_H of the j = 0 mode, the sums over the
-stored j (single m, per E^2; multiply by 2 for +-m), their mean, and the asymmetry
-sqrt(l) (I - H)/(I + H).
+Computes:  for each case prints, per l, l*Edot_I and l*Edot_H of the j = 0 mode, the sums over the
+           stored j (single m, per E^2; multiply by 2 for +-m), their mean, and the asymmetry
+           sqrt(l) (I - H)/(I + H).
+Run:       python summarize.py [kerr_results.json]
 """
 import json
 import os

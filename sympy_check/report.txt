@@ -121,7 +121,7 @@ Eqs. (8)-(9): |u(0)|^2 = sqrt(l/2) pi F(eta)/sqrt2, |u'(0)|^2 = (sqrt2 l^{3/2}/2
 |v'(0)|^2 = |u'(0)|^2 (parabolic barrier, g = 0)                               1             1    0.0e+00  PASS
 d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 0.5      1.256745e-17             0    1.3e-17  PASS   [v'(0)/v(0) = -0.636225+0.132258j, u'(0)/u(0) = 0.636225-0.132258j]
 d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 1.5      2.082264e-19             0    2.1e-19  PASS   [v'(0)/v(0) = -1.182494+0.010623j, u'(0)/u(0) = 1.182494-0.010623j]
-   [section time 3.9 s]
+   [section time 3.6 s]
 
 ==============================================================================================================
 Sec. III C  The fluxes  [Eqs. (10)-(14)] and the O(l^-1/2) asymmetry
@@ -190,7 +190,7 @@ horizon fraction, asymptotic formulae, l_max = 140 (paper: 40% for l_max = 100-1
 horizon fraction with the asymptotic formulae at l_max = 1e3, 1e4, 1e6 (approaches 1/2 only logarithmically)0.427, 0.445, 0.463            --             info
 sum_{l>=2} l^{-3/2} = zeta(3/2) - 1                            0 (numeric<1e-30)      identity             PASS
 (1/2 - horizon fraction) x sum_{l<=l_max} 1/l -> sigma_bar (zeta(3/2)-1)/2 = 0.4918 at l_max = 1e6 (1/ln law; O(l_max^-1/2) corrections)        0.49116448    0.49177448    1.2e-03  PASS   [(1/2 - f_H) ln l_max at l_max = 1e3, 1e4, 1e6: 0.503, 0.509, 0.507]
-   [section time 23.9 s]
+   [section time 22.6 s]
 
 ==============================================================================================================
 Sec. III D  Numerical check: stored run photon_big_results.m (l = 10..12800, j <= 4)
@@ -239,7 +239,7 @@ l x mean flux / kappa at l = 100, 400, 12800 (Fig. 1: mean on the dashed line fr
 mean flux: fit of l x mean/kappa - 1 with {l^-1/2, 1/l, l^-3/2} over l >= 100: |coefficient of l^-1/2| negligible vs sigma_bar = 0.61 (bound 2e-3)      3.389245e-04          2e-3    0.0e+00  PASS   [coefficients: -3.4e-04 l^-1/2, +0.990/l, -0.118 l^-3/2]
 mean flux: l (l x mean/kappa - 1) is bounded, i.e. the relative corrections are O(1/l): max/min over 50 <= l <= 12800         1.0737001             1    7.4e-02  PASS   [50: 0.971, 100: 0.975, 200: 0.977, 400: 0.977, 800: 0.977, 1600: 0.975, 3200: 0.970, 6400: 0.954, 12800: 0.910]
    The production integrator is validated against the Toolkit to 1e-7 at l = 5 (1e-5 at l = 2) in the Sec. II block above (stored Toolkit run).
-   [section time 18.8 s]
+   [section time 18.3 s]
 
 ==============================================================================================================
 Sec. IV  Kerr  [Eqs. (15)-(21), Table I]   (M = 1; r0 parametrizes the light ring, a = sqrt(r0)(3-r0)/2)
@@ -386,7 +386,7 @@ Toolkit: |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^3/2) (even j), |S'|^2 -> d_
   ... Richardson extrapolation in 1/l from l = 400, 800: max |ratio - 1|      0.0031867319             0    3.2e-03  PASS
 Toolkit vs spectral solver: eigenvalues (max rel. dev.)             2.220446e-15             0    2.2e-15  PASS
 Toolkit vs spectral solver: |S(pi/2)|^2 (even j), |S'(pi/2)|^2 (odd j) (max rel. dev.)      2.321525e-10             0    2.3e-10  PASS
-   [section time 124.0 s]
+   [section time 119.5 s]
 
 ==============================================================================================================
 Sec. V  Comparison with the geodesic synchrotron radiation literature  [Eqs. (22)-(23)]
@@ -485,8 +485,8 @@ M87*: l_max ~ E r0/hbar = 2 pi r0/lambda (paper: ~1e17)             1.391686e+17
 M87*: Delta E/E = 4.2 (E/M) ln l_max ~ 1e-77 per orbit              2.180912e-77         1e-77    1.2e+00  PASS   [recomputed 2.2e-77; with l_max = 1e18: 2.3e-77]
 l_max = E r0/(hbar c) with r0 = 3 G M/c^2 equals 3 (E/c^2) M/m_Pl^2, m_Pl^2 = hbar c/G      0 (symbolic)      identity             PASS
 ln l_max = ln(E M/m_Pl^2) + ln 3 (G = c = 1): the flux is proportional to ln(E M/m_Pl^2) up to an additive constant      0 (symbolic)      identity             PASS
-   [section time 70.0 s]
+   [section time 67.6 s]
 
 ==============================================================================================================
-SUMMARY: 392 PASS, 0 FAIL, 22 info/not-checked lines; total time 246.2 s
+SUMMARY: 392 PASS, 0 FAIL, 22 info/not-checked lines; total time 237.0 s
 maximum relative deviation among passed quantitative checks (tolerance <= 5%) against a quoted paper value: 1.67e-02  (2 sigma_bar/sqrt(l) at l = 100 (12%))

@@ -40,8 +40,10 @@ Usage
     from kerrflux import Mode
     md = Mode(a, l, j, rB=60.0)      # a < 0 for retrograde orbits
     fluxI, fluxH = md.solve()        # per E^2, single m
+
 Running this file directly checks a = 0, l <= 5 against the Toolkit (MST) values stored in
-the dictionary below (agreement to ~1e-8). Cost: a second per mode at l ~ 10, of the order of
+the dictionary below (agreement to 2e-6 ... 2e-4 for the flux to infinity and better than 1e-6
+for the horizon flux, limited by the WKB boundary data at these small l). Cost: a second per mode at l ~ 10, of the order of
 ten seconds per mode at l = 800.
 """
 import time

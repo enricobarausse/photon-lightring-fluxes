@@ -17,7 +17,8 @@ T("Text", "The cells build on each other, so each section should be run after th
 T("Subsubsection", "Toolkit cells")
 T("Text", "Five cells need the Black Hole Perturbation Toolkit (the ReggeWheeler and Teukolsky packages for the cross-checks at l <= 5, the SpinWeightedSpheroidalHarmonics package for the eigenvalue and harmonic checks and for the Kerr integrator). They are commented out, the text cell before each of them says so and states what it checks, and the rest of the notebook does not depend on them.")
 T("Subsubsection", "Stored data")
-T("Text", "The results of the long numerical runs are read from the repository: photon_big_results.m and timelike_results.m in the repository root; kerr_mathematica_runL1.m, kerr_mathematica_runL2.m and toolkit_harmonics.m (the Toolkit's spheroidal eigenvalues and equatorial harmonics, written by toolkit_checks/kerr_harmonics_toolkit.wls) in notebook/ (next to this notebook); kerr_py/kerr_results.json and kerr_py/check_odd_BRTV_results.txt (the exact Teukolsky fluxes of timelike orbits of Sec. V); schwarzschild/asym_check_results.m (the decomposition of the flux asymmetry at l = 100-6400 of Sec. III D); and toolkit_checks/schwarzschild_toolkit_results.m (the Toolkit cross-checks at l <= 5 of Secs. II and III D). The repository root (repoDir, defined in the first cell) is taken to be the parent of the directory containing this notebook or, when the notebook is evaluated as a script, the current directory or its parent, whichever contains photon_big_results.m.")
+T("Text", "The results of the long numerical runs are read from the repository: photon_big_results.m and timelike_results.m in the repository root; kerr_mathematica_runL1.m, kerr_mathematica_runL2.m and toolkit_harmonics.m (the Toolkit's spheroidal eigenvalues and equatorial harmonics, written by toolkit_checks/kerr_harmonics_toolkit.wls) in notebook/ (next to this notebook); kerr_py/kerr_results.json and kerr_py/check_odd_BRTV_results.txt (the exact Teukolsky fluxes of timelike orbits of Sec. V); schwarzschild/asym_check_results.m (the decomposition of the flux asymmetry at l = 100-6400 of Sec. III D); and toolkit_checks/schwarzschild_toolkit_results.m (the Toolkit cross-checks at l <= 5 of Secs. II and III D).")
+T("Text", "The repository root (repoDir, defined in the first cell) is taken to be the parent of the directory containing this notebook or, when the notebook is evaluated as a script, the current directory or its parent, whichever contains photon_big_results.m.")
 
 # ------------------------------------------------------------------ II
 T("Section", "II. The problem and the formalism")
@@ -142,7 +143,7 @@ Do[
 kZ = -Dst[Dst[VZ[l, r]]] /. r -> 3;
 Print["omega/(2k)^(1/4) -> ", Series[((l - j)/Sqrt[27])/(2 kZ)^(1/4), {l, Infinity, 0}] // Normal // Simplify, ",   omega (2k)^(1/4) -> ", Series[((l - j)/Sqrt[27]) (2 kZ)^(1/4), {l, Infinity, -1}] // Normal // Simplify, "   (leading order)"];
 """)
-T("Subsubsection", "V = l^2 f/r^2 + O(l) as a function of r, and the linear term of the expansion about r = 3M")
+T("Subsubsection", "The potentials as functions of r: V = l^2 f/r^2 + O(l), and the linear term at r = 3M")
 T("Text", "Two statements of Secs. II and III B about the potentials as functions of r: both V_+ and V_- are l^2 f/r^2 + O(l) for every r (the limit V/l^2 is f/r^2 and the remainder (V - l^2 f/r^2)/l stays finite as l -> Infinity, symbolically in r), so the barrier top is at the light ring, r = 3M, up to O(l^-2) in r. "
   "The expansion of Eq. (7) is about r = 3M, not about the exact maximum of V_pm: the linear term dV/dr* at 3M is 2/243 + O(1/l) for both parities, O(l^0) while V0, k, V3 are O(l^2); in Weber's variable it is the term V1 z/(2k)^(3/4) = O(l^(-3/2)) z, negligible with respect to the O(l^(-1/2)) z^3 cubic term, which is why it is dropped in Eq. (7).")
 In(r"""
@@ -334,7 +335,7 @@ Print["generic O(l^0) jump J0 Ybar: Edot = ", Simplify[EdotGeneric], ", proporti
 Print["ratio to the photon flux kappa_0/l: ", Simplify[EdotGeneric/(kappaEven[0]/l)], "  = (J0 l/(8 Pi))^2: ", Simplify[EdotGeneric/(kappaEven[0]/l) - (J0 l/(8 Pi))^2] === 0, ", i.e. l^2 times the photon value"];
 Print["massive particle, J0 = -4 Pi/(3 gamma^2) (Eq. 6 per E^2, r0 = 3, mu^2/E^2 = 1/gamma^2): ratio = ", Simplify[EdotGeneric/(kappaEven[0]/l) /. J0 -> -4 Pi/(3 gamma^2)], " = (l/(6 gamma^2))^2, the square of (3/2) l delta of Sec. VI A"];
 """)
-T("Subsubsection", "sigma_j < 0 for every j >= 1: larger j")
+T("Subsubsection", "sigma_j < 0 for j >= 1: the larger j")
 T("Text", "The statement that the sigma_j with j >= 1 are negative is checked above for j <= 4, the modes that matter for the sum over m. This cell extends it to j = 5-12 (eta_j = 5.5-12.5), with the same cross term and model-equation cubic term; the table also shows that the cross term and the cubic term each have a definite sign for all j.")
 In(r"""
 sigmaJlarge = Table[{j, crossTerm[j], cubicTerm[j]}, {j, 5, 12}];
@@ -398,7 +399,7 @@ photonMode[l_, m_, rsA_: -40, rB_: 40, pg_: 12] := Module[{parity, w, Qin, Qup, 
 md = photonMode[5, 5]; Print["l = 5, m = 5: Edot_I = ", md["Flux"]["I"], "  Edot_H = ", md["Flux"]["H"]];
 """)
 T("Subsubsection", "Toolkit cross-check at l <= 5 (commented out)")
-T("Text", "This cell needs the Black Hole Perturbation Toolkit (ReggeWheeler and Teukolsky packages) and is commented out. It checks the integrator against the MST solutions of the ReggeWheeler package at l = 5 (the two agree to 10^-7, Sec. III D; toolkit_checks/schwarzschild_toolkit.wls runs the same comparison at l = 2, 3, 5, where the agreement degrades to 10^-5 at l = 2), and the null source in the Teukolsky equation (last paragraph of Sec. II): with the photon orbit, Upsilon_t = r0^2 p^t = 27, the Teukolsky fluxes coincide with the Zerilli / Regge-Wheeler ones to the precision of the Toolkit's solutions, between nine and seventeen significant digits for l <= 5 (the cell runs l = m = 5).")
+T("Text", "This cell needs the Black Hole Perturbation Toolkit (ReggeWheeler and Teukolsky packages) and is commented out. It checks the integrator against the MST solutions of the ReggeWheeler package at l = 5 (the two agree to 10^-7, Sec. III D; toolkit_checks/schwarzschild_toolkit.wls runs the same comparison at l = 2, 3, 4, 5, where the agreement degrades to 10^-5 at l = 2), and the null source in the Teukolsky equation (last paragraph of Sec. II): with the photon orbit, Upsilon_t = r0^2 p^t = 27, the Teukolsky fluxes coincide with the Zerilli / Regge-Wheeler ones to the precision of the Toolkit's solutions, between nine and seventeen significant digits for l <= 5 (the cell runs l = m = 5).")
 In(r"""
 (* << ReggeWheeler`
 Module[{R, J, PsiIn, dPsiIn, PsiUp, dPsiUp, W, P, dP, ZI, ZH, w = N[5 OmegaLR, 40]},
@@ -420,9 +421,9 @@ teukPhotonMode[l_, m_, wp_: 40] := Module[{w = N[m OmegaLR, wp], R, S, Z, assoc}
   TeukolskyMode[assoc]["Fluxes"]["Energy"]];
 Print["Teukolsky null source, l = 5, m = 5: ", teukPhotonMode[5, 5]]; *)
 """)
-T("Subsubsection", "Stored Toolkit cross-checks at l <= 5: Teukolsky against Zerilli / Regge-Wheeler, and the integrator against the MST solutions")
-T("Text", "The stored output of toolkit_checks/schwarzschild_toolkit.wls (schwarzschild_toolkit_results.m, rows {l, m, method, Edot_I, Edot_H}, single m, per E^2, 20 digits) for l = 2-5 and m = l, l-1, with four methods: RW-MST, the Zerilli / Regge-Wheeler fluxes with the MST solutions of the Toolkit's ReggeWheeler package; Teuk, the same null stress-energy tensor in the Teukolsky equation (Toolkit MST solutions, Upsilon_t = 27); NI, an arbitrary-precision direct integration; MP, the machine-precision ninth-order Runge-Kutta integrator of the production runs (the same algorithm as photonMode above). "
-  "Three statements of the paper are checked: the Teukolsky and Zerilli / Regge-Wheeler fluxes agree to the precision of the Toolkit's solutions, between nine and seventeen significant digits for l <= 5 (end of Sec. II, and 'at least nine' in Sec. V); the number of agreeing digits is counted as -Log10 of the relative difference, capped at the 20 digits stored, and compared with the precision of the MST Zerilli / Regge-Wheeler solution, which the Toolkit tracks and which is lowest at l = 5 (9.0 digits for m = 5): the measured agreement is 9.0 digits there and 15-17 digits at l = 2-4 (the paper's 'twenty' is the number of digits at which the values are stored). the integrator agrees with the Toolkit's solutions to 10^-7 at l = 5 and to 10^-5 at l = 2 (Sec. III D; the largest relative difference at each l is printed); and the notebook's own photonMode reproduces the stored MP values and agrees with the MST fluxes at the same level.")
+T("Subsubsection", "Toolkit cross-checks at l <= 5 (stored)")
+T("Text", "The stored output of toolkit_checks/schwarzschild_toolkit.wls (schwarzschild_toolkit_results.m, rows {l, m, method, Edot_I, Edot_H}, single m, per E^2, 20 digits) for l = 2-5 and m = l, l-1, with four methods: RW-MST, the Zerilli / Regge-Wheeler fluxes with the MST solutions of the Toolkit's ReggeWheeler package; Teuk, the same null stress-energy tensor in the Teukolsky equation (Toolkit MST solutions, Upsilon_t = 27); NI, an arbitrary-precision direct integration; MP, the machine-precision ninth-order Runge-Kutta integrator of the production runs (the same algorithm as photonMode above).")
+T("Text", "Three statements of the paper are checked. (i) The Teukolsky and Zerilli / Regge-Wheeler fluxes agree to the precision of the Toolkit's solutions, between nine and seventeen significant digits for l <= 5 (end of Sec. II, and 'at least nine' in Sec. V); the number of agreeing digits is counted as -Log10 of the relative difference, capped at the 20 digits stored, and compared with the precision of the MST Zerilli / Regge-Wheeler solution, which the Toolkit tracks and which is lowest at l = 5 (9.0 digits for m = 5): the measured agreement is 9.0 digits there and 15-17 digits at l = 2-4 (the paper's 'twenty' is the number of digits at which the values are stored). (ii) The integrator agrees with the Toolkit's solutions to 10^-7 at l = 5 and to 10^-5 at l = 2 (Sec. III D; the largest relative difference at each l is printed). (iii) The notebook's own photonMode reproduces the stored MP values and agrees with the MST fluxes at the same level.")
 In(r"""
 schwTK = Get[FileNameJoin[{repoDir, "toolkit_checks", "schwarzschild_toolkit_results.m"}]];
 tkRow[l_, m_, meth_] := First[Select[schwTK, #[[1]] == l && #[[2]] == m && #[[3]] == meth &]];
@@ -571,7 +572,7 @@ kerrIndex[a_] := With[{d = lrData[a]}, With[{Rpp = D[Rtil[a, d["b"], r], {r, 2}]
 TableForm[kerrIndex /@ {0, 1/2, 9/10, 99/100, -1/2, -9/10, -99/100}, TableHeadings -> {None, {"a", "Omega_theta", "lambda_L", "eta_0"}}]
 """)
 T("Subsubsection", "No superradiance")
-T("Text", "No superradiance for the resonant modes (remark after Eq. 19): Omega = 1/b exceeds the horizon angular velocity Omega_H = a/(2 r_+) for every Kerr light ring.")
+T("Text", "No superradiance for the resonant modes (remark after Eq. 20): Omega = 1/b exceeds the horizon angular velocity Omega_H = a/(2 r_+) for every Kerr light ring.")
 In(r"""
 TableForm[Table[With[{d = lrData[a]}, {N[a], N[d["Omega"], 6], N[a/(2 rpK[a]), 6], N[d["Omega"] - a/(2 rpK[a]), 6]}], {a, {-999/1000, -9/10, -1/2, 0, 1/2, 9/10, 99/100, 999/1000, 9999/10000}}],
   TableHeadings -> {None, {"a", "Omega", "Omega_H", "Omega - Omega_H"}}]
@@ -602,7 +603,7 @@ ktilde[d_] := Module[{rr, g, a = d["a"]}, g = Rtil[a, d["b"], rr]/(rr^2 + a^2)^2
 Print["c1 = Im Q/(s omega x) at the light ring, a = 0, 1/2, 9/10, -9/10: ", N[imQc1 /@ {0, 1/2, 9/10, -9/10}, 6], "  (a = 0: ", imQc1[0], ")"];
 Print["coefficient of the odd perturbation in Weber's equation, s c1/(2 k~)^(3/4), for a = 0, 1/2, 9/10, -9/10: ", N[Table[s imQc1[aa]/(2 ktilde[lrData[aa]])^(3/4), {aa, {0, 1/2, 9/10, -9/10}}] /. s -> -2, 6], " times I omega^(-1/2) z,  with omega^(-1/2) = ", Simplify[Sqrt[bLR/(l - j)], l > j], " in Schwarzschild"];
 """)
-T("Subsubsection", "a = 0.99: the asymptotic regime recedes to l >> 800 (caption of Table I)")
+T("Subsubsection", "The onset of the asymptotic regime at a = 0.99 (caption of Table I)")
 T("Text", "The caption of Table I states that for the prograde orbit at a/M = 0.99 the barrier is so flat (k~ = 1.8 10^-5) that the asymptotic regime sets in only at l >> 800. The approach to the asymptotic regime is controlled by the two O(l^(-1/2)) odd perturbations of Weber's equation: the Im Q term, with coefficient |s c1/(2 k~)^(3/4)| omega^(-1/2) (previous cell), and the cubic term of the barrier, with coefficient |g'''(r0)|/(6 (2 k~)^(5/4)) omega^(-1/2), where g = R~/(r^2 + a^2)^2 is Re Q/omega^2 at leading order and the derivatives are in r* (at a = 0 this is the g = 0.068 l^(-1/2) of Section III C). "
   "With omega^(-1/2) = Sqrt[b/m] = Sqrt[b/l] at leading order, both are c(a) l^(-1/2); the cell lists c(a) for the spins of Table I and the l at which each perturbation at a = 0.99 is as small as at a = 0 and l = 800, i.e. 800 [c(0.99)/c(0)]^2. "
   "The flattening of the barrier acts through the cubic term, whose coefficient grows as k~^(-5/4): at a = 0.99 it is ten times its a = 0 value, so the l at which it is as small as at a = 0, l = 800 is about 7 10^4; the Im Q term, whose coefficient also contains the factor c1 that vanishes with k~, grows only by a factor 1.7 (l ~ 2300), and the sum of the two by a factor 2 (l ~ 3400). The statement of the caption rests on the cubic term, and the check printed is that the l of the dominant growth is much larger than 800; the other spins of Table I stay within a factor of a few of a = 0 for both terms.")
@@ -632,7 +633,7 @@ Table[With[{d = lrData[a], m = l - j}, With[{w = m d["Omega"]},
   {a, {1/2, 9/10}}, {l, {20, 40, 80}}, {j, 0, 2}] // Flatten[#, 2] & // TableForm *)
 """)
 T("Subsubsection", "Toolkit check of the spheroidal harmonics at the equator (commented out)")
-T("Text", "This cell needs the SpinWeightedSpheroidalHarmonics package of the Toolkit and is commented out. It checks the large-omega behaviour of the spheroidal harmonics at the equator that enters the source expansion below: "
+T("Text", "This cell needs the SpinWeightedSpheroidalHarmonics package of the Toolkit and is commented out. It checks the large-omega behavior of the spheroidal harmonics at the equator that enters the source expansion below: "
   "S'(Pi/2)/S(Pi/2) -> (2j+1) s (a+b)/beta_b for even j, S(Pi/2)/S'(Pi/2) -> -s (a+b)/(omega beta_b^2) for odd j, and the normalizations |S(Pi/2)|^2 -> c_j Sqrt[omega beta_b]/(2 Pi^(3/2)) (quoted after Eq. 19; at a = 0, where omega beta_b = m = l - j, it reduces to the spherical result of Sec. III C at leading order in l) and |S'(Pi/2)|^2 -> d_j (omega beta_b)^(3/2)/Pi^(3/2). The ratios printed tend to 1 with O(1/l) corrections.")
 In(r"""
 (* << SpinWeightedSpheroidalHarmonics`
@@ -672,7 +673,7 @@ Print["|S(Pi/2)|^2 and |S'(Pi/2)|^2 against the asymptotic forms: the ratios at 
 """)
 T("Subsubsection", "The source expansion: Ahat_j and Bhat")
 T("Text", "The source: large-omega expansion of the Teukolsky source projection alpha (the circular-orbit formula of Hughes 2000 in the conventions of the Teukolsky package of the Toolkit) for the null source. "
-  "The unknowns are the wave at the light ring, Y(0), and its derivative Y'(0) = omega^(1/2) y1; S0 = S(Pi/2), and S'(Pi/2) is related to S0 by the large-omega behaviour checked above (S'' from the angular equation). "
+  "The unknowns are the wave at the light ring, Y(0), and its derivative Y'(0) = omega^(1/2) y1; S0 = S(Pi/2), and S'(Pi/2) is related to S0 by the large-omega behavior checked above (S'' from the angular equation). "
   "The O(omega^2) and O(omega^(3/2)) coefficients must vanish (the two cancellations of Sec. IV, which follow from the null condition R~(r0) = 0); the O(omega) coefficient of S0 Y(0) is Ahat_j = (2j+1) Ahat_0 for even j, and the O(omega^(1/2)) coefficient of S0 y1 is Bhat for odd j. "
   "In Schwarzschild Ahat_0 = 9 Sqrt[27]/4 = 3 r0 b/4 and Bhat = -I Ahat_0. The table lists the two leading coefficients, Ahat_j/Ahat_0 and Bhat for seven spins and j <= 3.")
 In(r"""
@@ -710,7 +711,7 @@ TableForm[Table[With[{e = alphaExpand[a, j]}, {a, j, Chop[e["omega2"]], Chop[e["
   TableHeadings -> {None, {"a", "j", "omega^2 coeff.", "omega^(3/2) coeff.", "Ahat_j/Ahat_0", "Bhat"}}]
 Print["Ahat_j/Ahat_0 = 2j+1 for even j <= 12 and Bhat independent of j for odd j <= 11, a = 0, 1/2, -9/10 (max deviation): ", Max[Table[With[{e0 = alphaExpand[a, 0], e1 = alphaExpand[a, 1]}, Max[Table[If[EvenQ[j], Abs[alphaExpand[a, j]["Ahat"]/e0["Ahat"]/(2 j + 1) - 1], Abs[alphaExpand[a, j]["Bhat"]/e1["Bhat"] - 1]], {j, 0, 12}]]], {a, {0, 1/2, -9/10}}]]];
 """)
-T("Subsubsection", "The source for a general circular trajectory: the E^2 scaling and the origin of the two cancellations")
+T("Subsubsection", "The source on a general circular trajectory: E^2 scaling and the two cancellations")
 T("Text", "Two statements of Sec. IV about the source. First, alpha_lm is proportional to E^2: the geodesic enters alpha only through the tetrad projections of p^mu, E P/(2 Sigma) and I (L - a E)/(Sqrt[2] r0) with L = b E, so every coefficient of the expansion is homogeneous of degree 2 in E (and Z = -8 Pi alpha/(W Upsilon_t) with Upsilon_t = E Upsilon_t^ is linear in E, the fluxes quadratic). "
   "Second, 'both cancellations are consequences of the null condition R~(r0) = 0'. The expansion of the previous cell is repeated for a circular trajectory at r0 with p_t = -E, p_phi = b E, p_r = 0 and b free, i.e. not on the light ring (the circular-orbit source formula is algebraic in E, L and r0): its frequency is Omega = p^phi/p^t from the geodesic equations of the cell 'Omega = 1/b and the null condition', the resonant modes have m = omega b_Omega with b_Omega = 1/Omega (equal to b only when R~(r0) = 0), and the eigenvalue and the equatorial harmonics follow from the angular equation with this m, while the tetrad projections carry the actual b = L/E. "
   "The cell shows symbolically, for every a, r0 and b, that the omega^2 and omega^(3/2) coefficients of the even sector are both proportional to R~(r0) = P^2 - Delta (b - a)^2: they vanish if and only if the null condition holds (at both roots in b of R~(r0) = 0, for any r0, not only on the light ring), while the massive circular geodesics at r0, for which R~(r0) = mu^2 r0^2 Delta_0/E^2, keep both terms, as in Eq. (6). "
@@ -1035,7 +1036,7 @@ limOdd = 9 Exp[-3 Pi/4]/(162 Pi^(3/2)) 2 Abs[Gamma[3/4 + 3 I/4]]^2;
 Print["even: limit/kappa_0 = ", N[limEven/kappaEven[0], 15], ",  numerical: ", N[9 delta m Peven[m, delta]/kappaEven[0] /. {delta -> 10^-20, m -> 10^12}, 15]];
 Print["odd:  limit/kappa_1 = ", N[limOdd/kappaOdd[1], 15], ",  numerical: ", N[9 delta m Podd[m, delta]/kappaOdd[1] /. {delta -> 10^-20, m -> 10^12}, 15], "   (= 1/4)"];
 """)
-T("Subsubsection", "The second term of Eq. (22) is the m^(-1/2) cross term of the flux at infinity")
+T("Subsubsection", "The second term of Eq. (22): the m^(-1/2) cross term at infinity")
 T("Text", "Sec. V: in the null limit the factor eta + 1/2 of Eq. (22) is the one of Eq. (24), and 'the second term inside the modulus is the m^(-1/2) cross term of the flux at infinity'. Writing |A + B|^2 = |A|^2 (1 + 2 Re[B/A] + |B/A|^2) with A = (eta + 1/2) Gamma[1/4 + I eta/2] and B = Sqrt[2] (1 - I) Gamma[3/4 + I eta/2]/Sqrt[3 m], the relative correction at eta = 1/2 is 2 Re[Sqrt[2] (1 - I) Gamma[3/4 + I/4]/(Sqrt[3] Gamma[1/4 + I/4])]/Sqrt[m], to be compared with the cross-term contribution to sigma_0 of Section III C (+1.039, which enters the flux at infinity with the plus sign), Eq. (10) with l = m. "
   "The same decomposition of Eq. (23) at eta' = 3/2 gives 2 Re[(1 + I) Gamma[1/4 + 3 I/4]/(2 Sqrt[6] Gamma[3/4 + 3 I/4])], printed against the cross term of sigma_1 (the paper makes no statement about it).")
 In(r"""
@@ -1121,8 +1122,8 @@ TableForm[Table[With[{num = scalarFlux[l, 3 + dB], an = bchm54[l, dB]}, {l, N[dB
 """)
 T("Subsubsection", "Origin of the 0.94")
 T("Text", "Origin of the 0.94 (same paragraph of the paper): two errors of the WKB treatment compensate. In the massive regime (large eta) the Chrzanowski-Misner master formula, their Eq. (5.1) with (5.2), agrees with the exact scalar result of BCHM, Eq. (5.3), but tends to 8 times the exact tensor result of Breuer, Ruffini, Tiomno and Vishveshwara, Eq. (22), which is per single m: referred to the same counting of m, their tensor formula is 4 times the exact one, the (s!)^2 of their master formula. "
-  "In the null limit this is compensated by the WKB form of the barrier-top factor, eta^(3/2) E^(-Pi eta), which is the large-eta form of the exact (eta + 1/2)^2 F(eta) obtained with Stirling's approximation of the Gamma function (F(eta) -> E^(-Pi eta)/(Pi Sqrt[eta/2]), Sec. VI A): at eta = 1/2 it underestimates the exact factor by 4 x 1.065, i.e. the ratio WKB/exact is 0.2347 = 1/(4 x 1.065). What remains per |m| is 4 x 0.2347 = 1/1.065 = 0.94 (and 8 x 0.2347 = 1.877 of the single-m kappa_0). This factor 4 is unrelated to the odd-parity factor 4 of Sec. V. "
-  "Conventions: Schwarzschild, M = 1, per unit mu^2, l = m; the delta of BCHM and BRTV is 3 times ours, gamma^2 = 1/(9 delta), m_crit = 4/(Pi delta') = 12 gamma^2/Pi, epsilon = 1 + 3 m delta = 2 eta.")
+  "In the null limit this is compensated by the WKB form of the barrier-top factor, eta^(3/2) E^(-Pi eta), which is the large-eta form of the exact (eta + 1/2)^2 F(eta) obtained with Stirling's approximation of the Gamma function (F(eta) -> E^(-Pi eta)/(Pi Sqrt[eta/2]), Sec. VI A): at eta = 1/2 it underestimates the exact factor by 4 x 1.065, i.e. the ratio WKB/exact is 0.2347 = 1/(4 x 1.065). What remains per |m| is 4 x 0.2347 = 1/1.065 = 0.94 (and 8 x 0.2347 = 1.877 of the single-m kappa_0). This factor 4 is unrelated to the odd-parity factor 4 of Sec. V.")
+T("Text", "Conventions: Schwarzschild, M = 1, per unit mu^2, l = m; the delta of BCHM and BRTV is 3 times ours, gamma^2 = 1/(9 delta), m_crit = 4/(Pi delta') = 12 gamma^2/Pi, epsilon = 1 + 3 m delta = 2 eta.")
 In(r"""
 epsCM[m_, d_] := 1 + 3 m d; mcritCM0[d_] := 4/(3 Pi d);
 PBCHM[m_, d_] := (1/(27 Pi^(5/2))) (m/mcritCM0[d]) Exp[-Pi epsCM[m, d]/4] Abs[Gamma[1/4 + I epsCM[m, d]/4]]^2;     (* BCHM Eq. (5.3), exact scalar, q = 0 *)
@@ -1152,8 +1153,8 @@ Print["eta (m = l, delta = sigma/l) = ", Series[(VZ[l, 3] - l^2/r0t^3)/Sqrt[2 kZ
 T("Subsubsection", "Eq. (24) against the timelike fluxes")
 T("Text", "Eq. (24), Edot_ll = (kappa_0/l) (eta + 1/2)^2 F(eta)/F(1/2), against the numerical fluxes of timelike orbits (Sec. VI A). The stored file timelike_results.m in the repository root contains the fluxes of the dominant mode l = m for orbits with delta = 1/(9 gamma^2), gamma = 5, 10, 20, computed with the integrator of Section III D for the massive source (rows {r0, l, Edot_I/E^2, Edot_H/E^2}); "
   "since Eq. (24) is the leading term in l^(-1/2), it is compared with the mean of the two fluxes, in which the O(l^(-1/2)) correction cancels. As stated in Sec. VI A, the agreement is better than 1% for gamma = 20 and 120 <= l <= 4800, 0.4-4% for gamma = 10 and 30 <= l <= 1200, and better than 4% for gamma = 5 and 25 <= l <= 125 (the table lists all the stored rows, including the smaller l, where the O(1/l) corrections are larger, and the larger l of the gamma = 5 and 10 runs, deep in the exponential cut-off); the gamma column gives the nominal gamma = 1/Sqrt[9 delta] of the runs. "
-  "A few of the rows are then recomputed directly with circMode. "
-  "Then the cut-off: F(eta) ~ E^(-Pi eta)/(Pi Sqrt[eta/2]) at large eta, so that with 3 l delta/2 = l/(6 gamma^2) the flux is cut off as (l/(6 gamma^2))^(3/2) Exp[-Pi l/(6 gamma^2)], i.e. c_1 = Pi/6 = 0.52 in the notation of the 2021 paper (a pure exponential fitted over a finite range of l returns a smaller effective coefficient, 0.42 +- 0.02 there); and the sum over l up to the cut-off l ~ gamma^2, which gives for each flux Edot_tot M^2/E^2 = kappa Log[gamma^2] + const = 2 kappa Log[gamma] = 0.127 Log[gamma], consistent with the slope k_1 = 0.12 +- 0.01 fitted in the 2021 paper.")
+  "A few of the rows are then recomputed directly with circMode.")
+T("Text", "Then the cut-off: F(eta) ~ E^(-Pi eta)/(Pi Sqrt[eta/2]) at large eta, so that with 3 l delta/2 = l/(6 gamma^2) the flux is cut off as (l/(6 gamma^2))^(3/2) Exp[-Pi l/(6 gamma^2)], i.e. c_1 = Pi/6 = 0.52 in the notation of the 2021 paper (a pure exponential fitted over a finite range of l returns a smaller effective coefficient, 0.42 +- 0.02 there); and the sum over l up to the cut-off l ~ gamma^2, which gives for each flux Edot_tot M^2/E^2 = kappa Log[gamma^2] + const = 2 kappa Log[gamma] = 0.127 Log[gamma], consistent with the slope k_1 = 0.12 +- 0.01 fitted in the 2021 paper.")
 In(r"""
 Edotll[l_, delta_] := With[{eta = 1/2 + 3 l delta/2}, kappaEven[0]/l (eta + 1/2)^2 Fpar[eta]/Fpar[1/2]];   (* Eq. (24) *)
 gammaOf[delta_] := Sqrt[(1 + 3 delta)^2/(9 delta (1 + delta))];
@@ -1173,7 +1174,7 @@ Print["l Edot_ll/kappa_0 divided by x^(3/2) Exp[-Pi x], x = l/(6 gamma^2) = eta 
 Print["cut-off coefficient c_1 = Pi/6 = ", N[Pi/6, 4], "  (pure-exponential fit of the 2021 paper: 0.42 +- 0.02)"];
 Print["coefficient of Log[gamma] in Edot_tot M^2/E^2 (each flux): kappa Log[gamma^2] = 2 kappa Log[gamma] = 4 Sum_j kappa_j Log[gamma] = ", N[2 kappaTot, 4], " Log[gamma]  (fit of the 2021 paper: k_1 = 0.12 +- 0.01)"];
 """)
-T("Subsubsection", "Eq. (24) is the leading term of Eq. (22)")
+T("Subsubsection", "Eq. (24) as the leading term of Eq. (22)")
 T("Text", "Sec. VI A: Eq. (24) is the leading term of Eq. (22) for every eta, not only in the null limit eta = 1/2. With mu^2/E^2 -> 9 delta and the m^(-1/2) cross term dropped, 9 delta m P^even = E^(-Pi eta/2) (eta + 1/2)^2 |Gamma(1/4 + I eta/2)|^2/(18 Pi^(3/2)), and its ratio to l Eq. (24) = kappa_0 (eta + 1/2)^2 F(eta)/F(1/2) is 1 identically, by the reflection formula |Gamma(1/4 + I x) Gamma(3/4 + I x)|^2 = 2 Pi^2/Cosh[2 Pi x], which turns E^(-Pi eta/2) |Gamma(1/4 + I eta/2)|^2 into 2 Pi^2 F(eta). The cell checks the ratio at eta = 1/2, 1, 2, 5 and the reflection formula.")
 In(r"""
 PevenLead[eta_] := Exp[-Pi eta/2]/(162 Pi^(3/2)) (eta + 1/2)^2 Abs[Gamma[1/4 + I eta/2]]^2;   (* delta m P^even/mu^2 without the cross term, as a function of eta = 1/2 + 3 m delta/2 *)
@@ -1201,7 +1202,7 @@ TableForm[Table[{sums[[i, 1]], sums[[i, 2]], sums[[i, 3]], If[i > 1, (sums[[i, 2
 slope0 = Coefficient[Fit[Map[{Log[#[[1]]], #[[2]]} &, sums], {1, x}, x], x]; slopeAll = Fit[Map[{Log[#[[1]]], #[[3]]} &, sums], {1, x}, x];
 Print["fitted slope of the j = 0 sum: ", N[slope0, 4], " against 2 kappa_0 = ", N[2 kappaEven[0], 4], ";  of the full sum: ", N[Coefficient[slopeAll, x], 4], " against 4 Sum_j kappa_j = 2 kappa = ", N[2 kappaTot, 4], " (paper: 0.127);  within 2%: ", Abs[Coefficient[slopeAll, x]/(2 kappaTot) - 1] < 0.02, ";  the constant: ", N[slopeAll /. x -> 0, 3]];
 """)
-T("Subsubsection", "A pure exponential fitted over a finite range of l: the 0.42 of the 2021 fit")
+T("Subsubsection", "Pure-exponential fits over a finite range of l: the 0.42 of the 2021 fit")
 T("Text", "Sec. VI A: the flux is cut off as (l/6 gamma^2)^(3/2) Exp[-Pi l/(6 gamma^2)], i.e. l Edot_ll/kappa_0 = (eta + 1/2)^2 F(eta)/F(1/2) with eta = 1/2 + l/(6 gamma^2), the exponent corresponds to c_1 = Pi/6 in the notation of the 2021 paper (whose fit has the form Edot_l proportional to l^-1 Exp[-c_1 l/gamma^2]), and 'a pure exponential fitted over a finite range of l necessarily returns a smaller effective coefficient, which explains the value 0.42 +- 0.02 reported there'. "
   "The local coefficient of a pure exponential in l/gamma^2 fitted to l Edot_ll is c_1(l) = -gamma^2 d Log[l Edot_ll]/dl = -(1/6) [2/(1 + x) + d Log[F]/d eta], x = l/(6 gamma^2), with d Log[F]/d eta = -Pi/2 - Pi Tanh[Pi eta] + Im PolyGamma[3/4 + I eta/2] from the closed form of F; it is below Pi/6 for every l and tends to Pi/6 from below (at large eta as Pi/6 - 3 gamma^2/(2 l), from the x^(3/2) prefactor), so any finite range returns a smaller coefficient. "
   "The cell checks this on a grid of l/gamma^2, then fits a pure exponential (least squares on Log[l Edot]) to l Eq. (24) over 0.5 gamma^2 <= l <= 5 gamma^2 and over 2 gamma^2 <= l <= 10 gamma^2 (the results depend only on l/gamma^2), and to the stored numerical fluxes (mean of the two) of gamma = 5, 10, 20 over 2 gamma^2 <= l <= 10 gamma^2: the fitted coefficients are 0.4-0.45, bracketing the 0.42 of the 2021 fit.")
@@ -1227,11 +1228,12 @@ lmaxPhys = (EE r0/(hbar c)) /. r0 -> 3 G M/c^2 /. G -> hbar c/mPl^2;
 Print["l_max = E r0/(hbar c) with r0 = 3 G M/c^2 and G = hbar c/m_Pl^2: ", Simplify[lmaxPhys], "  (= 3 E M/(m_Pl^2 c^2));  Log[l_max] - Log[E M/m_Pl^2] = ", Simplify[Log[lmaxPhys /. c -> 1] - Log[EE M/mPl^2], {EE > 0, M > 0, mPl > 0}]];
 Print["for a photon of wavelength lambda, E = 2 Pi hbar c/lambda: l_max = ", Simplify[(EE r0/(hbar c)) /. EE -> 2 Pi hbar c/lambda], "  (the 2 Pi r0/lambda of Sec. VII)"];
 """)
+
 # ------------------------------------------------------------------ VII
 T("Section", "VII. Conclusions: energy per orbit and the M87* estimate")
 T("Subsubsection", "Energy per orbit and the M87* estimate")
 T("Text", "Numbers of Sec. VII: multiplied by the orbital period 2 Pi b = 6 Sqrt[3] Pi M and summed over the two fluxes, Eq. (13) gives the energy radiated per orbit by an ultrarelativistic body near the critical impact parameter, Delta E = 2 kappa (2 Pi b) (E^2/M) Log[l_max] = 4.2 (E^2/M) Log[l_max], half of it absorbed, in the regime Delta E << E. "
-  "Then the estimate for the millimetre photons of the Event Horizon Telescope around M87* (M = 6.5 10^9 solar masses, wavelength lambda = 1.3 mm): the wavelength cuts the sum at l_max ~ E r0/hbar = 2 Pi r0/lambda ~ 10^17, E/M ~ 10^-79, and the fractional energy loss per orbit is Delta E/E = 4.2 (E/M) Log[l_max] ~ 10^-77. The last estimate, for Sgr A*, is not quoted in the paper.")
+  "Then the estimate for the millimeter photons of the Event Horizon Telescope around M87* (M = 6.5 10^9 solar masses, wavelength lambda = 1.3 mm): the wavelength cuts the sum at l_max ~ E r0/hbar = 2 Pi r0/lambda ~ 10^17, E/M ~ 10^-79, and the fractional energy loss per orbit is Delta E/E = 4.2 (E/M) Log[l_max] ~ 10^-77. The last estimate, for Sgr A*, is not quoted in the paper.")
 In(r"""
 Print["orbital period 2 Pi b = 6 Sqrt[3] Pi = ", N[2 Pi bLR, 4], ";  Delta E per orbit = 2 kappa (2 Pi b) E^2/M = ", N[2 kappaTot 2 Pi bLR, 4], " (E^2/M) Log[l_max]   (both fluxes)"];
 With[{G = 6.674 10^-8, c = 2.998 10^10, h = 6.626 10^-27, Msun = 1.989 10^33, lambda = 0.13},
@@ -1249,15 +1251,16 @@ With[{G = 6.674 10^-8, c = 2.998 10^10, h = 6.626 10^-27, Msun = 1.989 10^33},
     Print["Sgr A*: per photon ", Pph, " erg/s;  N_photons ~ ", Nph, ";  incoherent total ~ ", Nph Pph, " erg/s"]]];
 """)
 
+# ------------------------------------------------------------------ summary
 T("Section", "Summary of the numbers quoted in the paper")
-T("Text", "Sec. III B: V0 = l(l+1)/27, k = 2 l^2/729, V3 = 4 l^2/6561; eta_j = j + 1/2; lambda_L = Sqrt[2k]/(2 omega) = Omega; |T|^2 = 0.041 at eta = 1/2 (96% reflected). "
-  "Sec. III C: kappa_0 = 0.0277668, kappa_1 = 0.0037670, kappa_2 = 2.7521 10^-4, kappa_3 = 1.6604 10^-5, kappa_4 = 9.23 10^-7; Sum_j kappa_j = 0.0318265; kappa = 0.063653; cross term 1.039, cubic term -0.23, sigma_0 = 0.81, sigma_j < 0 for j >= 1, sigma_bar = 0.61; 2 sigma_bar/Sqrt[l] = 12% at l = 100; horizon fraction 40% for l_max = 100-140. "
-  "Sec. III D: j <= 4 captures all but 2 10^-6 of the sum; three-term fit 0.0318263 against 0.0318265; at l = 12800 the kappa_j, j <= 4, to better than 10^-3, kappa_0 to 10^-4 and kappa_1 to 2 10^-5; at l = 6400 the cross term 1.0389 (analytic 1.0390) and the barrier asymmetry -0.231. "
-  "Sec. IV and Table I: r0, b, Upsilon_t, k~, |Ahat_0|, N, kappa_0(a) and g(a) for a = 0, 0.5, 0.9, 0.99, -0.5, -0.9, -0.99; N = 16/r0^6; g(a) = 27 (r0 - 1)/(r0^2 (r0 + 3)), maximum 6 Sqrt[3] - 9 = 1.392 at r0 = Sqrt[3], a = 0.834, g = 81/112 = 0.723 at r0 = 4, g = 0.99 at a = 0.98 and 0.62 at a = 0.995; horizon/infinity ratio 1; num./an. = 1.0012, 1.0014, 1.0017, 1.0011, 1.0010 at l = 800; Richardson extrapolation within 1.5 10^-5 (omitted j >= 4 terms: 3 10^-5 of kappa); Kerr asymmetries 0.78, 1.10, 0.51, 0.45 at l = 800 against 0.61 at a = 0. "
-  "Chrzanowski-Misner: (12/Sqrt[Pi]) E^(-Pi/2) E^2 (r0 - 1)/(r0^2 (r0 + 3) m), constant 0.94 of 2 kappa_0 (1.877 kappa_0); their tensor formula (s!)^2 = 4 times the exact one in the massive regime, compensated at eta = 1/2 by the WKB barrier factor, 1/(4 x 1.065) = 0.2347. "
-  "Sec. V: null limit of Eqs. (22)-(23) = kappa_0 and kappa_1/4; odd-parity ratio exact/1973 = 3.15, 3.48, 3.64, 3.77 for m = 40, 100, 200, 400 at delta = 10^-4, fits 4.06 and 4.05; kappa with the 1973 odd term 0.0580, against 0.0637. "
-  "Sec. VI A: Eq. (24) within 1% (gamma = 20, 120 <= l <= 4800), 0.4-4% (gamma = 10, 30 <= l <= 1200), better than 4% (gamma = 5, 25 <= l <= 125); c_1 = Pi/6; Edot_tot M^2/E^2 = 0.127 Log[gamma]. "
-  "Sec. VII: Delta E per orbit = 4.2 (E^2/M) Log[l_max]; M87*: l_max ~ 10^17, E/M ~ 10^-79, Delta E/E ~ 10^-77 per orbit.")
+T("Text", "Sec. III B: V0 = l(l+1)/27, k = 2 l^2/729, V3 = 4 l^2/6561; eta_j = j + 1/2; lambda_L = Sqrt[2k]/(2 omega) = Omega; |T|^2 = 0.041 at eta = 1/2 (96% reflected).")
+T("Text", "Sec. III C: kappa_0 = 0.0277668, kappa_1 = 0.0037670, kappa_2 = 2.7521 10^-4, kappa_3 = 1.6604 10^-5, kappa_4 = 9.23 10^-7; Sum_j kappa_j = 0.0318265; kappa = 0.063653; cross term 1.039, cubic term -0.23, sigma_0 = 0.81, sigma_j < 0 for j >= 1, sigma_bar = 0.61; 2 sigma_bar/Sqrt[l] = 12% at l = 100; horizon fraction 40% for l_max = 100-140.")
+T("Text", "Sec. III D: j <= 4 captures all but 2 10^-6 of the sum; three-term fit 0.0318263 against 0.0318265; at l = 12800 the kappa_j, j <= 4, to better than 10^-3, kappa_0 to 10^-4 and kappa_1 to 2 10^-5; at l = 6400 the cross term 1.0389 (analytic 1.0390) and the barrier asymmetry -0.231.")
+T("Text", "Sec. IV and Table I: r0, b, Upsilon_t, k~, |Ahat_0|, N, kappa_0(a) and g(a) for a = 0, 0.5, 0.9, 0.99, -0.5, -0.9, -0.99; N = 16/r0^6; g(a) = 27 (r0 - 1)/(r0^2 (r0 + 3)), maximum 6 Sqrt[3] - 9 = 1.392 at r0 = Sqrt[3], a = 0.834, g = 81/112 = 0.723 at r0 = 4, g = 0.99 at a = 0.98 and 0.62 at a = 0.995; horizon/infinity ratio 1; num./an. = 1.0012, 1.0014, 1.0017, 1.0011, 1.0010 at l = 800; Richardson extrapolation within 1.5 10^-5 (omitted j >= 4 terms: 3 10^-5 of kappa); Kerr asymmetries 0.78, 1.10, 0.51, 0.45 at l = 800 against 0.61 at a = 0.")
+T("Text", "Chrzanowski-Misner: (12/Sqrt[Pi]) E^(-Pi/2) E^2 (r0 - 1)/(r0^2 (r0 + 3) m), constant 0.94 of 2 kappa_0 (1.877 kappa_0); their tensor formula (s!)^2 = 4 times the exact one in the massive regime, compensated at eta = 1/2 by the WKB barrier factor, 1/(4 x 1.065) = 0.2347.")
+T("Text", "Sec. V: null limit of Eqs. (22)-(23) = kappa_0 and kappa_1/4; odd-parity ratio exact/1973 = 3.15, 3.48, 3.64, 3.77 for m = 40, 100, 200, 400 at delta = 10^-4, fits 4.06 and 4.05; kappa with the 1973 odd term 0.0580, against 0.0637.")
+T("Text", "Sec. VI A: Eq. (24) within 1% (gamma = 20, 120 <= l <= 4800), 0.4-4% (gamma = 10, 30 <= l <= 1200), better than 4% (gamma = 5, 25 <= l <= 125); c_1 = Pi/6; Edot_tot M^2/E^2 = 0.127 Log[gamma].")
+T("Text", "Sec. VII: Delta E per orbit = 4.2 (E^2/M) Log[l_max]; M87*: l_max ~ 10^17, E/M ~ 10^-79, Delta E/E ~ 10^-77 per orbit.")
 
 # ------------------------------------------------------------------ writers
 def esc(sx):

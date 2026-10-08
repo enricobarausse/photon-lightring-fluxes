@@ -1,23 +1,24 @@
 """Production run of the Kerr Teukolsky fluxes: writes kerr_results.json.
 
-Supports Sec. IV, Table I (last column) and Fig. 2 of "Gravitational radiation from a
-photon on the light ring" (E. Barausse): the numerical fluxes per multipole for
-a = 0, +-0.5, +-0.9 (negative sign = retrograde), l = 10, 20, 50, 100, 200, 400, 800 and
-j = l - m = 0 ... 3, and the Richardson extrapolation from l = 400 and 800 quoted in the text.
+Paper:     Sec. IV, Table I (last column) and Fig. 2 of "Gravitational radiation from a photon on
+           the light ring" (E. Barausse): the numerical fluxes per multipole for a = 0, +-0.5, +-0.9
+           (negative sign = retrograde), l = 10, 20, 50, 100, 200, 400, 800 and j = l - m = 0 ... 3,
+           and the Richardson extrapolation from l = 400 and 800 quoted in the text.
 
-Each record of the JSON list is {a, sign, l, j, FluxI, FluxH, lam, omega, kdom, ctail}:
-a = |a| and sign = +1/-1 (prograde/retrograde), FluxI and FluxH the fluxes to infinity and
-into the horizon per E^2 for the single mode m = l - j > 0 (M = 1; the physical flux per l
-is twice the sum over j), lam the separation constant, omega = m Omega, and two diagnostics
-of the spheroidal expansion (index of the dominant spherical coefficient, which must equal
-j, and the largest of the last five coefficients, which must be negligible). The outer
-boundary of the up integration is rB = 60 for l < 50 and rB = 40 otherwise.
+Outputs:   kerr_results.json. Each record of the JSON list is
+           {a, sign, l, j, FluxI, FluxH, lam, omega, kdom, ctail}: a = |a| and sign = +1/-1
+           (prograde/retrograde), FluxI and FluxH the fluxes to infinity and into the horizon per
+           E^2 for the single mode m = l - j > 0 (M = 1; the physical flux per l is twice the sum
+           over j), lam the separation constant, omega = m Omega, and two diagnostics of the
+           spheroidal expansion (index of the dominant spherical coefficient, which must equal j,
+           and the largest of the last five coefficients, which must be negligible). The outer
+           boundary of the up integration is rB = 60 for l < 50 and rB = 40 otherwise. The file is
+           rewritten after every mode, so a partial run is usable.
+Run:       python run_production.py                    # the full run
+           python run_production.py --cases 0.5 --ls 10 --jmax 0 --out test.json   # one mode
+Cost:      about ten minutes for the full run.
 
-    python run_production.py                    # the full run (about ten minutes)
-    python run_production.py --cases 0.5 --ls 10 --jmax 0 --out test.json   # one mode
-
-The file is rewritten after every mode, so a partial run is usable. A sanity check against
-the Toolkit at l <= 5 is validate_kerr.py; summarize.py tabulates the results.
+A sanity check against the Toolkit at l <= 5 is validate_kerr.py; summarize.py tabulates the results.
 """
 import argparse
 import json

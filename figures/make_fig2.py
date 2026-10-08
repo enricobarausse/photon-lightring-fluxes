@@ -1,15 +1,17 @@
 """Fig. 2 of "Gravitational radiation from a photon on the light ring" (E. Barausse):
 Kerr fluxes per multipole (top) and the spin factor g(a) (bottom), from the stored data.
 
-Inputs: ../kerr_py/kerr_results.json (the run of kerr_py/run_production.py: Teukolsky fluxes
-per E^2, single m = l - j, for a = 0, +-0.5, +-0.9, l = 10 ... 800, j <= 3; M = 1) and
-../kerr_analytic/kerr_kappa_analytic.json (the analytic kappa_j(a) of kerr_analytic/run_kerr.py).
-Top panel: l (Edot_I + Edot_H)/2 summed over the four dominant m (j <= 3) and over +-m
-(a factor 2), i.e. l (Edot_I^l + Edot_H^l) M^2/(2 E^2) in the notation of the paper, with
-the analytic value with the same truncation, 2 g(a) sum_{j<=3} kappa_j = 2 sum_{j<=3} kappa_j(a),
-dashed. Bottom: g(a) of Eq. (gclosed), with the five spins of the top panel marked.
-
-    python make_fig2.py      (run from the figures/ directory, or from anywhere) -> fig2.pdf
+Inputs:    ../kerr_py/kerr_results.json (the run of kerr_py/run_production.py: Teukolsky fluxes per
+           E^2, single m = l - j, for a = 0, +-0.5, +-0.9, l = 10 ... 800, j <= 3; M = 1) and
+           ../kerr_analytic/kerr_kappa_analytic.json (the analytic kappa_j(a) of
+           kerr_analytic/run_kerr.py).
+Plotted:   top panel: l (Edot_I + Edot_H)/2 summed over the four dominant m (j <= 3) and over +-m
+           (a factor 2), i.e. l (Edot_I^l + Edot_H^l) M^2/(2 E^2) in the notation of the paper,
+           with the analytic value with the same truncation,
+           2 g(a) sum_{j<=3} kappa_j = 2 sum_{j<=3} kappa_j(a), dashed. Bottom: g(a) of
+           Eq. (21), with the five spins of the top panel marked.
+Outputs:   fig2.pdf
+Run:       python make_fig2.py      (run from the figures/ directory, or from anywhere)
 """
 import json
 import os
@@ -37,7 +39,7 @@ def r0(a):
 
 
 def g_closed(a):
-    """Spin factor g(a) of Eq. (gclosed)."""
+    """Spin factor g(a) of Eq. (21)."""
     r = r0(a)
     return 27*(r - 1)/(r**2*(r + 3))
 

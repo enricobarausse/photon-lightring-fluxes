@@ -1,26 +1,26 @@
 """Exact Teukolsky fluxes for timelike circular orbits near the light ring versus the
-1973 formulas of Breuer, Ruffini, Tiomno and Vishveshwara (BRTV), Eqs. (14)-(15).
+1973 formulae of Breuer, Ruffini, Tiomno and Vishveshwara (BRTV), Eqs. (14)-(15).
 
-Supports Sec. V ("Comparison with the geodesic synchrotron radiation literature") of
-"Gravitational radiation from a photon on the light ring" (E. Barausse): the ratio of the
-exact odd flux (l = m + 1) to the BRTV odd formula, 3.15, 3.48, 3.64, 3.77 for
-m = 40, 100, 200, 400 at delta = 1e-4, tending to 4, while the even formula (l = m) is
-accurate to O(m^-1/2).
+Paper:     Sec. V ("Comparison with the geodesic synchrotron radiation literature") of
+           "Gravitational radiation from a photon on the light ring" (E. Barausse): the ratio of
+           the exact odd flux (l = m + 1) to the BRTV odd formula, 3.15, 3.48, 3.64, 3.77 for
+           m = 40, 100, 200, 400 at delta = 1e-4, tending to 4, while the even formula (l = m) is
+           accurate to O(m^-1/2).
 
-Setup: Schwarzschild (a = 0), massive particle on the circular orbit r0 = 3 (1 + delta)
-(delta_here = r0 - 3 = 3 M delta_paper), m = 40 ... 400, flux to infinity. kerrflux.Mode is
-reused with the timelike constants of motion (E and L per unit mass mu, Omega = r0^-3/2,
-Upsilon_t = r0^2 u^t/E); since the source there is per E^2 of the null geodesic, the result
-is multiplied by E^2 to get the flux per mu^2 of the BRTV formulas. brtv(m, dl, parity)
-is Eqs. (14)-(15) of BRTV in the paper's notation (eta = 1/2 + m dl/2, eta' = eta + 1,
-in units of mu^2/M^2).
-
-    python check_odd_BRTV.py          (about a minute; m = 400 dominates)
-
-Writes check_odd_BRTV_results.txt next to this script (columns r0, m, parity, exact flux per mu^2,
-BRTV flux, ratio) and prints the two fits of the odd ratios at delta = 1e-4 quoted in the paper:
-rho_inf + rho_1 m^-1/2 + rho_2 m^-1 (rho_inf = 4.06) and rho_inf + rho_1 m^-1/2 (4.05). The stored
-copy is read by the companion notebook and by sympy_check/reproduce_paper.py.
+Setup:     Schwarzschild (a = 0), massive particle on the circular orbit r0 = 3 (1 + delta)
+           (delta_here = r0 - 3 = 3 M delta_paper), m = 40 ... 400, flux to infinity.
+           kerrflux.Mode is reused with the timelike constants of motion (E and L per unit mass mu,
+           Omega = r0^-3/2, Upsilon_t = r0^2 u^t/E); since the source there is per E^2 of the null
+           geodesic, the result is multiplied by E^2 to get the flux per mu^2 of the BRTV formulae.
+           brtv(m, dl, parity) is Eqs. (14)-(15) of BRTV in the paper's notation
+           (eta = 1/2 + m dl/2, eta' = eta + 1, in units of mu^2/M^2).
+Outputs:   writes check_odd_BRTV_results.txt next to this script (columns r0, m, parity, exact flux
+           per mu^2, BRTV flux, ratio) and prints the two fits of the odd ratios at delta = 1e-4
+           quoted in the paper: rho_inf + rho_1 m^-1/2 + rho_2 m^-1 (rho_inf = 4.06) and
+           rho_inf + rho_1 m^-1/2 (4.05). The stored copy is read by the companion notebook and by
+           sympy_check/reproduce_paper.py.
+Run:       python check_odd_BRTV.py
+Cost:      about a minute (m = 400 dominates).
 """
 import os
 import numpy as np

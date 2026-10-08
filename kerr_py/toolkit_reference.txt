@@ -1,5 +1,5 @@
-Kerr photon light ring, Teukolsky s=-2 (BHPToolkit MST, WorkingPrecision 40), E=1, single m = sign*(l-j)
- a    sign  l  j   l*Edot_I        l*Edot_H
+# Kerr photon light ring, Teukolsky s=-2 (BHPToolkit MST, WorkingPrecision 40), E=1, single m = sign*(l-j)
+# a    sign  l  j   l*Edot_I        l*Edot_H
     0    1   2  0   3.72835158e-02   1.79280159e-02
     0    1   2  1   9.98603250e-04   5.84556670e-03
     0    1   3  0   4.48227094e-02   2.21949963e-02

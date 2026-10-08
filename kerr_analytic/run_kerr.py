@@ -1,20 +1,20 @@
 """Driver for alpha_expand.py: the analytic Kerr coefficients of Sec. IV and Table I.
 
-    python run_kerr.py                 # kerr_kappa_analytic.json: a = 0, +-0.5, +-0.9, +-0.99, j = 0..3
-    python run_kerr.py --spins 0.5     # one spin, printed only (nothing written)
-    python run_kerr.py --grids         # also kerr_g_finegrid.json and kerr_g_curve.json
-
-Outputs (all in this directory; a < 0 denotes retrograde orbits):
-* kerr_kappa_analytic.json: a list of records {a, j, Ahat, Bhat, kappaI, ratioHI, a_j, J0, JH,
-  hinf, ktilde, imJ} with kappaI = kappa_j(a) (flux to infinity, single m, per E^2/(M^2 l)),
-  Ahat and Bhat the source coefficients as [Re, Im], ratioHI the horizon/infinity ratio
-  (equal to 1), and the amplitude integrals. Read by figures/make_fig2.py (the dashed lines
-  2 g(a) sum_{j<=3} kappa_j of Fig. 2) and used for Table I.
-* kerr_g_finegrid.json: for a = 0.7, 0.8, 0.95, 0.97, 0.98, 0.995, the j = 0 ingredients
-  {kappa0, g, N0, ktilde, Ahat, r0} (the values quoted in the text after Eq. (gclosed)).
-* kerr_g_curve.json: [a, g(a)] on a grid of spins, from kappa_0(a)/kappa_0(0).
-
-Cost: about a second per (a, j).
+Outputs:   all in this directory; a < 0 denotes retrograde orbits.
+           * kerr_kappa_analytic.json: a list of records {a, j, Ahat, Bhat, kappaI, ratioHI, a_j, J0,
+             JH, hinf, ktilde, imJ} with kappaI = kappa_j(a) (flux to infinity, single m, per
+             E^2/(M^2 l)), Ahat and Bhat the source coefficients as [Re, Im], ratioHI the
+             horizon/infinity ratio (equal to 1), and the amplitude integrals. Read by
+             figures/make_fig2.py (the dashed lines 2 g(a) sum_{j<=3} kappa_j of Fig. 2) and used
+             for Table I.
+           * kerr_g_finegrid.json: for a = 0.7, 0.8, 0.95, 0.97, 0.98, 0.995, the j = 0 ingredients
+             {kappa0, g, N0, ktilde, Ahat, r0} (the values quoted in the text after
+             Eq. (21)).
+           * kerr_g_curve.json: [a, g(a)] on a grid of spins, from kappa_0(a)/kappa_0(0).
+Run:       python run_kerr.py                 # kerr_kappa_analytic.json: a = 0, +-0.5, +-0.9, +-0.99, j = 0..3
+           python run_kerr.py --spins 0.5     # one spin, printed only (nothing written)
+           python run_kerr.py --grids         # also kerr_g_finegrid.json and kerr_g_curve.json
+Cost:      about a second per (a, j).
 """
 import argparse
 import json

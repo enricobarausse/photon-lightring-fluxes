@@ -1,6 +1,6 @@
 # Gravitational radiation from a photon on the light ring: companion repository
 
-Codes, stored results and the companion notebook of the paper
+Codes, stored results and the companion notebook of the paper:
 
 > E. Barausse, *Gravitational radiation from a photon on the light ring: multipole fluxes and the
 > logarithmic divergence*, submitted to Phys. Rev. D.
@@ -69,7 +69,7 @@ Each item gives the statement of the paper, the script that produces it, the com
 cost on a laptop. Section and equation numbers refer to the submitted version.
 
 **Sec. II, Toolkit cross-check of the null source** (Zerilli–Regge–Wheeler and Teukolsky fluxes agree
-to the precision of the Toolkit's solutions, nine to twenty digits, at ℓ ≤ 5); run from `toolkit_checks/`:
+to the precision of the Toolkit's solutions, nine to seventeen digits, at ℓ ≤ 5); run from `toolkit_checks/`:
 
     wolframscript -file schwarzschild_toolkit.wls    # l = 2 ... 5: Toolkit MST, Teukolsky, and the two integrators of schwarzschild/, a few minutes
 
@@ -92,9 +92,9 @@ Sections III A–III C, and `sympy_check/reproduce_paper.py` (Secs. III A–III 
 The three-term fit (Σ_j κ_j = 0.0318263), the κ_j at ℓ = 12800 and the m-summed asymmetry are evaluated
 from `photon_big_results.m` in Section III D of the notebook and in `sympy_check/`; the stored
 `asym_check_results.m` (rows {ℓ, √ℓ(Ė_∞−Ė_H)/(Ė_∞+Ė_H), barrier asymmetry, cross term, remainder}) is
-read there too and compared with the notebook's own recomputation. The validation of
-the integrator against the Toolkit at ℓ ≤ 5 is the `MP` line of `toolkit_checks/schwarzschild_toolkit.wls`
-above (relative agreement 10⁻⁸–3 × 10⁻⁷ at ℓ = 4, 5, 10⁻⁷–10⁻⁵ at ℓ = 2, 3, where the WKB boundary data at
+read there too and compared with the notebook's own recomputation. The validation of the integrator
+against the Toolkit at ℓ ≤ 5 is the `MP` line of `toolkit_checks/schwarzschild_toolkit.wls` above
+(relative agreement 10⁻⁸–3 × 10⁻⁷ at ℓ = 4, 5, 10⁻⁷–10⁻⁵ at ℓ = 2, 3, where the WKB boundary data at
 r* = ±40M are least accurate; the arbitrary-precision integrator `NI` shows the same differences, so they
 are not round-off). Figure 1: from `figures/`,
 
@@ -108,10 +108,10 @@ are not round-off). Figure 1: from `figures/`,
     python alpha_expand.py                   # Schwarzschild check: the kappa_j of Sec. III C from the Teukolsky side
 
 The closed forms of Sec. IV (Eq. (15), N = 16M²/r0⁶, e^{2J_H}, Â_0, B̂, Eq. (21), the horizon/infinity
-ratio) are derived symbolically in Section IV of the notebook and in `sympy_check/`; Table I is
-evaluated in the notebook from the same ingredients. The two statements of Sec. IV checked against the
-Toolkit's harmonics, Λ = (m − aω)² + (2j+1)ωβ_b + O(1) and |S(π/2)|² → c_j √(ωβ_b)/(2π^{3/2}), use
-the stored output of `toolkit_checks/kerr_harmonics_toolkit.wls`; from `toolkit_checks/`,
+ratio) are derived symbolically in Section IV of the notebook and in `sympy_check/`; Table I is evaluated
+in the notebook from the same ingredients. The two statements of Sec. IV checked against the Toolkit's
+harmonics, Λ = (m − aω)² + (2j+1)ωβ_b + O(1) and |S(π/2)|² → c_j √(ωβ_b)/(2π^{3/2}), use the stored
+output of `toolkit_checks/kerr_harmonics_toolkit.wls`; from `toolkit_checks/`,
 
     wolframscript -file kerr_harmonics_toolkit.wls   # -> ../notebook/toolkit_harmonics.m (a = 0, +-0.5, +-0.9; l = 100 ... 800; j <= 3), about fifteen minutes
 
@@ -126,7 +126,7 @@ which the notebook (Section IV, "Toolkit harmonics") and `sympy_check/` read.
 
 The Richardson extrapolation (agreement with 2g(a)Σ_{j≤3}κ_j to better than 1.5 × 10⁻⁵) and the
 asymmetries at ℓ = 800 (0.78, 1.10, 0.51, 0.45) are evaluated from `kerr_results.json` in the notebook
-and in `sympy_check/`. The Toolkit reference values of `toolkit_reference.txt` are produced by
+and in `sympy_check/`. The Toolkit reference values of `toolkit_reference.txt` are a reformatted copy of the output of
 `toolkit_checks/kerr_toolkit.wls` (`wolframscript -file kerr_toolkit.wls`, about ten minutes); the
 notebook's own Toolkit-based Kerr integrator (Section IV) wrote `notebook/kerr_mathematica_runL1.m`
 and `runL2.m`, which agree with `kerr_results.json`. Figure 2: from `figures/`,
@@ -161,19 +161,18 @@ The comparison with Eq. (24) (better than 1 % for γ = 20, 0.4–4 % for γ = 10
 
 `notebook/PhotonLightRing.nb` (also as the plain-text package `PhotonLightRing.wl`) follows the paper
 section by section: it derives the jumps, the barrier expansion, the parabolic-cylinder matching and the
-κ_j; re-runs the Schwarzschild integrators at small ℓ and reads `photon_big_results.m` for the
-large-ℓ numbers; derives all the Kerr closed forms symbolically and evaluates Table I; runs its own
-Toolkit-based Kerr integrator at ℓ ≤ 800 (slow: about 40 s per mode) and compares with
-`kerr_py/kerr_results.json`; and evaluates the comparisons with the 1973–74 formulae, the timelike
-orbits and the estimates of the Conclusions. Every numbered equation and every statement of the text
-has a cell, each printing the recomputed value, the value of the paper and the agreement. It reads the
-stored results by relative path (the repository root is the parent of `notebook/`:
-`photon_big_results.m`, `timelike_results.m`, `notebook/kerr_mathematica_runL*.m`,
-`notebook/toolkit_harmonics.m`, `kerr_py/kerr_results.json`, `kerr_py/check_odd_BRTV_results.txt`,
-`schwarzschild/asym_check_results.m`, `toolkit_checks/schwarzschild_toolkit_results.m`), so the
-repository layout should be kept. The five cells
-that need the Toolkit are commented out and the rest does not depend on them. The notebook is generated
-from `notebook/make_notebook.py` (`python make_notebook.py` rewrites both files).
+κ_j; re-runs the Schwarzschild integrators at small ℓ and reads `photon_big_results.m` for the large-ℓ
+numbers; derives all the Kerr closed forms symbolically and evaluates Table I; runs its own Toolkit-based
+Kerr integrator at ℓ ≤ 800 (slow: about 40 s per mode) and compares with `kerr_py/kerr_results.json`; and
+evaluates the comparisons with the 1973–74 formulae, the timelike orbits and the estimates of the
+Conclusions. Every numbered equation and every statement of the text has a cell, each printing the
+recomputed value, the value of the paper and the agreement. It reads the stored results by relative path
+(the repository root is the parent of `notebook/`: `photon_big_results.m`, `timelike_results.m`,
+`notebook/kerr_mathematica_runL*.m`, `notebook/toolkit_harmonics.m`, `kerr_py/kerr_results.json`,
+`kerr_py/check_odd_BRTV_results.txt`, `schwarzschild/asym_check_results.m`,
+`toolkit_checks/schwarzschild_toolkit_results.m`), so the repository layout should be kept. The five
+cells that need the Toolkit are commented out and the rest does not depend on them. The notebook is
+generated from `notebook/make_notebook.py` (`python make_notebook.py` rewrites both files).
 
 ## The SymPy check
 
