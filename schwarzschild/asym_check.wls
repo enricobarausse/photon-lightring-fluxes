@@ -11,13 +11,16 @@
      A3 = Sqrt[l] (|u'|^2 - |v'|^2) P^2/den         O(1/l) remainder,
    den = (|u|^2 + |v|^2) dP^2. The quantities come from photonModeMP of photonMP.wl.
 
-   Run from this directory: wolframscript -file asym_check.wls. Cost: a few minutes
-   (dominated by l = 6400). *)
+   Run from this directory: wolframscript -file asym_check.wls. Cost: about a minute
+   (dominated by l = 6400). Prints the rows {l, Sqrt[l] (I-H)/(I+H), A1, A2, A3} and stores them
+   in asym_check_results.m next to this script (the stored copy is read by the companion notebook
+   and by sympy_check/reproduce_paper.py). *)
 
 schwDir = If[StringQ[$InputFileName] && $InputFileName =!= "", DirectoryName[$InputFileName], Directory[]];
 Get[FileNameJoin[{schwDir, "photonNI.wl"}]];
 Get[FileNameJoin[{schwDir, "photonMP.wl"}]];
 
+rows = {};
 Print["l, sqrt(l)*(I-H)/(I+H) [j=0], A1 (|u0|^2-|v0|^2 term), A2 (cross term; pred 1.0390), A3 (|Du0|^2[Psi]^2 terms, O(l^-1))"];
 Do[md = photonModeMP[l, l];
   u0 = md["u0"]; Du0 = md["Du0"]; v0 = md["v0"]; Dv0 = md["Dv0"]; P = md["P"]; dP = md["dP"];
@@ -26,4 +29,7 @@ Do[md = photonModeMP[l, l];
   A1 = Sqrt[l] (Abs[u0]^2 - Abs[v0]^2) dP^2/den;
   A2 = Sqrt[l] (-2 (Re[u0 Conjugate[Du0]] - Re[v0 Conjugate[Dv0]]) dP P)/den;
   A3 = Sqrt[l] ((Abs[Du0]^2 - Abs[Dv0]^2) P^2)/den;
-  Print[{l, Sqrt[l] (I0 - H0)/(I0 + H0), A1, A2, A3}], {l, {100, 400, 1600, 6400}}];
+  AppendTo[rows, {l, Sqrt[l] (I0 - H0)/(I0 + H0), A1, A2, A3}];
+  Print[Last[rows]], {l, {100, 400, 1600, 6400}}];
+Put[rows, FileNameJoin[{schwDir, "asym_check_results.m"}]];
+Print["rows written to asym_check_results.m"];

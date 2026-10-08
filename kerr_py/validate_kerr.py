@@ -11,7 +11,7 @@ limit (Sec. IV). The Toolkit cross-check of the null source quoted in Secs. II a
 (Zerilli/Regge-Wheeler vs Teukolsky to 9-20 digits at l <= 5) was done with the Toolkit's own
 solvers (toolkit_checks/schwarzschild_toolkit.wls), not with this code.
 
-    python validate_kerr.py          (about a minute)
+    python validate_kerr.py          (about ten seconds)
 """
 import os
 

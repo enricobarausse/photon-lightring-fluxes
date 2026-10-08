@@ -33,7 +33,8 @@
                             amplitudes Z of the inhomogeneous solution;
      photonMode[l, m, opts] fluxes from the Toolkit's own homogeneous solutions
                             (ReggeWheelerRadial, MST or numerical integration): the
-                            cross-check at l <= 5 quoted in Sec. III D (requires the
+                            cross-check at l <= 5 quoted in Sec. III D, run and stored by
+                            ../toolkit_checks/schwarzschild_toolkit.wls (requires the
                             Toolkit; the integrators of photonNI.wl / photonMP.wl do not).
 
    The ReggeWheeler package is loaded here because photonMode uses it. *)

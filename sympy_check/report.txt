@@ -18,8 +18,16 @@ null condition L^2/r0^3 = E^2/(r0-2M) for L = bE, r0 = 3M           0 (symbolic)
 W = Psi_in d Psi_up - Psi_up d Psi_in = 2 i omega A_inc (at infinity)      0 (symbolic)      identity             PASS
 integrator vs stored Zerilli/RW fluxes, l=10,20, j<=4 (max rel. dev.)      1.128792e-06             0    1.1e-06  PASS   [tests Eq. (2), jumps, Eq. (4), c_pm]
 integrator vs stored Teukolsky null-source fluxes (a=0), l=10,20, j<=3      1.725883e-06             0    1.7e-06  PASS   [Sec. II last paragraph: Teukolsky = Zerilli/RW]
-Teukolsky vs Zerilli/RW agreement to 9-20 digits at l<=5 (Toolkit MST solutions)                --            --             NOT CHECKED   [needs the BHPToolkit; here checked to ~1e-6 at l=10,20 with stored data]
-   [section time 0.6 s]
+stored Toolkit run: (l, m) pairs; precision marks (digits) of the stored MST fluxes: min, max[(2, 1), (2, 2), (3, 2), (3, 3), (4, 3), (4, 4), (5, 4), (5, 5)]; 9.0, 20.0            --             info
+Sec. II: Teukolsky vs Zerilli/RW with the Toolkit solutions, l = [2, 3, 4, 5], m = l, l-1: worst agreement in significant digits (paper: "between nine and seventeen")          8.989233             9    1.2e-03  PASS   [per (l, m): (2, 1): 15.4, (2, 2): 15.1, (3, 2): 15.7, (3, 3): 15.7, (4, 3): 15.7, (4, 4): 12.6, (5, 4): 13.3, (5, 5): 9.0]
+  ... best agreement in significant digits (the paper's "seventeen"; this count caps at the 20 stored digits, the notebook's finer count gives 17.3)              20.0            --             info   [per (l, m), best of the two fluxes: (2, 1): 16.0, (2, 2): 15.5, (3, 2): 20.0, (3, 3): 16.0, (4, 3): 20.0, (4, 4): 12.7, (5, 4): 13.8, (5, 5): 9.1]
+Sec. III D: production integrator (MP) vs Toolkit MST at l = 2 (paper: 10^-5)      8.475182e-06          1e-5    0.0e+00  PASS   [8.48e-06]
+  ... production integrator (MP) vs Toolkit MST at l = 3 (not quoted)      2.686833e-06            --             info
+  ... production integrator (MP) vs Toolkit MST at l = 4 (not quoted)      2.443112e-07            --             info
+Sec. III D: production integrator (MP) vs Toolkit MST at l = 5, both m, both fluxes: max rel. dev. (paper: 10^-7; bound 5e-7)      3.057791e-07          5e-7    0.0e+00  PASS   [3.06e-07]
+  ... arbitrary-precision direct integration (NI) vs Toolkit MST, max rel. dev. over all stored (l, m) (not quoted)      8.464520e-06            --             info
+this script's integrator (zrw_mode, r* from -80 M to r = 120 M) vs Toolkit MST fluxes, l = [2, 3, 4, 5]: max rel. dev.      5.022788e-08             0    5.0e-08  PASS
+   [section time 0.7 s]
 
 ==============================================================================================================
 Sec. III A  The source  [Eqs. (5)-(6)]
@@ -37,12 +45,15 @@ massive particle: O(l^0) term = -4 pi Y mu^2/(E r0)  [per mu: -4 pi Y/(E0 r0)]  
 photon: A (energy density) contribution / (4 pi Y)                            -1            -1    0.0e+00  PASS
 photon: F (azimuthal pressure) contribution / (4 pi Y)                         1             1    0.0e+00  PASS
 photon: A + F contributions cancel (p.p = 0)                        0 (symbolic)      identity             PASS
+without the cancellation (generic O(l^0) jump J0 Y): the flux per multipole grows like l^{+1} (exponent of l)      0 (symbolic)      identity             PASS
+  ... i.e. l^2 times the photon flux: lim flux_generic/(l^2 flux_photon) = [J0/(8 pi (2j+1))]^2      0 (symbolic)      identity             PASS
+massive particle: the O(l^0) term -4 pi Y mu^2/(E r0) equals the photon term -8 pi Y/(l M) (j = 0) at l = 2 E^2 r0/(mu^2 M) = 6 gamma^2 (Introduction: the ingredients fail beyond l ~ gamma^2)      0 (symbolic)      identity             PASS
 [Psi] ~ -r0^3 A/(2 l^2 (r0-2M))  (leading)                          0 (symbolic)      identity             PASS
 [d_r Psi] ~ r0^3 A/(4 (r0-2M)^2)  (A coefficient, leading)          0 (symbolic)      identity             PASS
 [d_r Psi] ~ l^2 r0^2 F/(4 (r0-2M))  (F coefficient, leading)        0 (symbolic)      identity             PASS
 C sources only the Regge-Wheeler sector (even jumps independent of C)      0 (symbolic)      identity             PASS
 Zerilli jumps independent of dY; RW jumps independent of Y          0 (symbolic)      identity             PASS
-   [section time 0.9 s]
+   [section time 0.7 s]
 
 ==============================================================================================================
 Sec. III B  The barrier top  [Eqs. (7)-(9)]
@@ -55,6 +66,12 @@ Zerilli: V3 -> [4 l^2 + O(l)]/6561: lim 6561 V3/l^2                            4
 Zerilli: Eq. (7) 27 eps + (2j+1) l -> O(1) (lim at j=0)                        2             2    0.0e+00  PASS   [finite limit]
 Zerilli: Eq. (7) eta_j = j + 1/2 + O(1/l)                           0 (symbolic)      identity             PASS
 Zerilli: eta_j has no O(l) term                                     0 (symbolic)      identity             PASS
+Zerilli: V = l^2 f/r^2 + O(l) for every r: lim V/l^2 = f/r^2        0 (symbolic)      identity             PASS
+Zerilli: (V - l^2 f/r^2)/l -> f/r^2 for every r (the remainder is O(l), not larger)      0 (symbolic)      identity             PASS
+Zerilli: linear term dV/dr* at r = 3M is O(l^0): lim = 2/(243 M^3)      0 (symbolic)      identity             PASS
+Zerilli: in Weber's variable the linear term V1 z/(2k)^{3/4} is O(l^{-3/2}) z (negligible): l^{3/2} V1/(2k)^{3/4} -> 1/sqrt6      0 (symbolic)      identity             PASS
+Zerilli: the maximum of V is at r = 3M + M/l^2 + O(l^-3): shift x_max = V1/k in r*, f(3M) V1/k in r: l^2 f V1/k -> 1      0 (symbolic)      identity             PASS
+Zerilli: l^2 (r_max - 3M) at l = 1000 (numerical maximum of V)        0.99899967             1    1.0e-03  PASS
 Regge-Wheeler: V0 -> [l(l+1) + O(1)]/27: lim 27 V0/l^2                         1             1    0.0e+00  PASS
 Regge-Wheeler: 27 V0 - l(l+1) -> O(1) constant                                -2            -2    0.0e+00  PASS   [finite limit]
 Regge-Wheeler: k -> [2 l^2 + O(l)]/729: lim 729 k/l^2                          2             2    0.0e+00  PASS
@@ -62,6 +79,12 @@ Regge-Wheeler: V3 -> [4 l^2 + O(l)]/6561: lim 6561 V3/l^2                      4
 Regge-Wheeler: Eq. (7) 27 eps + (2j+1) l -> O(1) (lim at j=0)                  2             2    0.0e+00  PASS   [finite limit]
 Regge-Wheeler: Eq. (7) eta_j = j + 1/2 + O(1/l)                     0 (symbolic)      identity             PASS
 Regge-Wheeler: eta_j has no O(l) term                               0 (symbolic)      identity             PASS
+Regge-Wheeler: V = l^2 f/r^2 + O(l) for every r: lim V/l^2 = f/r^2      0 (symbolic)      identity             PASS
+Regge-Wheeler: (V - l^2 f/r^2)/l -> f/r^2 for every r (the remainder is O(l), not larger)      0 (symbolic)      identity             PASS
+Regge-Wheeler: linear term dV/dr* at r = 3M is O(l^0): lim = 2/(243 M^3)      0 (symbolic)      identity             PASS
+Regge-Wheeler: in Weber's variable the linear term V1 z/(2k)^{3/4} is O(l^{-3/2}) z (negligible): l^{3/2} V1/(2k)^{3/4} -> 1/sqrt6      0 (symbolic)      identity             PASS
+Regge-Wheeler: the maximum of V is at r = 3M + M/l^2 + O(l^-3): shift x_max = V1/k in r*, f(3M) V1/k in r: l^2 f V1/k -> 1      0 (symbolic)      identity             PASS
+Regge-Wheeler: l^2 (r_max - 3M) at l = 1000 (numerical maximum of V)        0.99900366             1    1.0e-03  PASS
 Weber: u_xx + (eps + k x^2/2) u = sqrt(2k) [u_zz + (z^2/4 - eta) u], z = (2k)^(1/4) x      0 (symbolic)      identity             PASS
 omega/(2k)^(1/4) = sqrt(l/2)                                        0 (symbolic)      identity             PASS
 omega (2k)^(1/4) = sqrt2 l^(3/2)/(27 M^2)                           0 (symbolic)      identity             PASS
@@ -72,6 +95,8 @@ footnote: sqrt(k)/V3 = (243 sqrt2/4) M/l  (the criterion |x|^3 << sqrt(k)/V3 is 
 footnote: local condition |x| << k/V3 = 9M/2, i.e. ~ M, independent of l      0 (symbolic)      identity             PASS
 parabolic region (sqrt(k)/V3)^{1/3} ~ M l^{-1/3}: l^{1/3} (sqrt(k)/V3)^{1/3} is l-independent      0 (symbolic)      identity             PASS
 parabolic region in z: (2k)^{1/4} (sqrt(k)/V3)^{1/3} ~ l^{1/6}  (|z| << l^{1/6})      0 (symbolic)      identity             PASS
+footnote hypothesis: (omega^2 - V0)/(k x^2/2) = -2 sqrt2 eta/(sqrt(k) x^2), i.e. O(1) only for |x| ~ k^{-1/4}      0 (symbolic)      identity             PASS
+  ... p0^2/[(k/2) x^2] = 1 - 4 eta/z^2 with z = (2k)^{1/4} x: p0 -> (k/2)^{1/2} x for |z| >> 1      0 (symbolic)      identity             PASS
 lambda_L = sqrt(2k)/(2 omega) = Omega = 1/(3 sqrt3 M) at leading order      0 (symbolic)      identity             PASS
 Re omega_QNM = sqrt(V0) = (l + 1/2) Omega + O(1/l)  (Zerilli V0)      0 (symbolic)      identity             PASS
 QNM condition: nu = -1/2 - i eta = n (integer) for eta = i(n + 1/2)      0 (symbolic)      identity             PASS
@@ -94,7 +119,9 @@ Eqs. (8)-(9): |u(0)|^2 = sqrt(l/2) pi F(eta)/sqrt2, |u'(0)|^2 = (sqrt2 l^{3/2}/2
 |T|^2 numerical ODE / (1+e^{2 pi eta})^-1, eta = 1.5                           1             1    3.6e-12  PASS
 |v(0)|^2 = |u(0)|^2 (parabolic barrier, g = 0)                                 1             1    0.0e+00  PASS
 |v'(0)|^2 = |u'(0)|^2 (parabolic barrier, g = 0)                               1             1    0.0e+00  PASS
-   [section time 3.4 s]
+d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 0.5      1.256745e-17             0    1.3e-17  PASS   [v'(0)/v(0) = -0.636225+0.132258j, u'(0)/u(0) = 0.636225-0.132258j]
+d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 1.5      2.082264e-19             0    2.1e-19  PASS   [v'(0)/v(0) = -1.182494+0.010623j, u'(0)/u(0) = 1.182494-0.010623j]
+   [section time 3.9 s]
 
 ==============================================================================================================
 Sec. III C  The fluxes  [Eqs. (10)-(14)] and the O(l^-1/2) asymmetry
@@ -102,9 +129,9 @@ Sec. III C  The fluxes  [Eqs. (10)-(14)] and the O(l^-1/2) asymmetry
 quantity                                                              recomputed         paper  deviation  status
 |Y_{l,l-j}(pi/2)|^2 and |d_theta Y|^2 closed forms vs scipy sph_harm_y, l<=40      6.949996e-14             0    6.9e-14  PASS
 Y_{l,l-j}(pi/2) = 0 for odd j, d_theta Y = 0 for even j (scipy, l<=40)      3.269458e-14             0    3.3e-14  PASS
-|Y_{l,l-0}(pi/2)|^2 / [c_0 sqrt(l)/(2 pi^3/2)], c_0 = 1.0: closed form at l = 1e7                 1             1    4.1e-08  PASS
+|Y_{l,l-0}(pi/2)|^2 / [c_0 sqrt(l)/(2 pi^3/2)], c_0 = 1: closed form at l = 1e7                 1             1    4.1e-08  PASS
   ... scipy sph_harm_y at l = 600 (O(1/l) corrections)                 1.0006248             1    6.2e-04  PASS
-|d_theta Y_{l,l-1}|^2 / [d_1 l^3/2/pi^3/2], d_1 = 1.0: closed form at l = 1e7                 1             1    4.1e-08  PASS
+|d_theta Y_{l,l-1}|^2 / [d_1 l^3/2/pi^3/2], d_1 = 1: closed form at l = 1e7                 1             1    4.1e-08  PASS
   ... scipy sph_harm_y at l = 600 (O(1/l) corrections)                 1.0006248             1    6.2e-04  PASS
 |Y_{l,l-2}(pi/2)|^2 / [c_2 sqrt(l)/(2 pi^3/2)], c_2 = 0.5: closed form at l = 1e7                 1             1    3.9e-08  PASS
   ... scipy sph_harm_y at l = 600 (O(1/l) corrections)                 1.0014594             1    1.5e-03  PASS
@@ -112,6 +139,14 @@ Y_{l,l-j}(pi/2) = 0 for odd j, d_theta Y = 0 for even j (scipy, l<=40)      3.26
   ... scipy sph_harm_y at l = 600 (O(1/l) corrections)                 0.9997903             1    2.1e-04  PASS
 |Y_{l,l-4}(pi/2)|^2 / [c_4 sqrt(l)/(2 pi^3/2)], c_4 = 0.375: closed form at l = 1e7         1.0000001             1    1.1e-07  PASS
   ... scipy sph_harm_y at l = 600 (O(1/l) corrections)                  1.002296             1    2.3e-03  PASS
+|d_theta Y_{l,l-5}|^2 / [d_5 l^3/2/pi^3/2], d_5 = 1.875: closed form at l = 1e7        0.99999991             1    8.6e-08  PASS
+|Y_{l,l-6}(pi/2)|^2 / [c_6 sqrt(l)/(2 pi^3/2)], c_6 = 0.3125: closed form at l = 1e7         1.0000001             1    1.2e-07  PASS
+|d_theta Y_{l,l-7}|^2 / [d_7 l^3/2/pi^3/2], d_7 = 2.1875: closed form at l = 1e7        0.99999982             1    1.8e-07  PASS
+|Y_{l,l-8}(pi/2)|^2 / [c_8 sqrt(l)/(2 pi^3/2)], c_8 = 0.273438: closed form at l = 1e7         1.0000002             1    1.8e-07  PASS
+|d_theta Y_{l,l-9}|^2 / [d_9 l^3/2/pi^3/2], d_9 = 2.46094: closed form at l = 1e7        0.99999978             1    2.2e-07  PASS
+|Y_{l,l-10}(pi/2)|^2 / [c_10 sqrt(l)/(2 pi^3/2)], c_10 = 0.246094: closed form at l = 1e7         1.0000002             1    1.9e-07  PASS
+|d_theta Y_{l,l-11}|^2 / [d_11 l^3/2/pi^3/2], d_11 = 2.70703: closed form at l = 1e7        0.99999969             1    3.1e-07  PASS
+|Y_{l,l-12}(pi/2)|^2 / [c_12 sqrt(l)/(2 pi^3/2)], c_12 = 0.225586: closed form at l = 1e7         1.0000003             1    3.5e-07  PASS
 sympy limit |Y_{l,l-0}|^2/(c_0 sqrt(l)/(2 pi^3/2))                             1             1    0.0e+00  PASS
 sympy limit |Y_{l,l-2}|^2/(c_2 sqrt(l)/(2 pi^3/2))                             1             1    0.0e+00  PASS
 sympy limit |Y_{l,l-4}|^2/(c_4 sqrt(l)/(2 pi^3/2))                             1             1    0.0e+00  PASS
@@ -128,6 +163,10 @@ sum_j kappa_j                                                        0.031826515
 kappa = 2 sum_j kappa_j  [Eq. (13)]                                  0.063653029      0.063653    4.6e-07  PASS
 kappa agrees with the 2021 fit 0.064 +- 0.001                        0.063653029         0.064    5.4e-03  PASS
 kappa_{j+1}/kappa_j for j = 0..3 (fall-off ~ e^{-pi j}; e^{-pi} = 0.0432)0.1357, 0.0731, 0.0603, 0.0556            --             info
+kappa_j e^{pi j}/j -> (8/(9 pi)) e^{-pi/2} = 0.058818 (Richardson in 1/j from j = 200, 400; both parities)       0.058817888   0.058817888    4.2e-11  PASS   [kappa_j e^(pi j)/j = 0.058965 (j=200), 0.058891 (j=400)]
+  ... odd j: kappa_401 e^{401 pi}/401 vs the same limit (O(1/j) corrections)       0.058891227   0.058817888    1.2e-03  PASS
+e^{pi} kappa_{j+1}/kappa_j = 1 + 1/j + O(j^-2): [e^pi kappa_401/kappa_400]/(1 + 1/400) - 1     -3.113321e-06             0    3.1e-06  PASS
+  ... e^{pi} kappa_{j+1}/kappa_j at j = 4, 10, 50 (-> 1: the fall-off is e^{-pi j} up to powers of j)1.2219, 1.0952, 1.0198            --             info
 fraction of sum_j kappa_j missed by j <= 4 (Sec. III D: 2e-6)       1.614000e-06          2e-6    1.9e-01  PASS
 fraction of sum_j kappa_j missed by j <= 3 (Sec. IV: 3e-5)          3.062163e-05          3e-5    2.1e-02  PASS
 Eq. (14): (2k)^{1/4} u(0)/u'(0) = e^{i pi/4} Gamma(1/4+i eta/2)/(sqrt2 Gamma(3/4+i eta/2))      2.120917e-31             0    2.1e-31  PASS
@@ -140,12 +179,18 @@ sigma_1 = cross (+0.6904) + cubic (-1.3041) is negative (paper: sigma_j < 0 for 
 sigma_2 = cross (+0.5105) + cubic (-2.8362) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_2 = -2.3257]
 sigma_3 = cross (+0.4388) + cubic (-4.7303) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_3 = -4.2915]
 sigma_4 = cross (+0.3837) + cubic (-6.9139) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_4 = -6.5302]
+sigma_5 = cross (+0.3489) + cubic (-9.3545) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_5 = -9.0056 (j > 4: beyond the stored data)]
+sigma_6 = cross (+0.3198) + cubic (-12.0258) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_6 = -11.7060 (j > 4: beyond the stored data)]
+sigma_7 = cross (+0.2985) + cubic (-14.9120) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_7 = -14.6135 (j > 4: beyond the stored data)]
+sigma_8 = cross (+0.2798) + cubic (-17.9965) is negative (paper: sigma_j < 0 for j >= 1)                 1             1    0.0e+00  PASS   [sigma_8 = -17.7166 (j > 4: beyond the stored data)]
 sigma_bar = sum_j kappa_j sigma_j / sum_j kappa_j (analytic, j<=4)        0.60986163          0.61    2.3e-04  PASS
 2 sigma_bar/sqrt(l) at l = 100 (12%)                                       0.122          0.12    1.7e-02  PASS
 horizon fraction, asymptotic formulae, l_max = 100 (paper: 40% for l_max = 100-140)        0.39708915          0.40    7.3e-03  PASS
 horizon fraction, asymptotic formulae, l_max = 140 (paper: 40% for l_max = 100-140)        0.40263809          0.40    6.6e-03  PASS
 horizon fraction with the asymptotic formulae at l_max = 1e3, 1e4, 1e6 (approaches 1/2 only logarithmically)0.427, 0.445, 0.463            --             info
-   [section time 22.3 s]
+sum_{l>=2} l^{-3/2} = zeta(3/2) - 1                            0 (numeric<1e-30)      identity             PASS
+(1/2 - horizon fraction) x sum_{l<=l_max} 1/l -> sigma_bar (zeta(3/2)-1)/2 = 0.4918 at l_max = 1e6 (1/ln law; O(l_max^-1/2) corrections)        0.49116448    0.49177448    1.2e-03  PASS   [(1/2 - f_H) ln l_max at l_max = 1e3, 1e4, 1e6: 0.503, 0.509, 0.507]
+   [section time 23.9 s]
 
 ==============================================================================================================
 Sec. III D  Numerical check: stored run photon_big_results.m (l = 10..12800, j <= 4)
@@ -173,6 +218,14 @@ l=6400, j=0: cross term (exact u and v from the independent integrator; paper: 1
 l=6400, j=0: barrier asymmetry |u(0)|^2 vs |v(0)|^2 (paper: -0.231)       -0.23094945        -0.231    2.2e-04  PASS
 l=6400, j=0: sqrt(l)(I-H)/(I+H) from the stored fluxes = cross + asymmetry (paper: 0.81 = 1.039 - 0.231)        0.80820304    0.80797559    2.8e-04  PASS   [the two integrators differ by ~1e-5 in the fluxes, i.e. by ~3e-4 in the asymmetry]
 l=6400, j=0: cross term vs the analytic 1.0390 of Eq. (14)              1.038931        1.0390    6.6e-05  PASS
+l=6400, j=0: (v(0)/v'(0))/(u(0)/u'(0)) = -1 + O(l^-1/2) from the exact solutions (d_r* v(0) = -d_r* u(0), Sec. III B)        0.00151773             0    1.5e-03  PASS   [ratio = -1.00118+0.00096j]
+stored (production integrator) l=6400: cross term A2 (paper: 1.0389)         1.0389315        1.0389    3.0e-05  PASS
+stored l=6400: barrier asymmetry A1 (paper: -0.231)                  -0.23071201        -0.231    1.2e-03  PASS
+stored l=6400: A1 + A2 + A3 = sqrt(l)(I-H)/(I+H) (= sigma_0 + O(1/l); paper: 0.81)        0.80820304          0.81    2.2e-03  PASS   [A1 + A2 + A3 - total = 1.0e-05]
+stored vs this script's integrator at l = 6400: cross term A2          1.0389315      1.038931    4.1e-07  PASS
+stored vs this script's integrator at l = 6400: barrier asymmetry A1       -0.23071201   -0.23094945    1.0e-03  PASS
+stored A2(l) -> 1.0390 with O(1/l) corrections: Richardson in 1/l from l = 1600, 6400 vs the analytic 1.0389513          1.038952     1.0389513    6.8e-07  PASS   [A2 at l = 100, 400, 1600, 6400: 1.03745, 1.03861, 1.03887, 1.03893]
+stored A1(l) Richardson-extrapolated in 1/l from l = 1600, 6400 vs the cubic-barrier model (-0.231)       -0.23058249   -0.23083505    1.1e-03  PASS   [A1 at l = 100, 400, 1600, 6400: -0.23527, -0.23199, -0.23110, -0.23071]
 l=12800: sqrt(l)(I-H)/(I+H) for j=0 vs analytic sigma_0 = +0.8081        0.80849423    0.80811626    4.7e-04  PASS
 l=12800: sqrt(l)(I-H)/(I+H) for j=1 vs analytic sigma_1 = -0.6137       -0.61284544   -0.61367315    1.3e-03  PASS
 l=12800: sqrt(l)(I-H)/(I+H) for j=2 vs analytic sigma_2 = -2.3257        -2.3245268    -2.3257061    5.1e-04  PASS
@@ -182,8 +235,11 @@ l=3200: m-summed sqrt(l)(I-H)/(I+H) (sigma_bar = 0.61)                0.60980245
 l=12800: m-summed sqrt(l)(I-H)/(I+H) (sigma_bar = 0.61)               0.61032041          0.61    5.3e-04  PASS
 l=100: (I-H)/mean, stored data (paper: ~12%)                          0.12097424          0.12    8.1e-03  PASS
 l x mean flux / kappa at l = 100, 400, 12800 (Fig. 1: mean on the dashed line from l ~ 100)1.00975, 1.00244, 1.00007            --             info
-integrator validated against the Toolkit to 1e-7 at l<=5                      --            --             NOT CHECKED   [needs the BHPToolkit]
-   [section time 23.1 s]
+|l x mean flux / sum_{j<=4} kappa_j - 1| <= 1% for every stored l >= 100 (the mean on the dashed line from l ~ 100)      0.0097472173          0.01    0.0e+00  PASS   [l = 100: +0.00975]
+mean flux: fit of l x mean/kappa - 1 with {l^-1/2, 1/l, l^-3/2} over l >= 100: |coefficient of l^-1/2| negligible vs sigma_bar = 0.61 (bound 2e-3)      3.389245e-04          2e-3    0.0e+00  PASS   [coefficients: -3.4e-04 l^-1/2, +0.990/l, -0.118 l^-3/2]
+mean flux: l (l x mean/kappa - 1) is bounded, i.e. the relative corrections are O(1/l): max/min over 50 <= l <= 12800         1.0737001             1    7.4e-02  PASS   [50: 0.971, 100: 0.975, 200: 0.977, 400: 0.977, 800: 0.977, 1600: 0.975, 3200: 0.970, 6400: 0.954, 12800: 0.910]
+   The production integrator is validated against the Toolkit to 1e-7 at l = 5 (1e-5 at l = 2) in the Sec. II block above (stored Toolkit run).
+   [section time 18.8 s]
 
 ==============================================================================================================
 Sec. IV  Kerr  [Eqs. (15)-(21), Table I]   (M = 1; r0 parametrizes the light ring, a = sqrt(r0)(3-r0)/2)
@@ -199,6 +255,8 @@ Delta_0 = r0 (r0-1)^2/4                                             0 (symbolic)
 P_0 = 2 r0 Delta_0/(r0-1)                                           0 (symbolic)      identity             PASS
 Upsilon_t^ = (r0^2+a^2) P0/Delta_0 + a(b-a) = r0^2 (r0+3)/(r0-1)      0 (symbolic)      identity             PASS
 Upsilon_t^(a=0) = 27                                                0 (symbolic)      identity             PASS
+Omega = 1/b: dphi/dt = [(b-a) + a P0/Delta_0]/Upsilon_t^ = 1/b on the Kerr light ring (geodesic equations, every r0)      0 (symbolic)      identity             PASS
+R~(r0) at a = 0 equals r0^4 (r0-2M)/E^2 [E^2/(r0-2M) - L^2/r0^3]: R~(r0) = 0 is the null condition of Eq. (6)      0 (symbolic)      identity             PASS
 b^2 - a^2 = 3 r0^2  (beta_b = sqrt3 r0)                             0 (symbolic)      identity             PASS
 R~''(r0) = 6 r0^2                                                   0 (symbolic)      identity             PASS
 k~ = Delta_0^2 R~''(r0)/(r0^2+a^2)^4 = 3 r0^4 (r0-1)^4/[8 (r0^2+a^2)^4]      0 (symbolic)      identity             PASS
@@ -221,15 +279,18 @@ Lambda - (m-a omega)^2 - (2j+1) omega beta_b = O(1): bounded (max |.| < 20) over
 angular equation about the equator: bracket = (A + s - m^2) + 2 s (g + m) psi - (m^2 - g^2 + s^2) psi^2 + O(psi^3)      0 (symbolic)      identity             PASS
 oscillator frequency^2 = m^2 - a^2 omega^2 = omega^2 beta_b^2 for m = omega b      0 (symbolic)      identity             PASS
 j-th eigenvalue (2j+1) omega beta_b: A = m^2 - s + (2j+1) omega beta_b + O(1) gives Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1)      0 (symbolic)      identity             PASS
-|S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^{3/2}) and |S'|^2 -> d_j (omega beta_b)^{3/2}/pi^{3/2}: c_j = sqrt(pi) h_j(0)^2, d_j = sqrt(pi) h_j'(0)^2/2 (j <= 7)                 0             0    0.0e+00  PASS   [normalised Hermite functions h_j; at a = 0, omega beta_b = l (the spherical limits of Sec. III C)]
-Eq. (18): N = r0^{2s} e^{-2s h_inf} e^{-2 J_inf} = 16/r0^6 (mpmath quadrature, 7 values of r0, both branches)      7.529677e-28             0    7.5e-28  PASS
-h_inf = int 2/Delta dr (elementary logarithm) vs quadrature         7.888609e-31             0    7.9e-31  PASS
-e^{2 J_H} = [r0^2 + r0 + 4 sqrt(4-r0) - 8]^4/r0^8 vs quadrature (7 values of r0)      1.497061e-27             0    1.5e-27  PASS
-horizon/infinity flux ratio = 1 (alpha_H kappa N_H/N, numerically, 7 values of r0)      7.352184e-28             0    7.4e-28  PASS
+|S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^{3/2}) and |S'|^2 -> d_j (omega beta_b)^{3/2}/pi^{3/2}: c_j = sqrt(pi) h_j(0)^2, d_j = sqrt(pi) h_j'(0)^2/2 (j <= 12)                 0             0    0.0e+00  PASS   [normalised Hermite functions h_j; at a = 0, omega beta_b = l (the spherical limits of Sec. III C)]
+Eq. (18): N = r0^{2s} e^{-2s h_inf} e^{-2 J_inf} = 16/r0^6 (mpmath quadrature, the 7 spins of Table I and r0 = 1.3)      1.099495e-26             0    1.1e-26  PASS
+h_inf = int 2/Delta dr (elementary logarithm) vs quadrature         5.916457e-31             0    5.9e-31  PASS
+e^{2 J_H} = [r0^2 + r0 + 4 sqrt(4-r0) - 8]^4/r0^8 vs quadrature (same 8 values of r0)      2.165551e-26             0    2.2e-26  PASS
+horizon/infinity flux ratio = 1 (alpha_H kappa N_H/N, numerically, same 8 values of r0)      1.048100e-26             0    1.0e-26  PASS
+footnote: the ratio is 1 "to better than 1e-17 at all the spins of Table I" (30-digit quadrature at a = 0, +-0.5, +-0.9, +-0.99)      1.048100e-26         1e-17    0.0e+00  PASS
 horizon/infinity ratio = 1 symbolically: 4(2 r+ - a b) = (r0-1)(r0^2 + r0 + 4 sqrt(4-r0) - 8) (reduces the ratio to 1 given e^{2J_H})      0 (symbolic)      identity             PASS
 sqrt(1 - a^2) = (r0-1) sqrt(4-r0)/2 (used above; r+ = 1 + sqrt(1-a^2))      0 (symbolic)      identity             PASS
 Omega - Omega_H > 0 on 1 < r0 < 4 (min over a grid)                            1             1    0.0e+00  PASS   [min = 5.823e-04; -> 0 only as r0 -> 1 (a -> 1)]
 Omega - Omega_H = (r0-1)[...]: vanishes at r0 = 1                   0 (symbolic)      identity             PASS
+Omega > Omega_H symbolically: 2 r+ - a b = (2-s)^2 (s+1)(s+3)(3-s^2)/4 with s = sqrt(4 - r0) (r+ = 1 + (r0-1) s/2)      0 (symbolic)      identity             PASS
+  ... no real root of 2 r+ - a b in 0 < s < sqrt3 (1 < r0 < 4) and 2 r+ - a b > 0 at s = 1: Omega > Omega_H for every light ring, -> 0 only as a -> M                 1             1    0.0e+00  PASS   [real roots in s: [-3.0000, -1.7320, -1.0000, 1.7320, 2.0000, 2.0000]]
 source: O(omega^2) coefficient vanishes for every r0 (even j = 0)      0 (symbolic)      identity             PASS
 source: O(omega^{3/2}) coefficient vanishes for every r0 (even j = 0)      0 (symbolic)      identity             PASS
 source: O(omega^2) and O(omega^{3/2}) coefficients vanish (odd j = 1)      0 (symbolic)      identity             PASS
@@ -240,6 +301,16 @@ Schwarzschild: Bhat = -i Ahat_0                                     0 (symbolic)
 Ahat_2/Ahat_0 = 5 = 2j+1                                            0 (symbolic)      identity             PASS
 Bhat independent of j (j = 3 vs j = 1)                              0 (symbolic)      identity             PASS
 source cancellations also at j = 2, 3                               0 (symbolic)      identity             PASS
+Ahat_j = (2j+1) Ahat_0 for j = 4, 6, ..., 12 (exact expressions evaluated at r0 = 2.3 and 3.7 to 30 digits)                 0             0    0.0e+00  PASS
+Bhat independent of j for j = 5, 7, ..., 11 (same evaluation)                  0             0    0.0e+00  PASS
+source cancellations (omega^2, omega^{3/2}) for j = 4 ... 12                   0             0    0.0e+00  PASS
+alpha_lm propto E^2: alpha(E p^mu)/alpha(p^mu) = E^2 (symbolic in a, b, r0; even j)      0 (symbolic)      identity             PASS
+alpha_lm propto E^2 (odd j)                                         0 (symbolic)      identity             PASS
+orbit data free, omega = m/b: the O(omega^2) coefficient of alpha is -S Y(0) (b-a)^2 R~(r0)/[8 sqrt(r0^2+a^2) Delta_0], i.e. propto the null condition (even j)      0 (symbolic)      identity             PASS
+orbit data free, omega = m/b: the O(omega^{3/2}) coefficient vanishes identically (even j)      0 (symbolic)      identity             PASS
+orbit data free: both coefficients vanish identically for odd j (S(pi/2) = O(1/omega) S'(pi/2))      0 (symbolic)      identity             PASS
+wave frequency decoupled (m = omega b_w): O(omega^{3/2}) coefficient = i S y1 r0^2 (a-b) sqrt(r0^2+a^2) (b - b_w)/(4 Delta_0): vanishes iff Omega = 1/b      0 (symbolic)      identity             PASS
+circular orbit with E = 1, L = b at r0: dphi/dt - 1/b = -R~(r0)/[r0 b (r0^3 + a^2 r0 + 2 a^2 - 2 a b)]: Omega = 1/b iff R~(r0) = 0      0 (symbolic)      identity             PASS
 identity |Bhat/Ahat_0|^2 sqrt(2 k~) beta_b = 2 for every spin  0 (numeric<1e-30)      identity             PASS
 Eq. (19)/odd analogue at a = 0 reproduces kappa_0 of Eqs. (11)-(12)                 1             1    0.0e+00  PASS
 Eq. (19)/odd analogue at a = 0 reproduces kappa_1 of Eqs. (11)-(12)                 1             1    0.0e+00  PASS
@@ -267,6 +338,10 @@ g(a = 0.98) = 0.99                                                    0.99290366
 g(a = 0.995) = 0.62                                                   0.61760536          0.62    3.9e-03  PASS
 g(a = 0.83) close to the maximum (paper: maximum near a/M = 0.83)        0.99993851             1    6.1e-05  PASS
 k~ -> 0 as r0 -> M (barrier flattens): k~(r0=1.001)                 2.343749e-14             0    2.3e-14  PASS
+Kerr cubic coefficient at a = 0 reduces to the Schwarzschild g0 l^{-1/2} of Sec. III B (|g0| = 0.0680)      0 (symbolic)      identity             PASS
+O(l^-1/2) coefficients (x l^{1/2}) of the cubic and Im Q terms at a = 0, 0.5, 0.9, 0.99, -0.5, -0.9, -0.990: 0.068, 1.414; 0.5: 0.119, 1.605; 0.9: 0.453, 2.015; 0.99: 0.659, 2.392; -0.5: 0.166, 1.306; -0.9: 0.211, 1.244; -0.99: 0.219, 1.232            --             info
+a = 0.99: l at which the cubic-term coefficient equals its a = 0 value at l = 800 is >> 800 (bound: > 8000)                 1             1    0.0e+00  PASS   [l* = 7.51e+04 (vs a = 0.9 at l = 800: 1.69e+03)]
+a = 0.99: the same for the Im Q term (bound: > 1600)                           1             1    0.0e+00  PASS   [l* = 2.29e+03 (vs a = 0.9 at l = 800: 1.13e+03)]
    Stored Kerr runs (kerr_py/kerr_results.json, l <= 800) are NOT recomputed; the quoted comparisons are re-derived from them.
 Table I last column, a = 0: num./an. at l = 800                        1.0012222        1.0012    2.2e-05  PASS   [Richardson (2 f800 - f400)/analytic - 1 = +9.81e-07]
 Table I last column, a = 0.5: num./an. at l = 800                      1.0014204        1.0014    2.0e-05  PASS   [Richardson (2 f800 - f400)/analytic - 1 = +2.75e-06]
@@ -296,9 +371,22 @@ WKB barrier factor eta^{3/2} e^{-pi eta} / exact (eta+1/2)^2 F(eta) at eta = 1/2
 1/0.2347 = 4 x 1.065 (paper)                                           4.2614833          4.26    3.5e-04  PASS
 4 x 0.2347 = 0.94 (paper: the Stirling factor that remains per |m|)         0.9386403        0.9386    4.3e-05  PASS
 8 x 0.2347 = 1.877 (per single m)                                      1.8772806         1.877    1.5e-04  PASS
-Lambda and |S(pi/2)|^2 asymptotics "checked against the Toolkit's harmonics"                --            --             NOT CHECKED   [needs the SWSH package; the derivation (oscillator expansion, Hermite functions) is checked above, Lambda against the stored eigenvalues, and at a = 0 the limits reduce to Sec. III C]
-horizon/infinity ratio found numerically to 1e-17 before the proof                --            --             NOT CHECKED   [statement about the notebook; the ratio is verified here to 1e-18 by quadrature and symbolically]
-   [section time 123.6 s]
+spectral solver reproduces the eigenvalues stored with the Kerr runs (a = +-0.5, +-0.9, l = 100..800, j <= 3): max |dLambda|/Lambda      1.110223e-15             0    1.1e-15  PASS
+Lambda - (m - a omega)^2 - (2j+1) omega beta_b = O(1) (spectral solver, a = +-0.5, +-0.9, l = 100..800, j <= 3): max |remainder| (bound 20)         11.253397            20    0.0e+00  PASS   [j = 0 at l = 800: 0.5: -3.10, -0.5: -1.39, 0.9: -5.61, -0.9: -1.06]
+  ... and l-independent: max |remainder(800) - remainder(400)|       0.041303031             0    4.1e-02  PASS
+|S(pi/2)|^2 / [c_j sqrt(omega beta_b)/(2 pi^{3/2})] (even j) and |S'(pi/2)|^2 / [d_j (omega beta_b)^{3/2}/pi^{3/2}] (odd j) -> 1: max |ratio - 1| at l = 800 (O(1/l) corrections; bound 0.07)       0.062676832          0.07    0.0e+00  PASS   [largest for j = 3 at a = 0.9; j = 0: 0.5: -5.9e-03, -0.5: -3.8e-03, 0.9: -9.5e-03, -0.9: -3.4e-03]
+  ... Richardson extrapolation in 1/l from l = 400, 800: max |ratio - 1| (all spins, j <= 3)      0.0031867322             0    3.2e-03  PASS
+  ... l (ratio - 1) is l-independent: max |l (ratio-1)|_800 / |l (ratio-1)|_400 - 1|       0.026085064             0    2.6e-02  PASS
+inputs of the source expansion: S'/S -> (2j+1) s (a+b)/beta_b (even j), S/S' -> -s (a+b)/(omega beta_b^2) (odd j): max |ratio - 1| at l = 800 (bound 0.02)       0.018179408          0.02    0.0e+00  PASS
+  ... Richardson extrapolation in 1/l from l = 400, 800             8.739256e-04             0    8.7e-04  PASS
+stored Toolkit harmonics: (a, l, j) rows                      80 rows, a = [-0.9, -0.5, 0.0, 0.5, 0.9], l = [100, 200, 400, 800], j <= 3            --             info
+Toolkit: Lambda - (m - a omega)^2 - (2j+1) omega beta_b = O(1): max |remainder| (bound 20)         11.253397            20    0.0e+00  PASS   [j = 0: -0.9,l=100: -1.06, -0.9,l=200: -1.06, -0.9,l=400: -1.06, -0.9,l=800: -1.06, -0.5,l=100: -1.40, -0.5,l=200: -1.40, -0.5,l=400: -1.39, -0.5,l=800: -1.39, 0.0,l=100: -2.00, 0.0,l=200: -2.00, 0.0,l=400: -2.00, 0.0,l=800: -2.00, 0.5,l=100: -3.09, 0.5,l=200: -3.09, 0.5,l=400: -3.10, 0.5,l=800: -3.10, 0.9,l=100: -5.56, 0.9,l=200: -5.59, 0.9,l=400: -5.60, 0.9,l=800: -5.61]
+Toolkit: the remainder is l-independent: max |rem(800) - rem(400)|       0.041303031             0    4.1e-02  PASS
+Toolkit: |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^3/2) (even j), |S'|^2 -> d_j (omega beta_b)^3/2/pi^3/2 (odd j): max |ratio - 1| at l = 800 (bound 0.07)       0.062676832          0.07    0.0e+00  PASS
+  ... Richardson extrapolation in 1/l from l = 400, 800: max |ratio - 1|      0.0031867319             0    3.2e-03  PASS
+Toolkit vs spectral solver: eigenvalues (max rel. dev.)             2.220446e-15             0    2.2e-15  PASS
+Toolkit vs spectral solver: |S(pi/2)|^2 (even j), |S'(pi/2)|^2 (odd j) (max rel. dev.)      2.321525e-10             0    2.3e-10  PASS
+   [section time 124.0 s]
 
 ==============================================================================================================
 Sec. V  Comparison with the geodesic synchrotron radiation literature  [Eqs. (22)-(23)]
@@ -309,9 +397,15 @@ Eq. (22) null limit, direct evaluation at delta = 1e-20, m = 1e12          1.000
 Eq. (23) null limit 9 delta m P^odd -> kappa_1/4 exactly (closed-form limit / kappa_1)              0.25          0.25    0.0e+00  PASS
 Eq. (23) null limit, direct evaluation at delta = 1e-20, m = 1e12        0.25000016          0.25    6.5e-07  PASS
 reflection identity |Gamma(1/4+ix) Gamma(3/4+ix)|^2 = 2 pi^2/cosh(2 pi x) (from Gamma(z)Gamma(1-z) = pi/sin(pi z))      0 (symbolic)      identity             PASS
-kappa with the 1973 odd term, j <= 1 only: 2(kappa_0 + kappa_1/4) = 0.0574          0.057417        0.0574    3.0e-04  PASS
+Eq. (22): relative m^{-1/2} term 2 Re[sqrt2 (1-i) Gamma(3/4+i/4)/(sqrt3 Gamma(1/4+i/4))] vs the cross term of sigma_0 from Eq. (14) (sign included)         1.0389513     1.0389513    0.0e+00  PASS   [1.0389513]
+  ... = 1.0390 (Sec. III C)                                            1.0389513        1.0390    4.7e-05  PASS
+odd analogue (not stated in the paper): relative m^{-1/2} term of Eq. (23), 2 Re[(1+i) Gamma(1/4+3i/4)/(2 sqrt6 Gamma(3/4+3i/4))], vs the cross term of sigma_1        0.69043124    0.69043124    0.0e+00  PASS   [0.6904312: the 1973 odd formula has the right cross term, only its normalisation is off by 4]
+kappa with the 1973 odd term, j <= 1 only: 2(kappa_0 + kappa_1/4) (= 0.0574; this number is no longer quoted in the paper)          0.057417            --             info
 kappa with all odd kappa_j divided by 4: 0.0580                      0.057977598        0.0580    3.9e-04  PASS
 our kappa, 0.0637                                                    0.063653029        0.0637    7.4e-04  PASS
+0.0580 is outside the 2021 fit 0.064 +- 0.001, 0.0637 is inside                 1             1    0.0e+00  PASS
+Eq. (24) = leading term of Eq. (22) (cross term dropped, mu^2/E^2 -> 9 delta) at eta = 1/2, 1, 2, 5: max |ratio - 1|      1.084684e-30             0    1.1e-30  PASS
+  ... symbolically: e^{-pi eta/2} |Gamma(1/4+i eta/2)|^2/(18 pi^{3/2}) = kappa_0 F(eta)/F(1/2) with F from the reflection identity      0 (symbolic)      identity             PASS
    Exact timelike fluxes of Sec. V (ratios 3.15, 3.48, 3.64, 3.77) are not stored in the repository: recomputed here with the
    independent Zerilli/RW integrator (per mu^2, flux at infinity), E0 = (r0-2)/sqrt(r0(r0-3)), L0 = r0/sqrt(r0-3), Omega = r0^-3/2.
 exact odd flux / Eq. (23), delta = 1e-4, m = 40                        3.1532951          3.15    1.0e-03  PASS   [even: exact/Eq.(22) = 0.9893]
@@ -323,7 +417,16 @@ two-term fit: rho_inf = 4.05                                           4.0468975
 same fits on the four quoted values (3.15, 3.48, 3.64, 3.77): three-term         4.0678114          4.06    1.9e-03  PASS
 same fits on the four quoted values: two-term                          4.0495044          4.05    1.2e-04  PASS
 even formula accurate to O(m^-1/2): |exact/Eq.(22) - 1| x sqrt(m) bounded (m = 400)       0.085209284             0    8.5e-02  PASS   [values: m=40: 0.9893, m=100: 0.9894, m=200: 0.9921, m=400: 0.9957]
-   [section time 5.2 s]
+stored Teukolsky: exact odd flux / Eq. (23), delta = 1e-4, m = 40 (paper: 3.15)          3.153295          3.15    1.0e-03  PASS   [this script (Zerilli/RW integrator): 3.1533; even: 0.9893]
+stored Teukolsky: exact odd flux / Eq. (23), delta = 1e-4, m = 100 (paper: 3.48)          3.478656          3.48    3.9e-04  PASS   [this script (Zerilli/RW integrator): 3.4787; even: 0.9894]
+stored Teukolsky: exact odd flux / Eq. (23), delta = 1e-4, m = 200 (paper: 3.64)          3.644831          3.64    1.3e-03  PASS   [this script (Zerilli/RW integrator): 3.6448; even: 0.9921]
+stored Teukolsky: exact odd flux / Eq. (23), delta = 1e-4, m = 400 (paper: 3.77)          3.766543          3.77    9.2e-04  PASS   [this script (Zerilli/RW integrator): 3.7665; even: 0.9957]
+stored Teukolsky vs this script's Zerilli/RW ratios: max rel. dev. (m = 40..400, odd)      1.155286e-07             0    1.2e-07  PASS
+stored: three-term fit rho_inf = 4.06                                  4.0621611          4.06    5.3e-04  PASS
+stored: two-term fit rho_inf = 4.05                                    4.0468974          4.05    7.7e-04  PASS
+stored: even formula accurate to O(m^-1/2): |exact/Eq.(22) - 1| sqrt(m) at m = 400 bounded            0.0852             0    8.5e-02  PASS
+  ... stored odd ratios at delta = 1e-3 (not quoted), m = 40, 100, 200, 4003.222, 3.610, 3.858, 4.122            --             info
+   [section time 4.1 s]
 
 ==============================================================================================================
 Sec. VI  Discussion: timelike orbits [Eq. (24)], cut-off, M87* estimate
@@ -364,15 +467,26 @@ c_1 = pi/6 = 0.5236 (coefficient of l/gamma^2 in the exponent)        0.52359878
 c_1 = pi/6 vs the 2021 fitted value 0.42 +- 0.02 (paper: fitted value is smaller)                 1             1    0.0e+00  PASS
 4 sum_j kappa_j = 0.127 (coefficient of ln gamma in each flux)        0.12730606         0.127    2.4e-03  PASS
   ... consistent with the 2021 slope k_1 = 0.12 +- 0.01                        1             1    0.0e+00  PASS
+timelike, m = l - j (even j): [d_r Psi]/E = -8 pi Y (2j+1 + 3 l delta/2)/(l M), no O(l^0) term      0 (symbolic)      identity             PASS
+timelike, m = l - j: eta_j = j + 1/2 + 3 l delta/2                  0 (symbolic)      identity             PASS
+timelike, odd j: [Psi](delta)/[Psi](0) = 1 + O(delta), no O(l delta) term (the mass enters the odd modes only through eta_j)      0 (symbolic)      identity             PASS
+each flux summed over l (and m, j <= 4) for r0 = 3M(1+delta), delta = 1/(9 gamma^2): slope in ln gamma between gamma = 100 and 1000 = 2 kappa = 0.1273         0.1273045    0.12730606    1.2e-05  PASS   [slopes 10->30, 30->100, 100->300, 300->1000: 0.12705, 0.12728, 0.12730, 0.12731]
+  ... = 0.127 ln gamma (paper)                                         0.1273045         0.127    2.4e-03  PASS   [the constant, S - kappa ln gamma^2, at gamma = 100, 1000: +0.00011, +0.00011 (happens to be ~1e-4)]
+  ... with Eq. (24) alone (j = 0, both signs of m) the slope would be 4 kappa_0 = 0.111: the 0.127 needs all j        0.11106592    0.11106703    1.0e-05  PASS
+local coefficient -d ln(l Edot_ll)/d(l/gamma^2) of Eq. (24) is below pi/6 for every x = l/gamma^2 in [0.25, 1e4] and increases monotonically to pi/6                 1             1    0.0e+00  PASS   [c_eff at x = 0.25, 1, 4, 16, 100, 1e4: 0.327, 0.360, 0.407, 0.460, 0.510, 0.523]
+pure-exponential fits of l Eq. (24), ln(l Edot) = a - c_1 l/gamma^2, over l <= 400 at gamma = 5, 10, 18 (the 2021 ranges): all c_1 < pi/6                 1             1    0.0e+00  PASS   [gamma=5, l=25..400: 0.431; gamma=10, l=30..400: 0.383; gamma=10, l=100..400: 0.390; gamma=18, l=100..400: 0.351]
+  ... and of the order of the 2021 value 0.42: mean of the four fits        0.38871362          0.42    7.4e-02  PASS
+pure-exponential fit of the stored exact fluxes to infinity (gamma = 5, 10, 20; stored l <= 400): c_1 within 0.42 +- 0.03 for each gamma                 1             1    0.0e+00  PASS   [gamma=20.0 (l = 40..400): 0.431; gamma=10.0 (l = 10..300): 0.428; gamma=5.1 (l = 2..300): 0.409]
 Delta E per orbit = 2 kappa (2 pi b) E^2/M ln l_max: coefficient 4.2         4.1563377           4.2    1.0e-02  PASS   [exact: 4.1563]
 orbital period 2 pi b = 6 sqrt3 pi M                                0 (symbolic)      identity             PASS
 M87*: E/M for a 1.3 mm photon and M = 6.5e9 Msun (paper: E/M ~ 1e-79)      1.315445e-79         1e-79    3.2e-01  PASS   [recomputed 1.32e-79]
 l_max ~ E r0/hbar = 2 pi r0/lambda for a photon of wavelength lambda (E = 2 pi hbar c/lambda, c = 1)      0 (symbolic)      identity             PASS
 M87*: l_max ~ E r0/hbar = 2 pi r0/lambda (paper: ~1e17)             1.391686e+17          1e17    3.9e-01  PASS   [order-of-magnitude statement: recomputed 1.4e17, i.e. log10 = 17.1]
 M87*: Delta E/E = 4.2 (E/M) ln l_max ~ 1e-77 per orbit              2.180912e-77         1e-77    1.2e+00  PASS   [recomputed 2.2e-77; with l_max = 1e18: 2.3e-77]
-Sec. VI B: Y_ll ~ sin^l theta ~ exp[-l (theta-pi/2)^2/2]: Taylor coefficient of (theta-pi/2)^2 in l ln sin theta is -l/2      0 (symbolic)      identity             PASS
-   [section time 32.6 s]
+l_max = E r0/(hbar c) with r0 = 3 G M/c^2 equals 3 (E/c^2) M/m_Pl^2, m_Pl^2 = hbar c/G      0 (symbolic)      identity             PASS
+ln l_max = ln(E M/m_Pl^2) + ln 3 (G = c = 1): the flux is proportional to ln(E M/m_Pl^2) up to an additive constant      0 (symbolic)      identity             PASS
+   [section time 70.0 s]
 
 ==============================================================================================================
-SUMMARY: 285 PASS, 0 FAIL, 16 info/not-checked lines; total time 211.7 s
+SUMMARY: 392 PASS, 0 FAIL, 22 info/not-checked lines; total time 246.2 s
 maximum relative deviation among passed quantitative checks (tolerance <= 5%) against a quoted paper value: 1.67e-02  (2 sigma_bar/sqrt(l) at l = 100 (12%))

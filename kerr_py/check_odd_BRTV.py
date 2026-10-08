@@ -15,8 +15,14 @@ is multiplied by E^2 to get the flux per mu^2 of the BRTV formulas. brtv(m, dl, 
 is Eqs. (14)-(15) of BRTV in the paper's notation (eta = 1/2 + m dl/2, eta' = eta + 1,
 in units of mu^2/M^2).
 
-    python check_odd_BRTV.py          (a few minutes; m = 400 dominates)
+    python check_odd_BRTV.py          (about a minute; m = 400 dominates)
+
+Writes check_odd_BRTV_results.txt next to this script (columns r0, m, parity, exact flux per mu^2,
+BRTV flux, ratio) and prints the two fits of the odd ratios at delta = 1e-4 quoted in the paper:
+rho_inf + rho_1 m^-1/2 + rho_2 m^-1 (rho_inf = 4.06) and rho_inf + rho_1 m^-1/2 (4.05). The stored
+copy is read by the companion notebook and by sympy_check/reproduce_paper.py.
 """
+import os
 import numpy as np
 import mpmath as mp
 
@@ -49,6 +55,7 @@ def brtv(m, dl, parity):
 
 
 if __name__ == "__main__":
+    rows = []
     for r0 in [3.003, 3.0003]:
         dl = r0 - 3
         for m in [40, 100, 200, 400]:
@@ -57,5 +64,22 @@ if __name__ == "__main__":
                 md = TimelikeMode(r0, m + j, j); fI, fH = md.solve()
                 fI_mu2 = fI*md.E**2          # convert per-E^2 to per-mu^2
                 pB = brtv(m, dl, par)
+                rows.append((r0, m, par, fI_mu2, pB, fI_mu2/pB))
                 out.append(f"{par}: exact={fI_mu2:.5e} BRTV={pB:.5e} ratio={fI_mu2/pB:.4f}")
             print(f"r0={r0} m={m} m*delta={m*dl:.3f} | " + " | ".join(out), flush=True)
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(here, 'check_odd_BRTV_results.txt'), 'w') as f:
+        f.write("# exact Teukolsky flux to infinity (per mu^2) of a massive particle on r0 = 3(1 + delta_paper),\n"
+                "# l = m (even) or l = m + 1 (odd), versus BRTV 1973 Eqs. (14)-(15); check_odd_BRTV.py\n"
+                "# r0  m  parity  exact  BRTV  ratio\n")
+        for r0, m, par, ex, pB, ra in rows:
+            f.write(f"{r0} {m} {par} {ex:.10e} {pB:.10e} {ra:.6f}\n")
+    # fits of the odd ratios at delta_paper = 1e-4 (r0 = 3.0003), as quoted in Sec. V of the paper
+    ms = np.array([m for r0, m, par, *_ in rows if r0 == 3.0003 and par == 'odd'], float)
+    rs = np.array([ra for r0, m, par, ex, pB, ra in rows if r0 == 3.0003 and par == 'odd'])
+    c3 = np.linalg.lstsq(np.c_[np.ones_like(ms), ms**-0.5, 1/ms], rs, rcond=None)[0]
+    c2 = np.linalg.lstsq(np.c_[np.ones_like(ms), ms**-0.5], rs, rcond=None)[0]
+    print(f"odd ratios at delta = 1e-4: {', '.join(f'{r:.4f}' for r in rs)}")
+    print(f"fit rho_inf + rho_1 m^-1/2 + rho_2 m^-1: rho_inf = {c3[0]:.3f}   (paper: 4.06)")
+    print(f"fit rho_inf + rho_1 m^-1/2:              rho_inf = {c2[0]:.3f}   (paper: 4.05)")
+    print("results written to check_odd_BRTV_results.txt")

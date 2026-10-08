@@ -2,7 +2,7 @@
    Schwarzschild light ring (Secs. II and III D of "Gravitational radiation from a photon on the
    light ring", E. Barausse).
 
-   For l = 2, 3, 5 and m = l, l - 1 the single-m fluxes to infinity and into the horizon (per E^2,
+   For l = 2, 3, 4, 5 and m = l, l - 1 the single-m fluxes to infinity and into the horizon (per E^2,
    M = 1) are computed in four ways and compared:
      RW-MST   photonMode of schwarzschild/photonLR.wl: the Zerilli/Regge-Wheeler fluxes with the MST
               solutions of the Toolkit's ReggeWheeler package and the null source of Sec. II;
@@ -15,7 +15,9 @@
               integrator used for the production runs (agreement with the Toolkit to 10^-7, Sec. III D).
 
    Run from this directory:   wolframscript -file schwarzschild_toolkit.wls      (a few minutes)
-   Needs the ReggeWheeler and Teukolsky packages of the Toolkit. *)
+   Needs the ReggeWheeler and Teukolsky packages of the Toolkit. Writes schwarzschild_toolkit_results.m
+   next to this script (rows {l, m, method, Edot_I, Edot_H}, single m, 20 digits; the stored copy is
+   read by sympy_check/reproduce_paper.py and by the notebook to verify the digits quoted in the paper). *)
 
 << Teukolsky`
 scriptDir = If[StringQ[$InputFileName] && $InputFileName =!= "", DirectoryName[$InputFileName], Directory[]];
@@ -34,6 +36,7 @@ teukPhotonMode[l_, m_, wp_: 40] := Module[{w = N[m/(3 Sqrt[3]), wp], R, S, Z, as
   <|"I" -> fl["\[ScriptCapitalI]"], "H" -> fl["\[ScriptCapitalH]"]|>];
 
 rel[x_, y_] := N[Abs[x/y - 1], 3];
+res = {};
 Do[
   mst = photonMode[l, m, WorkingPrecision -> 32]["Flux"];
   teuk = teukPhotonMode[l, m];
@@ -43,6 +46,11 @@ Do[
   Print["  RW-MST  l*Edot_I = ", N[l mst["I"], 16], "  l*Edot_H = ", N[l mst["H"], 16]];
   Print["  Teuk    l*Edot_I = ", N[l teuk["I"], 16], "  l*Edot_H = ", N[l teuk["H"], 16], "   rel. diff. ", {rel[teuk["I"], mst["I"]], rel[teuk["H"], mst["H"]]}];
   Print["  NI      l*Edot_I = ", N[l ni["I"], 16], "  l*Edot_H = ", N[l ni["H"], 16], "   rel. diff. ", {rel[ni["I"], mst["I"]], rel[ni["H"], mst["H"]]}];
-  Print["  MP      l*Edot_I = ", N[l mp["I"], 16], "  l*Edot_H = ", N[l mp["H"], 16], "   rel. diff. ", {rel[mp["I"], mst["I"]], rel[mp["H"], mst["H"]]}],
-  {l, {2, 3, 5}}, {m, {l, l - 1}}];
-Print["DONE"];
+  Print["  MP      l*Edot_I = ", N[l mp["I"], 16], "  l*Edot_H = ", N[l mp["H"], 16], "   rel. diff. ", {rel[mp["I"], mst["I"]], rel[mp["H"], mst["H"]]}];
+  AppendTo[res, {l, m, "RW-MST", N[mst["I"], 20], N[mst["H"], 20]}];
+  AppendTo[res, {l, m, "Teuk", N[teuk["I"], 20], N[teuk["H"], 20]}];
+  AppendTo[res, {l, m, "NI", N[ni["I"], 20], N[ni["H"], 20]}];
+  AppendTo[res, {l, m, "MP", N[mp["I"], 20], N[mp["H"], 20]}],
+  {l, {2, 3, 4, 5}}, {m, {l, l - 1}}];
+Put[res, FileNameJoin[{scriptDir, "schwarzschild_toolkit_results.m"}]];
+Print["DONE: ", Length[res], " rows written to schwarzschild_toolkit_results.m"];

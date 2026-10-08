@@ -2,10 +2,12 @@
    Produces ../timelike_results.m, the numerical fluxes against which Eq. (timelike) of Sec. VI A
    of "Gravitational radiation from a photon on the light ring" (E. Barausse) is compared: the
    mean of the two fluxes agrees with it to better than 1% for gamma = 20 and 120 <= l <= 4800,
-   to 0.4-4% for gamma = 10 and 30 <= l <= 1200, and to 2-4% for gamma = 5 and 25 <= l <= 125.
+   to 0.4-4% for gamma = 10 and 30 <= l <= 1200, and to better than 4% for gamma = 5 and 25 <= l <= 125.
 
-   Orbits: r0 = 3 (1 + delta) with delta = 1/(9 gamma^2) for gamma = 5, 10, 20 (at leading order
-   in delta, gamma^2 = (1+3 delta)^2/(9 delta (1+delta))). Modes: the dominant even mode l = m,
+   Orbits: r0 = 3 (1 + delta) with delta = 1/(9 gamma^2) for gamma = 5, 10, 20, where gamma is the
+   leading-order value (9 delta)^(-1/2) used in the paper; the exact energy per unit mass of these
+   orbits, E0 = gamma_exact with gamma_exact^2 = (1+3 delta)^2/(9 delta (1+delta)), is 5.055, 10.028
+   and 20.014 (printed at the start of each orbit). Eq. (timelike) is evaluated with the same delta. Modes: the dominant even mode l = m,
    at l = {0.1, 0.3, 1, 2, 3, 5, 8, 12}/(9 delta) rounded (l = 2 ... 4800), which spans the
    cut-off l ~ 6 gamma^2. Integrator: circModeMP of timelikeMP.wl (same ninth-order Runge-Kutta
    scheme as the photon run). Output rows: {r0, l, Edot_I/E^2, Edot_H/E^2} (M = 1, single m).

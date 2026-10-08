@@ -3,4 +3,3 @@ __pycache__/
 *.log
 .DS_Store
 figures/*.pdf
-toolkit_checks/kerr_toolkit_results.m
