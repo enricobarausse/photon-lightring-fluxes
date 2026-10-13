@@ -1642,16 +1642,107 @@ def section_IV():
         return mp.exp(-mp.pi*eta/2)/(162*mp.pi**mp.mpf(1.5)*mv*d)*abs((eta + mp.mpf(1)/2)*mp.gamma(mp.mpf(1)/4 + 1j*eta/2) + mp.sqrt(2)*(1 - 1j)/mp.sqrt(3*mv)*mp.gamma(mp.mpf(3)/4 + 1j*eta/2))**2
     dd = mp.mpf('1e-3'); mv = mp.mpf(10)**6
     rep.check('massive regime (eta >> 1): CM scalar / BCHM exact scalar -> 1 (m delta = 1000)', PCMs(0, mv, dd)/PBCHM(mv, dd), '1', 1e-3)
-    rep.check('massive regime: CM tensor / BRTV exact tensor (single m) -> 8, i.e. 4 x the exact per-|m| flux (paper: factor 4)', PCMs(2, mv, dd)/Peven(mv, dd), '8', 1e-3)
-    rep.check('massive regime: CM tensor/scalar = (s!)^2 = 4 (-> 4 as eps -> inf: ratio = 4 (eps/(eps-1))^2)', PCMs(2, mv, dd)/PCMs(0, mv, dd), '4', 1e-3)
+    rep.check('massive regime: CM tensor / BRTV exact tensor (single m) -> 8, i.e. 4 x the exact per-|m| flux (paper: even-parity terms tend to four times the exact result)', PCMs(2, mv, dd)/Peven(mv, dd), '8', 1e-3)
+    rep.info('massive regime: CM tensor/scalar -> (s!)^2 = 4 of their master formula (ratio = 4 (eps/(eps-1))^2)', PCMs(2, mv, dd)/PCMs(0, mv, dd),
+             note='not stated in the paper any more: the factor 4 is traced to eps^2 below, not to (s!)^2')
     rep.check('massive regime: exact BRTV (single m) / BCHM (per |m|) -> 1/2, i.e. equal per |m|', Peven(mv, dd)/PBCHM(mv, dd), '0.5', 3e-3)
     dd = mp.mpf('1e-20'); mv = mp.mpf(10)**12
-    rep.check('null limit: CM tensor / BRTV even (-> 1.877)', PCMs(2, mv, dd)/Peven(mv, dd), '1.877', 5e-4)
-    wkb_exact = (mp.mpf(1)/4)*(2/mp.pi)*mp.exp(-mp.pi/2)/Fpar(mp.mpf(1)/2)
-    rep.check('WKB barrier factor eta^{3/2} e^{-pi eta} / exact (eta+1/2)^2 F(eta) at eta = 1/2: 0.2347 (=1/4.26)', wkb_exact, '0.2347', 5e-4)
-    rep.check('1/0.2347 = 4 x 1.065 (paper)', 1/wkb_exact, '4.26', 2e-3)
-    rep.check('4 x 0.2347 = 0.94 (paper: the Stirling factor that remains per |m|)', 4*wkb_exact, '0.9386', 5e-4)
-    rep.check('8 x 0.2347 = 1.877 (per single m)', 8*wkb_exact, '1.877', 5e-4)
+    rep.check('null limit: CM tensor / BRTV even (-> 1.877 per single m, i.e. 0.94 per |m|)', PCMs(2, mv, dd)/Peven(mv, dd), '1.877', 5e-4)
+    # ---- "The origin of the 0.94 is simple": CM Eq. (4.28) at a = 0, all k, against the exact flux.
+    # x = m delta' (delta' = r0/M - 3 = 3 delta), m_crit = 4/(pi delta') [CM Eq. (2.35b) with gamma^2 = 1/(3 delta')],
+    # eps = 1 + 2k + 4m/(pi m_crit) = 1 + 2k + x; prefactor 2 sqrt(pi) (r-M)(3Mr)^{1/2}/(r^2 (r+3M)^2) = sqrt(pi)/27 at r = 3M.
+    # Per mu^2 and per frequency m Omega (modes m and -m together):
+    #   even k: P_CM = (sqrt(pi)/27) eps^{3/2} (m_crit/m) k!/((k/2)!^2 2^k) e^{-pi eps/2}
+    #   odd k:  P_CM = (sqrt(pi)/27) 2k eps^{1/2} (m_crit/m) (k-1)!/(((k-1)/2)!^2 2^{k-1}) e^{-pi eps/2}
+    # Exact (both signs of m, per mu^2; p = k mod 2), from Eq. (24) and its j-generalisation (Sec. VI A):
+    #   F_exact = (1/x) 2^{4p-k} k!/(27 pi^{3/2} floor(k/2)!^2) (1+2k+x/2)^{2(1-p)} e^{-pi eps/4} |Gamma((1+2p+i eps)/4)|^2
+    rS, mS, mcS, dpS, kS = sp.symbols('r m m_crit deltap k', positive=True)
+    rep.ident('CM Eq. (4.28) prefactor 2 sqrt(pi) (r-M)(3Mr)^{1/2}/(r^2 (r+3M)^2) = sqrt(pi)/27 at r = 3M',
+              (2*sp.sqrt(pi)*(rS - 1)*sp.sqrt(3*rS)/(rS**2*(rS + 3)**2)).subs(rS, 3) - sp.sqrt(pi)/27)
+    rep.ident('m_crit = 4/(pi delta\'): eps = 1 + 2k + 4m/(pi m_crit) = 1 + 2k + m delta\', and 2m/(pi m_crit) = m delta\'/2',
+              (4*mS/(pi*mcS) - mS*dpS + 2*mS/(pi*mcS) - mS*dpS/2).subs(mcS, 4/(pi*dpS)))
+    xS = sp.symbols('x', positive=True)
+    rep.ident('exact jump coefficient for k = 0: (eta+1/2)^2 with eta = 1/2 + 3 l delta/2 (Eq. 24) is [1 + 2m/(pi m_crit)]^2 (l = m, x = 3 m delta)',
+              ((sp.Rational(1, 2) + xS/2) + sp.Rational(1, 2))**2 - (1 + xS/2)**2)
+    epsr = lambda kk: (1 + 2*kk + xS)**2/(1 + 2*kk + xS/2)**2
+    rep.ident('eps^2/(1+2k+m delta\'/2)^2 -> 1 in the null limit m/m_crit -> 0 (k = 0, 2)', sp.limit(epsr(0), xS, 0) - 1 + sp.limit(epsr(2), xS, 0) - 1)
+    rep.ident('eps^2/(1+2k+m delta\'/2)^2 -> 4 for m >> m_crit (k = 0, 2)', sp.limit(epsr(0), xS, sp.oo) - 4 + sp.limit(epsr(2), xS, sp.oo) - 4)
+    def PCMk(kk, x):
+        e = 1 + 2*kk + x; mc_m = 4/(mp.pi*x)
+        if kk % 2 == 0:
+            return mp.sqrt(mp.pi)/27*e**mp.mpf(1.5)*mc_m*mp.factorial(kk)/(mp.factorial(kk//2)**2*2**kk)*mp.exp(-mp.pi*e/2)
+        return mp.sqrt(mp.pi)/27*2*kk*mp.sqrt(e)*mc_m*mp.factorial(kk - 1)/(mp.factorial((kk - 1)//2)**2*2**(kk - 1))*mp.exp(-mp.pi*e/2)
+    def Fexact(kk, x):
+        p = kk % 2; e = 1 + 2*kk + x
+        return (1/x)*mp.mpf(2)**(4*p - kk)*mp.factorial(kk)/(27*mp.pi**mp.mpf(1.5)*mp.factorial(kk//2)**2)*(1 + 2*kk + x/2)**(2*(1 - p)) \
+            *mp.exp(-mp.pi*e/4)*abs(mp.gamma((1 + 2*p + 1j*e)/4))**2
+    def stirl(xx, y): return 2*mp.pi*y**(2*xx - 1)*mp.exp(-mp.pi*y)/abs(mp.gamma(xx + 1j*y))**2
+    # the CM k = 0 even term is PCMs(2, ...) above (CM Eq. 5.1 with s = 2): same formula
+    rep.check('CM Eq. (4.28), k = 0, as transcribed here = CM Eq. (5.1) with s = 2 (m delta\' = 3, delta\' = 1e-3)',
+              PCMk(0, mp.mpf(3))/PCMs(2, mp.mpf(1000), mp.mpf('1e-3')), '1', 1e-20)
+    # conversion: Edot(single m)/E^2 = (3/2) delta' F_exact (gamma^2 = 1/(3 delta')); with l = m, l x Edot/E^2 = (3/2) x F_exact
+    # must equal the timelike formula of Sec. VI A, kappa_j [(2j+1+x/2)/(2j+1)]^2 F(eta_j)/F(j+1/2) (even j) or
+    # kappa_j G(eta_j)/G(j+1/2) (odd j), eta_j = j + 1/2 + x/2
+    worst_conv = 0
+    for kk in range(4):
+        for x in (mp.mpf('0.01'), mp.mpf(1), mp.mpf(10), mp.mpf(100)):
+            eta = kk + mp.mpf(1)/2 + x/2
+            tl = kappa_j(kk)*((2*kk + 1 + x/2)/(2*kk + 1))**2*Fpar(eta)/Fpar(kk + mp.mpf(1)/2) if kk % 2 == 0 else kappa_j(kk)*Gpar(eta)/Gpar(kk + mp.mpf(1)/2)
+            worst_conv = max(worst_conv, abs(mp.mpf(3)/2*x*Fexact(kk, x)/tl - 1))
+    rep.check('F_exact x (3/2) delta\' = single-m Edot/E^2 of Eq. (24) and its j-generalisation (k = 0..3, m delta\' = 0.01..100): max |ratio - 1|', worst_conv, '0', 1e-20, 'abs')
+    x0 = mp.mpf('1e-30')
+    rep.check('  ... null limit: m delta\' F_exact (k = 0) -> (2/3) kappa_0, kappa_0 = 0.0277668', mp.mpf(3)/2*x0*Fexact(0, x0), '0.0277668', 2e-6)
+    rep.check('  ... null limit: m delta\' F_exact (k = 1) -> (2/3) kappa_1, kappa_1 = 0.0037670', mp.mpf(3)/2*x0*Fexact(1, x0), '0.0037670', 2e-5)
+    # a. CM/exact as a function of m delta'
+    xs_ = [0, 1, 10, 100, 1000]
+    tgt = {0: ['0.9386', '1.663', '3.354', '3.922', '3.992'], 1: ['1.036', '1.019', '1.002', '1.000', '1.000']}
+    for kk in (0, 1):
+        for x, t in zip(xs_, tgt[kk]):
+            xv = mp.mpf(x) if x else mp.mpf('1e-30')
+            rep.check(f'CM Eq. (4.28) / exact, k = {kk} ({"even" if kk == 0 else "odd"}), m delta\' = {x}', PCMk(kk, xv)/Fexact(kk, xv), t, 6e-4)
+    rep.info('  ... k = 2 (even) at m delta\' = 0, 1, 10, 100, 1000 (-> 4)', ', '.join(f'{float(PCMk(2, mp.mpf(x) if x else mp.mpf("1e-30"))/Fexact(2, mp.mpf(x) if x else mp.mpf("1e-30"))):.4f}' for x in xs_))
+    rep.info('  ... k = 3 (odd) at m delta\' = 0, 1, 10, 100, 1000 (-> 1)', ', '.join(f'{float(PCMk(3, mp.mpf(x) if x else mp.mpf("1e-30"))/Fexact(3, mp.mpf(x) if x else mp.mpf("1e-30"))):.4f}' for x in xs_))
+    rep.check('massive regime: CM even / exact -> 4 (k = 0, 2; m delta\' = 1e6) ("their even-parity terms tend to four times the exact result")',
+              max(PCMk(0, mp.mpf(10)**6)/Fexact(0, mp.mpf(10)**6), PCMk(2, mp.mpf(10)**6)/Fexact(2, mp.mpf(10)**6)), '4', 1e-4)
+    rep.check('massive regime: CM odd / exact -> 1 (k = 1, 3; m delta\' = 1e6) ("their odd-parity terms agree with the massive-particle version of our odd kappa_j")',
+              max(PCMk(1, mp.mpf(10)**6)/Fexact(1, mp.mpf(10)**6), PCMk(3, mp.mpf(10)**6)/Fexact(3, mp.mpf(10)**6)), '1', 1e-5)
+    # b. the exact identity: CM even = exact x eps^2/(1+2k+x/2)^2 x Stirling(1/4, eps/4); CM odd = exact x Stirling(3/4, eps/4)
+    Gm2, eS = sp.symbols('Gamma2 epsilon', positive=True)       # Gm2 = |Gamma(x + i eps/4)|^2 (same in both)
+    for kk in (0, 1, 2, 3):
+        p = kk % 2; e_ = 1 + 2*kk + xS
+        cm = sp.sqrt(pi)/27*(4/(pi*xS))*sp.exp(-pi*e_/2)*(e_**sp.Rational(3, 2)*sp.factorial(kk)/(sp.factorial(kk//2)**2*2**kk) if p == 0
+                                                       else 2*kk*sp.sqrt(e_)*sp.factorial(kk - 1)/(sp.factorial((kk - 1)//2)**2*2**(kk - 1)))
+        ex = (1/xS)*sp.Integer(2)**(4*p - kk)*sp.factorial(kk)/(27*pi**sp.Rational(3, 2)*sp.factorial(kk//2)**2)*(1 + 2*kk + xS/2)**(2*(1 - p))*sp.exp(-pi*e_/4)*Gm2
+        xx = sp.Rational(1, 4) if p == 0 else sp.Rational(3, 4); y = e_/4
+        st = 2*pi*y**(2*xx - 1)*sp.exp(-pi*y)/Gm2
+        rep.ident(f'k = {kk}: CM = exact x ' + ('eps^2/(1+2k+m delta\'/2)^2 x ' if p == 0 else '') + f'[2 pi y^(2x-1) e^(-pi y)/|Gamma(x+iy)|^2] at x = {xx}, y = eps/4 (symbolic)',
+                  sp.simplify(cm - ex*(e_**2/(1 + 2*kk + xS/2)**2 if p == 0 else 1)*st))
+    worst_id = 0
+    for kk in (0, 1, 2, 3):
+        for x in (mp.mpf('0.001'), mp.mpf('0.5'), mp.mpf(3), mp.mpf(30), mp.mpf(300)):
+            e = 1 + 2*kk + x
+            rhs = Fexact(kk, x)*((e/(1 + 2*kk + x/2))**2*stirl(mp.mpf(1)/4, e/4) if kk % 2 == 0 else stirl(mp.mpf(3)/4, e/4))
+            worst_id = max(worst_id, abs(PCMk(kk, x)/rhs - 1))
+    rep.check('  ... the same identity numerically, k = 0..3, m delta\' = 0.001..300: max |ratio - 1|', worst_id, '0', 1e-12, 'abs')
+    # c. Stirling at x = y = 1/4
+    q = mp.mpf(1)/4
+    rep.check('Stirling 2 pi y^{2x-1} e^{-pi y} at x = y = 1/4', 2*mp.pi*q**(2*q - 1)*mp.exp(-mp.pi*q), '5.7295', 2e-5)
+    rep.check('|Gamma(1/4 + i/4)|^2 = 6.104 (paper)', abs(mp.gamma(q + 1j*q))**2, '6.104', 1e-4)
+    rep.check('ratio = 0.9386: "hence the 0.94"', stirl(q, q), '0.94', 2e-3, note=f'{float(stirl(q, q)):.5f}')
+    rep.check('  ... = CM constant / (2 kappa_0) (the Stirling ratio is all that remains in the null limit)', stirl(q, q), ratioCM/2, 1e-12)
+    rep.check('  ... "underestimates ... by 6%" (paper and Introduction: agrees to 6%): 100 (1 - ratio), rounded', 100*(1 - stirl(q, q)), '6', 0.5, 'abs')
+    rep.check('Stirling formula is the large-y asymptotics of |Gamma(x+iy)|^2: ratio at x = 1/4, y = 1000', stirl(q, mp.mpf(1000)), '1', 1e-4)
+    rep.info('old decomposition 0.94 = 4 x 0.2347 with 1/0.2347 = 4 x 1.065 (WKB barrier factor eta^{3/2} e^{-pi eta} / exact (eta+1/2)^2 F(eta) at eta = 1/2)',
+             (mp.mpf(1)/4)*(2/mp.pi)*mp.exp(-mp.pi/2)/Fpar(mp.mpf(1)/2), note='not stated in the paper any more')
+    # d. CM odd = 4 x BRTV odd (Eq. 23, both signs of m) in the massive regime, consistency with Sec. V
+    def Podd(mv, d):     # Eq. (23), per mu^2, single m
+        eta = mp.mpf(3)/2 + 3*mv*d/2
+        return mp.exp(-mp.pi*eta/2)/(162*mp.pi**mp.mpf(1.5)*mv*d)*abs(mp.sqrt(2)*mp.gamma(mp.mpf(3)/4 + 1j*eta/2) + (1 + 1j)/(2*mp.sqrt(3*mv))*mp.gamma(mp.mpf(1)/4 + 1j*eta/2))**2
+    mvv = mp.mpf(10)**14; xv = mp.mpf(1000)
+    rep.check('massive regime: CM odd (k = 1) / [2 x BRTV Eq. (23)] -> 4 (m delta\' = 1000, m = 1e14): "four times the odd-parity term of [BRTV]", Sec. V',
+              PCMk(1, xv)/(2*Podd(mvv, xv/(3*mvv))), '4', 1e-4)
+    rep.check('  ... and exact odd (k = 1) / [2 x BRTV Eq. (23)] = 4 at every m delta\' (cross term dropped, m = 1e14; here m delta\' = 1)',
+              Fexact(1, mp.mpf(1))/(2*Podd(mvv, 1/(3*mvv))), '4', 1e-6)
     # ---- Lambda = (m - a omega)^2 + (2j+1) omega beta_b + O(1),
     # |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^{3/2})
     # [and |S'(pi/2)|^2 -> d_j (omega beta_b)^{3/2}/pi^{3/2}, S'/S -> (2j+1) s (a+b)/beta_b,

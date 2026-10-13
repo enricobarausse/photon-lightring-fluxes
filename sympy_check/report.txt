@@ -27,7 +27,7 @@ Sec. III D: production integrator (MP) vs Toolkit MST at l = 2 (paper: 10^-5)   
 Sec. III D: production integrator (MP) vs Toolkit MST at l = 5, both m, both fluxes: max rel. dev. (paper: 10^-7; bound 5e-7)      3.057791e-07          5e-7    0.0e+00  PASS   [3.06e-07]
   ... arbitrary-precision direct integration (NI) vs Toolkit MST, max rel. dev. over all stored (l, m) (not quoted)      8.464520e-06            --             info
 this script's integrator (zrw_mode, r* from -80 M to r = 120 M) vs Toolkit MST fluxes, l = [2, 3, 4, 5]: max rel. dev.      5.022788e-08             0    5.0e-08  PASS
-   [section time 0.6 s]
+   [section time 0.8 s]
 
 ==============================================================================================================
 Sec. III A  The source  [Eqs. (5)-(6)]
@@ -53,7 +53,7 @@ massive particle: the O(l^0) term -4 pi Y mu^2/(E r0) equals the photon term -8 
 [d_r Psi] ~ l^2 r0^2 F/(4 (r0-2M))  (F coefficient, leading)        0 (symbolic)      identity             PASS
 C sources only the Regge-Wheeler sector (even jumps independent of C)      0 (symbolic)      identity             PASS
 Zerilli jumps independent of dY; RW jumps independent of Y          0 (symbolic)      identity             PASS
-   [section time 0.7 s]
+   [section time 0.9 s]
 
 ==============================================================================================================
 Sec. III B  The barrier top  [Eqs. (7)-(9)]
@@ -144,7 +144,7 @@ Eqs. (8)-(9): |u(0)|^2 = sqrt(l/2) pi F(eta)/sqrt2, |u'(0)|^2 = (sqrt2 l^{3/2}/2
 |v'(0)|^2 = |u'(0)|^2 (parabolic barrier, g = 0)                               1             1    0.0e+00  PASS
 d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 0.5      1.256745e-17             0    1.3e-17  PASS   [v'(0)/v(0) = -0.636225+0.132258j, u'(0)/u(0) = 0.636225-0.132258j]
 d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 1.5      2.082264e-19             0    2.1e-19  PASS   [v'(0)/v(0) = -1.182494+0.010623j, u'(0)/u(0) = 1.182494-0.010623j]
-   [section time 4.0 s]
+   [section time 5.0 s]
 
 ==============================================================================================================
 Sec. III C  The fluxes  [Eqs. (10)-(14)] and the O(l^-1/2) asymmetry
@@ -213,7 +213,7 @@ horizon fraction, asymptotic formulae, l_max = 140 (paper: 40% for l_max = 100-1
 horizon fraction with the asymptotic formulae at l_max = 1e3, 1e4, 1e6 (approaches 1/2 only logarithmically)0.427, 0.445, 0.463            --             info
 sum_{l>=2} l^{-3/2} = zeta(3/2) - 1                            0 (numeric<1e-30)      identity             PASS
 (1/2 - horizon fraction) x sum_{l<=l_max} 1/l -> sigma_bar (zeta(3/2)-1)/2 = 0.4918 at l_max = 1e6 (1/ln law; O(l_max^-1/2) corrections)        0.49116448    0.49177448    1.2e-03  PASS   [(1/2 - f_H) ln l_max at l_max = 1e3, 1e4, 1e6: 0.503, 0.509, 0.507]
-   [section time 23.0 s]
+   [section time 28.5 s]
 
 ==============================================================================================================
 Sec. III D  Numerical check: stored run photon_big_results.m (l = 10..12800, j <= 4)
@@ -262,7 +262,7 @@ l x mean flux / kappa at l = 100, 400, 12800 (Fig. 1: mean on the dashed line fr
 mean flux: fit of l x mean/kappa - 1 with {l^-1/2, 1/l, l^-3/2} over l >= 100: |coefficient of l^-1/2| negligible vs sigma_bar = 0.61 (bound 2e-3)      3.389245e-04          2e-3    0.0e+00  PASS   [coefficients: -3.4e-04 l^-1/2, +0.990/l, -0.118 l^-3/2]
 mean flux: l (l x mean/kappa - 1) is bounded, i.e. the relative corrections are O(1/l): max/min over 50 <= l <= 12800         1.0737001             1    7.4e-02  PASS   [50: 0.971, 100: 0.975, 200: 0.977, 400: 0.977, 800: 0.977, 1600: 0.975, 3200: 0.970, 6400: 0.954, 12800: 0.910]
    The production integrator is validated against the Toolkit to 1e-7 at l = 5 (1e-5 at l = 2) in the Sec. II block above (stored Toolkit run).
-   [section time 18.7 s]
+   [section time 22.9 s]
 
 ==============================================================================================================
 Sec. IV  Kerr  [Eqs. (15)-(21), Table I]   (M = 1; r0 parametrizes the light ring, a = sqrt(r0)(3-r0)/2)
@@ -399,14 +399,47 @@ BCHM Eq. (5.4) / exact single-m scalar flux, l = m = 40, delta' = 0.01 (eps = 1.
   ... the same ratio at (l, delta') = (100, 0.003), (400, 0.001)  [O(m^-1/2) deviations from 2]      2.008, 1.992            --             info
 CM constant / (2 kappa_0) = 0.94 (paper: "their constant is 0.94 times ours", per |m|; Introduction: agrees to 6%)         0.9386403          0.94    1.4e-03  PASS   [recomputed 0.9386]
 massive regime (eta >> 1): CM scalar / BCHM exact scalar -> 1 (m delta = 1000)        0.99999997             1    2.8e-08  PASS
-massive regime: CM tensor / BRTV exact tensor (single m) -> 8, i.e. 4 x the exact per-|m| flux (paper: factor 4)          7.994334             8    7.1e-04  PASS
-massive regime: CM tensor/scalar = (s!)^2 = 4 (-> 4 as eps -> inf: ratio = 4 (eps/(eps-1))^2)         4.0026671             4    6.7e-04  PASS
+massive regime: CM tensor / BRTV exact tensor (single m) -> 8, i.e. 4 x the exact per-|m| flux (paper: even-parity terms tend to four times the exact result)          7.994334             8    7.1e-04  PASS
+massive regime: CM tensor/scalar -> (s!)^2 = 4 of their master formula (ratio = 4 (eps/(eps-1))^2)         4.0026671            --             info   [not stated in the paper any more: the factor 4 is traced to eps^2 below, not to (s!)^2]
 massive regime: exact BRTV (single m) / BCHM (per |m|) -> 1/2, i.e. equal per |m|        0.50068799           0.5    1.4e-03  PASS
-null limit: CM tensor / BRTV even (-> 1.877)                           1.8772787         1.877    1.5e-04  PASS
-WKB barrier factor eta^{3/2} e^{-pi eta} / exact (eta+1/2)^2 F(eta) at eta = 1/2: 0.2347 (=1/4.26)        0.23466008        0.2347    1.7e-04  PASS
-1/0.2347 = 4 x 1.065 (paper)                                           4.2614833          4.26    3.5e-04  PASS
-4 x 0.2347 = 0.94 (paper: the Stirling factor that remains per |m|)         0.9386403        0.9386    4.3e-05  PASS
-8 x 0.2347 = 1.877 (per single m)                                      1.8772806         1.877    1.5e-04  PASS
+null limit: CM tensor / BRTV even (-> 1.877 per single m, i.e. 0.94 per |m|)         1.8772787         1.877    1.5e-04  PASS
+CM Eq. (4.28) prefactor 2 sqrt(pi) (r-M)(3Mr)^{1/2}/(r^2 (r+3M)^2) = sqrt(pi)/27 at r = 3M      0 (symbolic)      identity             PASS
+m_crit = 4/(pi delta'): eps = 1 + 2k + 4m/(pi m_crit) = 1 + 2k + m delta', and 2m/(pi m_crit) = m delta'/2      0 (symbolic)      identity             PASS
+exact jump coefficient for k = 0: (eta+1/2)^2 with eta = 1/2 + 3 l delta/2 (Eq. 24) is [1 + 2m/(pi m_crit)]^2 (l = m, x = 3 m delta)      0 (symbolic)      identity             PASS
+eps^2/(1+2k+m delta'/2)^2 -> 1 in the null limit m/m_crit -> 0 (k = 0, 2)      0 (symbolic)      identity             PASS
+eps^2/(1+2k+m delta'/2)^2 -> 4 for m >> m_crit (k = 0, 2)           0 (symbolic)      identity             PASS
+CM Eq. (4.28), k = 0, as transcribed here = CM Eq. (5.1) with s = 2 (m delta' = 3, delta' = 1e-3)                 1             1    0.0e+00  PASS
+F_exact x (3/2) delta' = single-m Edot/E^2 of Eq. (24) and its j-generalisation (k = 0..3, m delta' = 0.01..100): max |ratio - 1|      2.169367e-29             0    2.2e-29  PASS
+  ... null limit: m delta' F_exact (k = 0) -> (2/3) kappa_0, kappa_0 = 0.0277668       0.027766758     0.0277668    1.5e-06  PASS
+  ... null limit: m delta' F_exact (k = 1) -> (2/3) kappa_1, kappa_1 = 0.0037670      0.0037669678     0.0037670    8.6e-06  PASS
+CM Eq. (4.28) / exact, k = 0 (even), m delta' = 0                      0.9386403        0.9386    4.3e-05  PASS
+CM Eq. (4.28) / exact, k = 0 (even), m delta' = 1                      1.6628245         1.663    1.1e-04  PASS
+CM Eq. (4.28) / exact, k = 0 (even), m delta' = 10                     3.3540191         3.354    5.7e-06  PASS
+CM Eq. (4.28) / exact, k = 0 (even), m delta' = 100                     3.921857         3.922    3.6e-05  PASS
+CM Eq. (4.28) / exact, k = 0 (even), m delta' = 1000                    3.992019         3.992    4.7e-06  PASS
+CM Eq. (4.28) / exact, k = 1 (odd), m delta' = 0                       1.0357304         1.036    2.6e-04  PASS
+CM Eq. (4.28) / exact, k = 1 (odd), m delta' = 1                       1.0191679         1.019    1.6e-04  PASS
+CM Eq. (4.28) / exact, k = 1 (odd), m delta' = 10                      1.0015035         1.002    5.0e-04  PASS
+CM Eq. (4.28) / exact, k = 1 (odd), m delta' = 100                     1.0000236         1.000    2.4e-05  PASS
+CM Eq. (4.28) / exact, k = 1 (odd), m delta' = 1000                    1.0000002         1.000    2.5e-07  PASS
+  ... k = 2 (even) at m delta' = 0, 1, 10, 100, 1000 (-> 4)   0.9886, 1.1811, 2.2475, 3.6445, 3.9605            --             info
+  ... k = 3 (odd) at m delta' = 0, 1, 10, 100, 1000 (-> 1)    1.0054, 1.0041, 1.0009, 1.0000, 1.0000            --             info
+massive regime: CM even / exact -> 4 (k = 0, 2; m delta' = 1e6) ("their even-parity terms tend to four times the exact result")          3.999992             4    2.0e-06  PASS
+massive regime: CM odd / exact -> 1 (k = 1, 3; m delta' = 1e6) ("their odd-parity terms agree with the massive-particle version of our odd kappa_j")                 1             1    2.5e-13  PASS
+k = 0: CM = exact x eps^2/(1+2k+m delta'/2)^2 x [2 pi y^(2x-1) e^(-pi y)/|Gamma(x+iy)|^2] at x = 1/4, y = eps/4 (symbolic)      0 (symbolic)      identity             PASS
+k = 1: CM = exact x [2 pi y^(2x-1) e^(-pi y)/|Gamma(x+iy)|^2] at x = 3/4, y = eps/4 (symbolic)      0 (symbolic)      identity             PASS
+k = 2: CM = exact x eps^2/(1+2k+m delta'/2)^2 x [2 pi y^(2x-1) e^(-pi y)/|Gamma(x+iy)|^2] at x = 1/4, y = eps/4 (symbolic)      0 (symbolic)      identity             PASS
+k = 3: CM = exact x [2 pi y^(2x-1) e^(-pi y)/|Gamma(x+iy)|^2] at x = 3/4, y = eps/4 (symbolic)      0 (symbolic)      identity             PASS
+  ... the same identity numerically, k = 0..3, m delta' = 0.001..300: max |ratio - 1|      3.944305e-31             0    3.9e-31  PASS
+Stirling 2 pi y^{2x-1} e^{-pi y} at x = y = 1/4                        5.7294875        5.7295    2.2e-06  PASS
+|Gamma(1/4 + i/4)|^2 = 6.104 (paper)                                   6.1040288         6.104    4.7e-06  PASS
+ratio = 0.9386: "hence the 0.94"                                       0.9386403          0.94    1.4e-03  PASS   [0.93864]
+  ... = CM constant / (2 kappa_0) (the Stirling ratio is all that remains in the null limit)         0.9386403     0.9386403    0.0e+00  PASS
+  ... "underestimates ... by 6%" (paper and Introduction: agrees to 6%): 100 (1 - ratio), rounded         6.1359695             6    1.4e-01  PASS
+Stirling formula is the large-y asymptotics of |Gamma(x+iy)|^2: ratio at x = 1/4, y = 1000        0.99999998             1    1.6e-08  PASS
+old decomposition 0.94 = 4 x 0.2347 with 1/0.2347 = 4 x 1.065 (WKB barrier factor eta^{3/2} e^{-pi eta} / exact (eta+1/2)^2 F(eta) at eta = 1/2)        0.23466008            --             info   [not stated in the paper any more]
+massive regime: CM odd (k = 1) / [2 x BRTV Eq. (23)] -> 4 (m delta' = 1000, m = 1e14): "four times the odd-parity term of [BRTV]", Sec. V          4.000001             4    2.4e-07  PASS
+  ... and exact odd (k = 1) / [2 x BRTV Eq. (23)] = 4 at every m delta' (cross term dropped, m = 1e14; here m delta' = 1)         3.9999998             4    5.9e-08  PASS
 spectral solver reproduces the eigenvalues stored with the Kerr runs (a = +-0.5, +-0.9, l = 100..800, j <= 3): max |dLambda|/Lambda      1.110223e-15             0    1.1e-15  PASS
 Lambda - (m - a omega)^2 - (2j+1) omega beta_b = O(1) (spectral solver, a = +-0.5, +-0.9, l = 100..800, j <= 3): max |remainder| (bound 20)         11.253397            20    0.0e+00  PASS   [j = 0 at l = 800: 0.5: -3.10, -0.5: -1.39, 0.9: -5.61, -0.9: -1.06]
   ... and l-independent: max |remainder(800) - remainder(400)|       0.041303031             0    4.1e-02  PASS
@@ -422,7 +455,7 @@ Toolkit: |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^3/2) (even j), |S'|^2 -> d_
   ... Richardson extrapolation in 1/l from l = 400, 800: max |ratio - 1|      0.0031867319             0    3.2e-03  PASS
 Toolkit vs spectral solver: eigenvalues (max rel. dev.)             2.220446e-15             0    2.2e-15  PASS
 Toolkit vs spectral solver: |S(pi/2)|^2 (even j), |S'(pi/2)|^2 (odd j) (max rel. dev.)      2.321525e-10             0    2.3e-10  PASS
-   [section time 120.5 s]
+   [section time 152.5 s]
 
 ==============================================================================================================
 Sec. V  Comparison with the geodesic synchrotron radiation literature  [Eqs. (22)-(23)]
@@ -462,7 +495,7 @@ stored: three-term fit rho_inf = 4.06                                  4.0621611
 stored: two-term fit rho_inf = 4.05                                    4.0468974          4.05    7.7e-04  PASS
 stored: even formula accurate to O(m^-1/2): |exact/Eq.(22) - 1| sqrt(m) at m = 400 bounded            0.0852             0    8.5e-02  PASS
   ... stored odd ratios at delta = 1e-3 (not quoted), m = 40, 100, 200, 4003.222, 3.610, 3.858, 4.122            --             info
-   [section time 4.0 s]
+   [section time 5.1 s]
 
 ==============================================================================================================
 Sec. VI  Discussion: timelike orbits [Eq. (24)], cut-off, M87* estimate
@@ -521,8 +554,8 @@ M87*: l_max ~ E r0/hbar = 2 pi r0/lambda (paper: ~1e17)             1.391686e+17
 M87*: Delta E/E = 4.2 (E/M) ln l_max ~ 1e-77 per orbit              2.180912e-77         1e-77    1.2e+00  PASS   [recomputed 2.2e-77; with l_max = 1e18: 2.3e-77]
 l_max = E r0/(hbar c) with r0 = 3 G M/c^2 equals 3 (E/c^2) M/m_Pl^2, m_Pl^2 = hbar c/G      0 (symbolic)      identity             PASS
 ln l_max = ln(E M/m_Pl^2) + ln 3 (G = c = 1): the flux is proportional to ln(E M/m_Pl^2) up to an additive constant      0 (symbolic)      identity             PASS
-   [section time 66.1 s]
+   [section time 86.2 s]
 
 ==============================================================================================================
-SUMMARY: 427 PASS, 0 FAIL, 23 info/not-checked lines; total time 237.6 s
+SUMMARY: 456 PASS, 0 FAIL, 27 info/not-checked lines; total time 301.9 s
 maximum relative deviation among passed quantitative checks (tolerance <= 5%) against a quoted paper value: 1.67e-02  (2 sigma_bar/sqrt(l) at l = 100 (12%))

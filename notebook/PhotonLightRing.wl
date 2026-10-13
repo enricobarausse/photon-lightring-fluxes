@@ -1324,21 +1324,35 @@ TableForm[Table[With[{num = scalarFlux[l, 3 + dB], an = bchm54[l, dB]}, {l, N[dB
 (*Origin of the 0.94*)
 
 (* ::Text:: *)
-(*Origin of the 0.94 (same paragraph of the paper): two errors of the WKB treatment compensate. In the massive regime (large eta) the Chrzanowski-Misner master formula, their Eq. (5.1) with (5.2), agrees with the exact scalar result of BCHM, Eq. (5.3), but tends to 8 times the exact tensor result of Breuer, Ruffini, Tiomno and Vishveshwara, Eq. (22), which is per single m: referred to the same counting of m, their tensor formula is 4 times the exact one, the (s!)^2 of their master formula. In the null limit this is compensated by the WKB form of the barrier-top factor, eta^(3/2) E^(-Pi eta), which is the large-eta form of the exact (eta + 1/2)^2 F(eta) obtained with Stirling's approximation of the Gamma function (F(eta) -> E^(-Pi eta)/(Pi Sqrt[eta/2]), Sec. VI A): at eta = 1/2 it underestimates the exact factor by 4 x 1.065, i.e. the ratio WKB/exact is 0.2347 = 1/(4 x 1.065). What remains per |m| is 4 x 0.2347 = 1/1.065 = 0.94 (and 8 x 0.2347 = 1.877 of the single-m kappa_0). This factor 4 is unrelated to the odd-parity factor 4 of Sec. V.*)
+(*Origin of the 0.94 (same paragraph of the paper). In the massive regime, where their WKB approximation is valid, the Chrzanowski-Misner scalar formula (their master formula, Eq. 5.1 with 5.2, at s = 0) agrees with the exact scalar result of BCHM, Eq. (5.3), and their odd-parity terms agree with the massive-particle version of our odd kappa_j (they are therefore four times the odd-parity term of Breuer, Ruffini, Tiomno and Vishveshwara, Eq. (23), Sec. V); their even-parity terms, however, tend to four times the exact result (BRTV, Eq. (22), which is per single m: the ratio tends to 8 per single m, 4 once the two are referred to the same counting of m). The reason (as noted by Trestini, Gonzo and Leather) is that their Eq. (4.28) carries epsilon^2, with epsilon = 1 + 2k + 4 m/(Pi m_crit), where the exact result has [1 + 2k + 2 m/(Pi m_crit)]^2, the square of the coefficient of the derivative jump (the (eta + 1/2)^2 of Eq. (24) for k = 0): the two coincide in the null limit m/m_crit -> 0 and differ by a factor 4 for m >> m_crit. What remains in the null limit is Stirling's approximation 2 Pi y^(2x - 1) E^(-Pi y) for |Gamma(x + I y)|^2 in their WKB treatment, which at x = y = 1/4 underestimates |Gamma(1/4 + I/4)|^2 = 6.104 by 6%: hence the 0.94 (the 6% of the Introduction). The cell writes CM Eq. (4.28) at a = 0 for every k and the exact flux in the same counting (both signs of m, per mu^2), F_exact = (1/x) 2^(4p - k) k!/(27 Pi^(3/2) Floor[k/2]!^2) (1 + 2k + x/2)^(2(1 - p)) E^(-Pi epsilon/4) |Gamma[(1 + 2p + I epsilon)/4]|^2, x = m delta', p = Mod[k, 2], which gives the single-m flux of Eq. (24) and of its j-generalisation (Sec. VI A, j = k) through Edot/E^2 = (3/2) delta' F_exact, and checks the exact identities CM(even) = F_exact epsilon^2/(1 + 2k + x/2)^2 S(1/4, epsilon/4), CM(odd) = F_exact S(3/4, epsilon/4), with S(x, y) = 2 Pi y^(2x - 1) E^(-Pi y)/|Gamma(x + I y)|^2 the Stirling ratio.*)
 
 (* ::Text:: *)
-(*Conventions: Schwarzschild, M = 1, per unit mu^2, l = m; the delta of BCHM and BRTV is 3 times ours, gamma^2 = 1/(9 delta), m_crit = 4/(Pi delta') = 12 gamma^2/Pi, epsilon = 1 + 3 m delta = 2 eta.*)
+(*Conventions: Schwarzschild, M = 1, per unit mu^2; the delta' of BCHM, BRTV and CM is 3 times ours, delta' = r0/M - 3, gamma^2 = 1/(9 delta) = 1/(3 delta'), m_crit = 4/(Pi delta') = 12 gamma^2/Pi, epsilon = 1 + 2k + m delta' (= 2 eta for k = 0, l = m).*)
 
 epsCM[m_, d_] := 1 + 3 m d; mcritCM0[d_] := 4/(3 Pi d);
 PBCHM[m_, d_] := (1/(27 Pi^(5/2))) (m/mcritCM0[d]) Exp[-Pi epsCM[m, d]/4] Abs[Gamma[1/4 + I epsCM[m, d]/4]]^2;     (* BCHM Eq. (5.3), exact scalar, q = 0 *)
 ACM3 = 2 (3 - 1) Sqrt[3 3]/(Sqrt[Pi] 3^2 (3 + 3)^2);                                                             (* CM Eq. (5.2) at r_gamma = 3 *)
 PCMs[s_, m_, d_] := ACM3 (s!)^2 (4 m/(epsCM[m, d] Pi mcritCM0[d]))^(1 - s) Sqrt[epsCM[m, d]] Exp[-Pi epsCM[m, d]/2];   (* CM Eq. (5.1), k = 0 term *)
-Print["CM Eq. (4.28), k = 0, equals the master formula with s = 2: ", Simplify[PCMs[2, m, d]/(2 Sqrt[Pi] (3 - 1) Sqrt[3 3]/(3^2 (3 + 3)^2) epsCM[m, d]^(3/2) (mcritCM0[d]/m) Exp[-Pi epsCM[m, d]/2])]];
-TableForm[Table[With[{d = 10^-3}, {m, N[epsCM[m, d]/2], N[PCMs[0, m, d]/PBCHM[m, d], 6], N[PCMs[2, m, d]/Peven[m, d], 6], N[Peven[m, d]/PBCHM[m, d], 6], N[PCMs[2, m, d]/PCMs[0, m, d], 6]}], {m, {100, 1000, 10000, 100000, 1000000}}],
-  TableHeadings -> {None, {"m", "eta", "CM scalar/BCHM", "CM tensor/BRTV", "BRTV/BCHM (exact)", "CM tensor/scalar"}}]
-Print["null limit: CM scalar/BCHM = ", N[Limit[PCMs[0, m, d]/PBCHM[m, d] /. d -> 0, m -> Infinity], 6], ",  CM tensor/BRTV = ", N[Limit[PCMs[2, m, d]/Peven[m, d] /. d -> 0, m -> Infinity], 6]];
-wkbOverExact = N[(Sqrt[2] (1/2)^(3/2) Exp[-Pi/2]/Pi)/((1/2 + 1/2)^2 Fpar[1/2]), 6];   (* [Sqrt[2] eta^(3/2) E^(-Pi eta)/Pi] / [(eta+1/2)^2 F(eta)] at eta = 1/2 *)
-Print["WKB/exact barrier factor at eta = 1/2: ", wkbOverExact, " = 1/", 1/wkbOverExact, " = 1/(4 x ", 1/(4 wkbOverExact), ");  per |m|: 4 x ", wkbOverExact, " = ", 4 wkbOverExact, " = 1/1.065 (paper: 0.94);  per single m: 8 x ", wkbOverExact, " = ", 8 wkbOverExact];
+(* CM Eq. (4.28) at a = 0, all k, per mu^2 and per frequency m Omega (m and -m together); x = m delta' *)
+PCMk[k_, x_] := With[{e = 1 + 2 k + x}, Sqrt[Pi]/27 (4/(Pi x)) Exp[-Pi e/2] If[EvenQ[k], e^(3/2) k!/((k/2)!^2 2^k), 2 k Sqrt[e] (k - 1)!/(((k - 1)/2)!^2 2^(k - 1))]];
+(* the exact flux in the same counting *)
+Fexact[k_, x_] := With[{p = Mod[k, 2], e = 1 + 2 k + x}, (1/x) 2^(4 p - k) k!/(27 Pi^(3/2) Floor[k/2]!^2) (1 + 2 k + x/2)^(2 (1 - p)) Exp[-Pi e/4] Abs[Gamma[(1 + 2 p + I e)/4]]^2];
+stirRatio[k_, x_] := With[{p = Mod[k, 2], e = 1 + 2 k + x}, 2 Pi (e/4)^(2 (1 + 2 p)/4 - 1) Exp[-Pi e/4]/Abs[Gamma[(1 + 2 p + I e)/4]]^2];
+GparCM[x_] := Exp[-Pi x/2]/(Cosh[Pi x] Abs[Gamma[1/4 + I x/2]]^2);   (* G(eta) of Sec. VI A *)
+Print["prefactor 2 Sqrt[Pi] (r - M) Sqrt[3 M r]/(r^2 (r + 3M)^2) at r = 3M: ", Simplify[2 Sqrt[Pi] (3 - 1) Sqrt[3 3]/(3^2 (3 + 3)^2)], " (= Sqrt[Pi]/27);  4 m/(Pi m_crit) = ", Simplify[4 m/(Pi mcritCM0[d])], " = m delta';  CM Eq. (4.28), k = 0, = master formula with s = 2: ", Simplify[PCMk[0, 3 m d]/PCMs[2, m, d], {m > 0, d > 0}]];
+Print["conversion (3/2) x F_exact = l Edot/E^2 of Eq. (24) and its j-generalisation (l = m), k = 0..3, x = 0.01, 1, 10, 100: max |ratio - 1| = ",
+  Max[Table[With[{eta = k + 1/2 + x/2}, Abs[N[(3/2) x Fexact[k, x]/(kappaJ[k] If[EvenQ[k], ((2 k + 1 + x/2)/(2 k + 1))^2 Fpar[eta]/Fpar[k + 1/2], GparCM[eta]/GparCM[k + 1/2]]), 30] - 1]], {k, 0, 3}, {x, {1/100, 1, 10, 100}}]]];
+Print["null limit m delta' F_exact -> (2/3) kappa_j: k = 0: ", N[Limit[(3/2) x Fexact[0, x], x -> 0], 8], " (kappa_0 = 0.0277668);  k = 1: ", N[Limit[(3/2) x Fexact[1, x], x -> 0], 8], " (kappa_1 = 0.0037670)"];
+Print["identity CM = F_exact x eps^2/(1+2k+x/2)^2 x S(1/4, eps/4) (even k), F_exact x S(3/4, eps/4) (odd k), k = 0..3: ",
+  Table[Simplify[PCMk[k, x]/(Fexact[k, x] If[EvenQ[k], (1 + 2 k + x)^2/(1 + 2 k + x/2)^2, 1] stirRatio[k, x]), x > 0], {k, 0, 3}]];
+TableForm[Table[Prepend[Table[N[PCMk[k, x]/Fexact[k, x], 4], {x, {10^-30, 1, 10, 100, 1000, 10^6}}], k], {k, 0, 3}],
+  TableHeadings -> {None, {"k", "CM/exact: m delta' = 0", "1", "10", "100", "1000", "10^6"}}]
+Print["eps^2/(1 + 2k + m delta'/2)^2: null limit ", Limit[(1 + x)^2/(1 + x/2)^2, x -> 0], ", m >> m_crit ", Limit[(1 + x)^2/(1 + x/2)^2, x -> Infinity]];
+Print["Stirling at x = y = 1/4: 2 Pi y^(2x-1) E^(-Pi y) = ", N[2 Pi (1/4)^(-1/2) Exp[-Pi/4], 6], " vs |Gamma(1/4 + I/4)|^2 = ", N[Abs[Gamma[1/4 + I/4]]^2, 6], ";  ratio ", N[2 Pi (1/4)^(-1/2) Exp[-Pi/4]/Abs[Gamma[1/4 + I/4]]^2, 6], " (paper: 0.94, 6% low) = CM constant/(2 kappa_0) = ", N[nullCM[3]/(2 kappaJ[0]), 6]];
+Print["massive regime, odd: CM (k = 1)/[2 x BRTV Eq. (23)] at m delta' = 1000, m = 10^14: ", N[PCMk[1, 1000]/(2 Podd[10^14, 1000/(3 10^14)]), 8], " (-> 4, Sec. V)"];
+TableForm[Table[With[{d = 10^-3}, {m, N[epsCM[m, d]/2], N[PCMs[0, m, d]/PBCHM[m, d], 6], N[PCMs[2, m, d]/Peven[m, d], 6], N[Peven[m, d]/PBCHM[m, d], 6]}], {m, {100, 1000, 10000, 100000, 1000000}}],
+  TableHeadings -> {None, {"m", "eta", "CM scalar/BCHM", "CM tensor/BRTV (single m)", "BRTV/BCHM (exact)"}}]
+Print["null limit: CM scalar/BCHM = ", N[Limit[PCMs[0, m, d]/PBCHM[m, d] /. d -> 0, m -> Infinity], 6], ",  CM tensor/BRTV (single m) = ", N[Limit[PCMs[2, m, d]/Peven[m, d] /. d -> 0, m -> Infinity], 6], " = 2 x 0.9386"];
 
 (* ::Section:: *)
 (*VI. Discussion*)
@@ -1491,7 +1505,7 @@ With[{G = 6.674 10^-8, c = 2.998 10^10, h = 6.626 10^-27, Msun = 1.989 10^33},
 (*Sec. IV and Table I: r0, b, Upsilon_t, k~, |Ahat_0|, N, kappa_0(a) and g(a) for a = 0, 0.5, 0.9, 0.99, -0.5, -0.9, -0.99; N = 16/r0^6; g(a) = 27 (r0 - 1)/(r0^2 (r0 + 3)), maximum 6 Sqrt[3] - 9 = 1.392 at r0 = Sqrt[3], a = 0.834, g = 81/112 = 0.723 at r0 = 4, g = 0.99 at a = 0.98 and 0.62 at a = 0.995; horizon/infinity ratio 1; num./an. = 1.0012, 1.0014, 1.0017, 1.0011, 1.0010 at l = 800; Richardson extrapolation within 1.5 10^-5 (omitted j >= 4 terms: 3 10^-5 of kappa); Kerr asymmetries 0.78, 1.10, 0.51, 0.45 at l = 800 against 0.61 at a = 0.*)
 
 (* ::Text:: *)
-(*Chrzanowski-Misner: (12/Sqrt[Pi]) E^(-Pi/2) E^2 (r0 - 1)/(r0^2 (r0 + 3) m), constant 0.94 of 2 kappa_0 (1.877 kappa_0); their tensor formula (s!)^2 = 4 times the exact one in the massive regime, compensated at eta = 1/2 by the WKB barrier factor, 1/(4 x 1.065) = 0.2347.*)
+(*Chrzanowski-Misner: (12/Sqrt[Pi]) E^(-Pi/2) E^2 (r0 - 1)/(r0^2 (r0 + 3) m), constant 0.94 of 2 kappa_0 (1.877 kappa_0), i.e. agreement to 6%; in the massive regime their odd-parity terms agree with the exact ones (CM/exact -> 1, four times the 1973 odd term) and their even-parity terms tend to four times the exact result (epsilon^2 in place of [1 + 2k + m delta'/2]^2); in the null limit the 0.94 is Stirling's approximation of |Gamma(1/4 + I/4)|^2 = 6.104, 5.7295/6.104 = 0.9386.*)
 
 (* ::Text:: *)
 (*Sec. V: null limit of Eqs. (22)-(23) = kappa_0 and kappa_1/4; odd-parity ratio exact/1973 = 3.15, 3.48, 3.64, 3.77 for m = 40, 100, 200, 400 at delta = 10^-4, fits 4.06 and 4.05; kappa with the 1973 odd term 0.0580, against 0.0637.*)

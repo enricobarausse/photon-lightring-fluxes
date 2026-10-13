@@ -166,9 +166,17 @@ Chrzanowski-Misner comparison: their null limit (12/sqrt(pi)) e^{-pi/2} E^2 (r0-
 the spin dependence of Eq. (21); the m-counting of the 1973-74 formulae (BCHM 1973 Eq. (5.4) = 2.00 times
 the exact single-m scalar flux at l = m = 40, delta' = 0.01, with the scalar integrator validated in the
 weak field: 0.955 x M^2/(6 r0^4) at r0 = 100 M, tending to the dipole value as 1 - 5 M/r0); their
-constant 0.94 of 2 kappa_0; in the massive regime their scalar formula = BCHM's exact one, their tensor
-formula = 4 x (BRTV's exact one per |m|), the (s!)^2 = 4 of their master formula; the WKB barrier factor
-eta^{3/2} e^{-pi eta} at eta = 1/2 is 1/(4 x 1.065) of the exact (eta+1/2)^2 F(eta).
+constant 0.94 of 2 kappa_0 (1.877 per single m); the origin of the 0.94: their Eq. (4.28) at a = 0 for
+every k against the exact flux in the same counting (the latter checked against Eq. (24) and its
+j-generalisation, and against kappa_0, kappa_1 in the null limit), CM/exact = 0.9386, 1.663, 3.354, 3.922,
+3.992 (k = 0) and 1.036, 1.019, 1.002, 1.000, 1.000 (k = 1) at m delta' = 0, 1, 10, 100, 1000, tending to
+4 (even) and 1 (odd); the exact identity CM = exact x eps^2/(1+2k+m delta'/2)^2 x Stirling ratio at
+x = 1/4 (even k) and CM = exact x Stirling ratio at x = 3/4 (odd k), symbolically for k <= 3 and
+numerically to 1e-12; eps^2/(1+2k+m delta'/2)^2 -> 1 (null) and 4 (massive); Stirling 5.7295 against
+|Gamma(1/4+i/4)|^2 = 6.104, ratio 0.9386 = the 0.94 (6% of the Introduction); in the massive regime
+their scalar formula = BCHM's exact one, their even (tensor) terms = 4 x (BRTV's exact one per |m|) and
+their odd terms = 4 x BRTV Eq. (23) (consistency with Sec. V). The superseded (s!)^2 = 4 and
+4 x 1.065 decomposition are kept as info lines.
 
 **Sec. V (Eqs. 22-23).** The null limits (kappa_0 exactly, kappa_1/4 exactly, via the reflection
 formula), the second term of Eq. (22) as the m^{-1/2} cross term of the flux at infinity (its relative
@@ -238,7 +246,7 @@ value, and the total runtime.
 
 ## Result of the saved run (`report.txt`)
 
-427 checks pass, 0 fail, 23 lines are informational (none `NOT CHECKED`); runtime about 245 s. Among the
+456 checks pass, 0 fail, 27 lines are informational (none `NOT CHECKED`); runtime about 240 s. Among the
 quantitative checks the largest relative deviation from a quoted value is 1.7e-2 (2 sigma_bar/sqrt(l) at
 l = 100, quoted as 12%: recomputed 12.2%); the others are at the level of the rounding of the quoted
 digits (e.g. kappa_j to 1e-6 ... 2e-4, Table I entries to < 6e-4, the cross term 1.0390 to 5e-5, the
