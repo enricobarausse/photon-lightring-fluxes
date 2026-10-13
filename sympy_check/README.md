@@ -41,12 +41,16 @@ every check passes. It reads (but never regenerates) the stored data files of th
   formulae (Sec. V);
 * `../notebook/toolkit_harmonics.m` -- the Toolkit's spheroidal harmonics, rows
   `{a, sign, l, j, Lambda, |S(pi/2)|^2, |S'(pi/2)|^2}` for a = 0, +-0.5, +-0.9, l = 100 ... 800, j <= 3
-  (Sec. IV).
+  (Sec. IV);
+* `../kerr_py/check_barrier_results.txt` -- output of `../kerr_py/check_barrier.py`: the shape of Re Q
+  along the resonant modes, rows `{a, sign, l, j, n_minima, n_zeros, rmin/r0, z_turn_1, z_turn_2,
+  eta_num, eta_j, ReQ(r*=-60M), ReQ(r=500M)}` for a = 0, +-0.5, +-0.9, +-0.99, l = 100, 400, j = 0, 3
+  (Sec. IV, "The two steps of Sec. III B still apply").
 
-The last four files are optional: if one is missing the corresponding lines print `NOT CHECKED` instead
+The last five files are optional: if one is missing the corresponding lines print `NOT CHECKED` instead
 of failing. The script also imports the spectral spheroidal-harmonic solver `../kerr_py/swsh.py`
 (numpy + mpmath, validated against the Toolkit at l <= 6) for the Lambda and S(pi/2) asymptotics of
-Sec. IV.
+Sec. IV, and `../kerr_py/kerrflux.py` (its potential Q of Eq. (16)) for the shape of Re Q.
 
 Two small integrators are part of the script: `zrw_mode`, an independent Zerilli/Regge-Wheeler
 integrator (scipy DOP853 in the tortoise coordinate, iterated-Riccati WKB boundary data), and
@@ -91,7 +95,16 @@ normalisation |C|^2 and the transmission coefficient (0.041, 96% reflected) from
 of the exact parabolic-cylinder solution at |z| = 40, the same from a direct numerical integration of
 Weber's equation, the closed forms of D_nu(0), D_nu'(0), and hence Eqs. (8)-(9); mirror symmetry
 |v(0)| = |u(0)| and the sign relation d_r* v(0) = -d_r* u(0) (v'(0)/v(0) = -u'(0)/u(0) for the up
-solution defined by its own boundary conditions).
+solution defined by its own boundary conditions). The two paragraphs on why D_nu(-e^{-i pi/4} z) is the
+right solution: the turning points z = +-2 sqrt(eta) (inside |z| << l^{1/6} as l -> oo; the l at which
+2 sqrt(eta_j) = l^{1/6}/10 is printed, 8e6 for j = 0 to 6e9 for j = 4), p dr* = (z^2/4 - eta)^{1/2} dz with
+omega^2 - V0 = -eta sqrt(2k), the WKB phase z^2/4 - eta ln|z| + eta(ln eta - 1)/2 + eta^2/(2 z^2) + ...
+(closed-form primitive and its expansion) and the amplitude p^{-1/2} -> sqrt2 |z|^{-1/2}; D_nu(c z) with
+c^2 = -i solves Weber's equation iff nu = -1/2 - i eta; DLMF 12.9.1 in the sector |arg zeta| < 3 pi/4 (and
+its failure at arg zeta = 3 pi/4); for z -> -oo, u -> e^{i pi/8 - pi eta/4} |z|^{-1/2} e^{i(z^2/4 - eta ln|z|)}
+with O(1/z^2) corrections and d arg u/dz = z/2 - eta/z < 0 (ingoing); for z -> +oo the incident and
+reflected waves with |R|^2 = e^{2 pi eta}/(1 + e^{2 pi eta}), |R|^2 + |T|^2 = 1; D_nu(e^{-i pi/4} z) a single
+outgoing wave for z -> +oo.
 
 **Sec. III C (Eqs. 10-14).** Closed forms of |Y_{l,l-j}(pi/2)|^2 and |d_theta Y|^2 against
 `scipy.special.sph_harm_y`, their large-l limits with c_j, d_j (scipy at l = 600 for j <= 4, closed form
@@ -142,7 +155,12 @@ the identity |Bhat/Ahat_0|^2 sqrt(2 k~) beta_b = 2, Eq. (19) and its odd counter
 Schwarzschild kappa_j at a = 0, all columns of Table I, Eq. (21) with its maximum 6 sqrt3 - 9 at
 a = 3^{1/4}(3 - sqrt3)/2, 81/112, g(0.98), g(0.995), the flattening of the barrier at a = 0.99 (the cubic
 and Im Q coefficients of Weber's equation reach their a = 0 values at l = 800 only at l = 7.5e4 and
-2.3e3), the Richardson extrapolation of the stored Kerr runs (better than 1.5e-5), the last column of
+2.3e3), the shape of Re Q along the resonant modes (sentence "The two steps of Sec. III B still apply"),
+recomputed with `kerr_py/kerrflux.py` for a = 0, +-0.5, +-0.9, +-0.99, l = 100, 400, j = 0, 3 and read from
+the stored `check_barrier_results.txt`: exactly one minimum, at r0 to O(1/l), no maximum, two zeros at
+|z| = 2 sqrt(eta_j) (within 4% at l = 400; 20% at l = 100 for a = 0.99, j = 3), Re Q > 0 at both ends
+(tending to (omega - m Omega_H)^2 at the horizon), eta_num = -Re Q(r0)/sqrt(2k) = j + 1/2 + O(1/l);
+the Richardson extrapolation of the stored Kerr runs (better than 1.5e-5), the last column of
 Table I, the asymmetries sqrt(l)(I-H)/(I+H) = 0.78, 1.10, 0.51, 0.45 at l = 800 (0.61 at a = 0), and the
 Chrzanowski-Misner comparison: their null limit (12/sqrt(pi)) e^{-pi/2} E^2 (r0-M)/[r0^2 (r0+3M) m] with
 the spin dependence of Eq. (21); the m-counting of the 1973-74 formulae (BCHM 1973 Eq. (5.4) = 2.00 times
@@ -220,7 +238,7 @@ value, and the total runtime.
 
 ## Result of the saved run (`report.txt`)
 
-392 checks pass, 0 fail, 22 lines are informational (none `NOT CHECKED`); runtime about 245 s. Among the
+427 checks pass, 0 fail, 23 lines are informational (none `NOT CHECKED`); runtime about 245 s. Among the
 quantitative checks the largest relative deviation from a quoted value is 1.7e-2 (2 sigma_bar/sqrt(l) at
 l = 100, quoted as 12%: recomputed 12.2%); the others are at the level of the rounding of the quoted
 digits (e.g. kappa_j to 1e-6 ... 2e-4, Table I entries to < 6e-4, the cross term 1.0390 to 5e-5, the

@@ -17,7 +17,7 @@ T("Text", "The cells build on each other, so each section should be run after th
 T("Subsubsection", "Toolkit cells")
 T("Text", "Five cells need the Black Hole Perturbation Toolkit (the ReggeWheeler and Teukolsky packages for the cross-checks at l <= 5, the SpinWeightedSpheroidalHarmonics package for the eigenvalue and harmonic checks and for the Kerr integrator). They are commented out, the text cell before each of them says so and states what it checks, and the rest of the notebook does not depend on them.")
 T("Subsubsection", "Stored data")
-T("Text", "The results of the long numerical runs are read from the repository: photon_big_results.m and timelike_results.m in the repository root; kerr_mathematica_runL1.m, kerr_mathematica_runL2.m and toolkit_harmonics.m (the Toolkit's spheroidal eigenvalues and equatorial harmonics, written by toolkit_checks/kerr_harmonics_toolkit.wls) in notebook/ (next to this notebook); kerr_py/kerr_results.json and kerr_py/check_odd_BRTV_results.txt (the exact Teukolsky fluxes of timelike orbits of Sec. V); schwarzschild/asym_check_results.m (the decomposition of the flux asymmetry at l = 100-6400 of Sec. III D); and toolkit_checks/schwarzschild_toolkit_results.m (the Toolkit cross-checks at l <= 5 of Secs. II and III D).")
+T("Text", "The results of the long numerical runs are read from the repository: photon_big_results.m and timelike_results.m in the repository root; kerr_mathematica_runL1.m, kerr_mathematica_runL2.m and toolkit_harmonics.m (the Toolkit's spheroidal eigenvalues and equatorial harmonics, written by toolkit_checks/kerr_harmonics_toolkit.wls) in notebook/ (next to this notebook); kerr_py/kerr_results.json, kerr_py/check_odd_BRTV_results.txt (the exact Teukolsky fluxes of timelike orbits of Sec. V) and kerr_py/check_barrier_results.txt (the shape of Re Q along the resonant modes, written by kerr_py/check_barrier.py, Sec. IV); schwarzschild/asym_check_results.m (the decomposition of the flux asymmetry at l = 100-6400 of Sec. III D); and toolkit_checks/schwarzschild_toolkit_results.m (the Toolkit cross-checks at l <= 5 of Secs. II and III D).")
 T("Text", "The repository root (repoDir, defined in the first cell) is taken to be the parent of the directory containing this notebook or, when the notebook is evaluated as a script, the current directory or its parent, whichever contains photon_big_results.m.")
 
 # ------------------------------------------------------------------ II
@@ -241,6 +241,47 @@ u0sqModel[eta_, g_, side_, Z_: 40] := Module[{z, zz, zA, zB, dir, Q, sol, Psi, A
     "u0" -> sol[0]/(Ainc Sqrt[pB]), "Du0" -> sol'[0]/(Ainc Sqrt[pB])|>];   (* the complex values for unit incident amplitude (up to a common phase) *)
 Print["model equation, eta = 1/2: |u(0)|^2 / u0sqA = ", u0sqModel[1/2, 0, "In"]["u0sq"]/u0sqA[1/2], ",  |u'(0)|^2 / Du0sqA = ", u0sqModel[1/2, 0, "In"]["Du0sq"]/Du0sqA[1/2], ",  |T|^2 = ", u0sqModel[1/2, 0, "In"]["T2"]];
 Print["model equation, eta = 3/2: |u(0)|^2 / u0sqA = ", u0sqModel[3/2, 0, "In"]["u0sq"]/u0sqA[3/2]];
+""")
+T("Subsubsection", "Why D_nu(-E^(-I Pi/4) z): turning points and the WKB wave in the overlap region")
+T("Text", "The first of the two steps in Sec. III B that justify the choice u = C D_nu(-E^(-I Pi/4) z) (the paragraph \"It is worth spelling out why this is the right solution\"). The turning points z^2/4 - eta = 0 are z = +-2 Sqrt[eta]; for the resonant modes, eta_j = j + 1/2 is fixed while the parabolic region |z| << l^(1/6) grows, so they lie inside it as l -> Infinity (the cell prints the l at which 2 Sqrt[eta_j] = l^(1/6)/10, as a measure of how large l must be for the separation to be wide). "
+  "With omega^2 - V0 = -eta Sqrt[2k], the WKB wavenumber p = Sqrt[omega^2 - V] gives p dr* = (z^2/4 - eta)^(1/2) dz, whose integral in the overlap region 1 << |z| << l^(1/6) is z^2/4 - eta Log[|z|] + const + O(1/z^2), and the amplitude p^(-1/2) is proportional to |z|^(-1/2). "
+  "Finally, D_nu(c z) with c^2 = -I (c = -E^(-I Pi/4) or E^(-I Pi/4)) solves Weber's equation if and only if nu = -1/2 - I eta, by the chain rule and the Weber equation D'' + (nu + 1/2 - zeta^2/4) D = 0 of the parabolic cylinder functions.")
+In(r"""
+Clear[z, eta, kk, x, nuW, cW, t, Dw, zeta];
+Print["turning points: ", Solve[z^2/4 - eta == 0, z], ";  2 Sqrt[eta_j]/l^(1/6) -> ", Limit[2 Sqrt[jj + 1/2]/ll^(1/6), ll -> Infinity, Assumptions -> jj >= 0], " as l -> Infinity (inside the parabolic region)"];
+Print["l at which 2 Sqrt[eta_j] = l^(1/6)/10, j = 0..4: ", Table[N[(20 Sqrt[jj + 1/2])^6, 2], {jj, 0, 4}], ";  at which 2 Sqrt[eta_j] = l^(1/6): ", Table[N[(2 Sqrt[jj + 1/2])^6, 4], {jj, 0, 4}]];
+Print["p dr*/dz - (z^2/4 - eta)^(1/2) with omega^2 - V0 = -eta Sqrt[2k], x = z/(2k)^(1/4): ", Simplify[Sqrt[-eta Sqrt[2 kk] + kk x^2/2]/(2 kk)^(1/4) /. x -> z/(2 kk)^(1/4)] - Sqrt[z^2/4 - eta] // Simplify[#, {kk > 0, z > 2 Sqrt[eta], eta > 0}] &];
+phaseW = Integrate[Sqrt[t^2/4 - eta], {t, 2 Sqrt[eta], z}, Assumptions -> {eta > 0, z > 2 Sqrt[eta]}];
+Print["WKB phase Int_{2 Sqrt[eta]}^z (t^2/4 - eta)^(1/2) dt - (z^2/4 - eta Log[z]) at large z: ", Simplify[Normal[Series[phaseW - (z^2/4 - eta Log[z]), {z, Infinity, 2}]], eta > 0], "  (constant + O(1/z^2))"];
+Print["z < 0: d/dz (z^2/4 - eta Log[-z]) + (z^2/4 - eta)^(1/2) at large |z|: ", Simplify[Normal[Series[D[z^2/4 - eta Log[-z], z] + Sqrt[z^2/4 - eta] /. z -> -1/t, {t, 0, 2}]] /. t -> -1/z, z < 0], " (the integrand is even: the phase is -(z^2/4 - eta Log|z|) + const there, the sign being absorbed in Exp[+-I Int p])"];
+Print["amplitude: p^(-1/2) |z|^(1/2) -> ", Limit[(z^2/4 - eta)^(-1/4) Sqrt[z], z -> Infinity], "  (p^(-1/2) proportional to |z|^(-1/2))"];
+(* D_nu(c z): chain rule and the Weber equation D''(zeta) = (zeta^2/4 - nu - 1/2) D(zeta) *)
+weberRes = Simplify[(D[Dw[cW z], {z, 2}] + (z^2/4 - eta) Dw[cW z] /. Derivative[2][Dw] -> Function[zeta, (zeta^2/4 - nuW - 1/2) Dw[zeta]])/Dw[cW z]];
+Print["[u'' + (z^2/4 - eta) u]/u for u = D_nu(c z): ", weberRes, "  (c = cW, nu = nuW)"];
+Print["c = -E^(-I Pi/4) and E^(-I Pi/4) (c^2 = -I): solutions for nu of the coefficients of z^0, z^2 = 0: ", Table[Solve[Thread[CoefficientList[Expand[weberRes /. cW -> cc], z] == 0], nuW], {cc, {-Exp[-I Pi/4], Exp[-I Pi/4]}}], "  (nu = -1/2 - I eta)"];
+""")
+T("Subsubsection", "The asymptotics of D_nu: ingoing at z -> -Infinity, incident and reflected waves at z -> +Infinity")
+T("Text", "The second step (the paragraph \"The second step is to recognize this wave\"). For |arg zeta| < 3 Pi/4, D_nu(zeta) = zeta^nu E^(-zeta^2/4) [1 - nu (nu - 1)/(2 zeta^2) + O(zeta^-4)] (DLMF 12.9.1), checked at |zeta| = 40; at arg zeta = 3 Pi/4 (z -> +Infinity in u) the single-exponential form fails. "
+  "For z -> -Infinity, zeta = -E^(-I Pi/4) z = E^(-I Pi/4) |z| is in the sector and u = D_nu(-E^(-I Pi/4) z) tends to e^(I Pi/8 - Pi eta/4) |z|^(-1/2) E^(I (z^2/4 - eta Log|z|)): the ratio is printed at z = -20, -40, -80 and approaches the constant as 1/z^2; d arg(u)/dz = z/2 - eta/z < 0, so the phase decreases with increasing r*, as that of E^(-I omega r*): the wave is ingoing. "
+  "For z -> +Infinity the solution contains both waves: the decomposition at z = 40 with the WKB wavenumbers of the previous cells gives the reflected/incident ratio |R|^2 = E^(2 Pi eta)/(1 + E^(2 Pi eta)) and |R|^2 + |T|^2 = 1 with |T|^2 = 0.041 at eta = 1/2. The other solution, D_nu(E^(-I Pi/4) z), is a single outgoing wave for z -> +Infinity (its incident component vanishes).")
+In(r"""
+Module[{nuv, zt, dl, eta0 = 1/2, ur, rat, Cm, dph, refl, outw, Qp, Qm, uB, duB, Ai, Ar, vo, dvo},
+  dl = Max[Table[nuv = -1/2 - I et; zt = 40 Exp[I ph]; Abs[N[ParabolicCylinderD[nuv, zt]/(zt^nuv Exp[-zt^2/4]) - (1 - nuv (nuv - 1)/(2 zt^2)), 30]], {et, {1/2, 7/2}}, {ph, {0, -Pi/4, Pi/2, -7 Pi/10}}]];
+  Print["DLMF 12.9.1, |zeta| = 40, arg zeta = 0, -Pi/4, Pi/2, -0.7 Pi, eta = 1/2, 7/2: max |D_nu/(zeta^nu E^(-zeta^2/4)) - (1 - nu(nu-1)/(2 zeta^2))| = ", N[dl, 3], " (O(zeta^-4));  at arg zeta = 3 Pi/4: |ratio - 1| = ",
+    With[{zz = 40 Exp[3 I Pi/4], nn = -1/2 - I/2}, N[Abs[ParabolicCylinderD[nn, zz]/(zz^nn Exp[-zz^2/4]) - 1], 4]], " (not small: two exponentials)"];
+  Cm = Exp[I Pi/8 - Pi eta0/4];
+  rat = Table[N[uD[eta0, -Z]/(Z^(-1/2) Exp[I (Z^2/4 - eta0 Log[Z])]), 30]/Cm, {Z, {20, 40, 80}}];
+  Print["z -> -Infinity, eta = 1/2: u/(|z|^(-1/2) E^(I (z^2/4 - eta Log|z|))) divided by E^(I Pi/8 - Pi eta/4) at z = -20, -40, -80: ", N[rat, 8], ";  |ratio - 1| = ", N[Abs[rat - 1], 3], " (ratios of successive deviations ", N[Abs[rat[[1]] - 1]/Abs[rat[[2]] - 1], 4], ", ", N[Abs[rat[[2]] - 1]/Abs[rat[[3]] - 1], 4], ": O(1/z^2))"];
+  dph = Table[N[Im[(D[uD[eta0, zz], zz] /. zz -> -Z)/uD[eta0, -Z]], 20], {Z, {20, 40}}];
+  Print["d arg(u)/dz at z = -20, -40: ", dph, " against z/2 - eta/z = ", N[Table[-Z/2 + eta0/Z, {Z, {20, 40}}], 10], ": negative, the phase decreases with increasing r* (ingoing, like E^(-I omega r*))"];
+  refl = Table[
+    Qp = QWeber[et, 0, +1][40]; Qm = QWeber[et, 0, -1][40];
+    uB = N[uD[et, 40], 30]; duB = N[-Exp[-I Pi/4] Derivative[0, 1][ParabolicCylinderD][-1/2 - I et, -Exp[-I Pi/4] 40], 30];
+    Ai = (duB - I Qp uB)/(I (Qm - Qp)); Ar = (duB - I Qm uB)/(I (Qp - Qm));       (* E^(-I Int p) incident, E^(+I Int p) reflected *)
+    vo = N[ParabolicCylinderD[-1/2 - I et, Exp[-I Pi/4] 40], 30]; dvo = N[Exp[-I Pi/4] Derivative[0, 1][ParabolicCylinderD][-1/2 - I et, Exp[-I Pi/4] 40], 30];
+    {et, Abs[Ar/Ai]^2/(Exp[2 Pi et]/(1 + Exp[2 Pi et])) - 1, Abs[Ar/Ai]^2 + 1/(1 + Exp[2 Pi et]) - 1, Abs[((dvo - I Qp vo)/(I (Qm - Qp)))/((dvo - I Qm vo)/(I (Qp - Qm)))]}, {et, {1/2, 3/2, 5/2}}];
+  Print["z -> +Infinity (z = 40), eta = 1/2, 3/2, 5/2: {eta, |R|^2/(E^(2 Pi eta)/(1 + E^(2 Pi eta))) - 1, |R|^2 + |T|^2 - 1, |incident/outgoing| of D_nu(E^(-I Pi/4) z)} = ", N[refl, 3]];
+  Print["   |R|^2 at eta = 1/2: ", N[Exp[Pi]/(1 + Exp[Pi]), 4], ", |T|^2 = ", N[1/(1 + Exp[Pi]), 3], ":  both waves present in u at z -> +Infinity, a single outgoing wave in D_nu(E^(-I Pi/4) z)"]];
 """)
 T("Subsubsection", "The up solution: v(z) = u(-z), d_r* v(0) = -d_r* u(0)")
 T("Text", "End of Sec. III B: the solution with unit incident amplitude from the horizon side is v(z) = u(-z) up to the O(l^(-1/2)) cubic asymmetry, so that |v(0)| = |u(0)| and d_r* v(0) = -d_r* u(0); the sign is what makes the cross term enter the two fluxes of Sec. III C with opposite signs. "
@@ -766,6 +807,52 @@ Clear[rr, aa];
 Egeo[rr_, aa_] := (rr^(3/2) - 2 rr^(1/2) + aa)/(rr^(3/4) Sqrt[rr^(3/2) - 3 rr^(1/2) + 2 aa]); Lgeo[rr_, aa_] := (rr^2 - 2 aa rr^(1/2) + aa^2)/(rr^(3/4) Sqrt[rr^(3/2) - 3 rr^(1/2) + 2 aa]);
 With[{aa = 1/2, rr = 3}, With[{bb = Lgeo[rr, aa]/Egeo[rr, aa]},
   Print["massive circular geodesic, a = 1/2, r0 = 3 (gamma = E/mu = ", N[Egeo[rr, aa], 4], "): R~(r0) = ", N[Rtil[aa, bb, rr], 6], " = r0^2 Delta_0/gamma^2 = ", N[rr^2 Dl[aa, rr]/Egeo[rr, aa]^2, 6], ";  omega^2 coefficient / (R~ SS YY0) = ", N[Simplify[(genE["omega2"] /. {a -> aa, r0 -> rr, b -> bb})/(Rtil[aa, bb, rr] SS YY0)], 6], " (nonzero: the cancellation fails by the mass term, as in Eq. 6)"]]];
+""")
+T("Subsubsection", "Re Q along the resonant modes: one minimum, two turning points")
+T("Text", "The sentence of Sec. IV \"The two steps of Sec. III B still apply\": Re Q, the analogue of omega^2 - V, has a single minimum, at the light ring, and is positive elsewhere, so the WKB waves propagate to the horizon and to infinity without mixing outside the parabolic region, and inside it the equation is Weber's with the same eta. "
+  "The cell evaluates Re Q of Eq. (16) (Qexpr above, s = -2) for the spins of Table I, l = 100 and 400, j = 0 and 3, with the Toolkit eigenvalue Lambda of the stored toolkit_harmonics.m where available (a = 0, +-1/2, +-9/10) and the eikonal Lambda = (m - a omega)^2 + (2j+1) omega beta_b at a = +-0.99, on a uniform grid in r* from -60 M to r = 500 M (r*(r) inverted by bisection; a dense grid in r would produce spurious minima from round-off near the horizon, where Re Q is flat). "
+  "It counts the local minima and maxima (sign changes of d Re Q/dr) and the zeros, and gives the turning points in z = (2k)^(1/4) x with k = d^2 Re Q/dr*^2 at r0 (the Weber form is Re Q = Re Q(r0) + k x^2/2), to be compared with +-2 Sqrt[eta_j], and eta_num = -Re Q(r0)/Sqrt[2k] = j + 1/2 + O(1/l). "
+  "It then reads the stored table kerr_py/check_barrier_results.txt (kerr_py/check_barrier.py, the same quantities with the spectral eigenvalue of kerrflux.py) and checks n_minima = 1, n_zeros = 2, |z_turn| = 2 Sqrt[eta_j] within 10% at l = 400, Re Q > 0 at both ends, and the O(1/l) approach of eta_num to j + 1/2 (largest for j = 3 at a = 0.99 prograde, where the asymptotic regime sets in late, as stated in the caption of Table I).")
+In(r"""
+reQshape[av_, lv_, jv_] := Module[{d = lrData[av, 30], mv = lv - jv, wv, lamv, tk, qf, dqf, rp = rpK[av], rsg, lo, hi, mid, rr, rq, dq, imin, imax, izer, rmin, tps, kq, r0, eta, zt, sgn, rv},
+  r0 = d["r0"]; wv = mv d["Omega"];
+  tk = Select[tkHarm, #[[1]] #[[2]] == av && #[[3]] == lv && #[[4]] == jv &];
+  lamv = If[tk =!= {}, tk[[1, 5]], (mv - av wv)^2 + (2 jv + 1) wv d["betab"]];
+  (* numerical Q and dQ/dr; Block protects against values assigned to r, a, w, m, lam, s by other cells *)
+  {qf, dqf} = Block[{r, a, w, m, lam, s}, With[{e = Qexpr /. {s -> -2, a -> N[av], w -> N[wv], m -> mv, lam -> N[lamv]}}, {Function @@ {{r}, e}, Function @@ {{r}, D[e, r]}}]];
+  rsg = Range[-60., rstarK[N[av], 500.], 0.01];
+  lo = ConstantArray[N[rp], Length[rsg]]; hi = ConstantArray[600., Length[rsg]];
+  Do[mid = (lo + hi)/2; sgn = UnitStep[rstarK[N[av], mid] - rsg]; hi = sgn mid + (1 - sgn) hi; lo = sgn lo + (1 - sgn) mid, {80}];
+  rr = (lo + hi)/2;
+  rq = Re[qf[rr]]; dq = Sign[Re[dqf[rr]]];
+  imin = Flatten[Position[Differences[dq], _?Positive]]; imax = Flatten[Position[Differences[dq], _?Negative]];
+  izer = Flatten[Position[Differences[Sign[rq]], _?(# != 0 &)]];
+  rmin = If[imin =!= {}, rv /. FindRoot[Re[dqf[rv]], {rv, rr[[imin[[1]]]], rr[[imin[[1]] + 1]]}, Method -> "Brent"], Indeterminate];
+  tps = Table[rv /. FindRoot[Re[qf[rv]], {rv, rr[[i]], rr[[i + 1]]}, Method -> "Brent"], {i, izer}];
+  kq = With[{g = Function[{x}, drdrs[N[av], x] Re[dqf[x]]]}, drdrs[N[av], N[r0]] (g[N[r0] + 10^-4] - g[N[r0] - 10^-4])/(2 10^-4)];
+  eta = -Re[qf[N[r0]]]/Sqrt[2 kq];
+  zt = (2 kq)^(1/4) (rstarK[N[av], #] - rstarK[N[av], N[r0]]) & /@ tps;
+  <|"a" -> av, "l" -> lv, "j" -> jv, "Lambda" -> If[tk =!= {}, "Toolkit", "eikonal"], "nmin" -> Length[imin], "nmax" -> Length[imax], "nzero" -> Length[izer], "lDr" -> lv (rmin - r0)/r0,
+    "z" -> zt, "zratio" -> Abs[zt]/(2 Sqrt[jv + 1/2]), "eta" -> eta, "Qh" -> rq[[1]], "Qinf" -> rq[[-1]]|>];
+reQcases = Flatten[Table[reQshape[aa, ll, jj], {aa, {0, 1/2, -1/2, 9/10, -9/10, 99/100, -99/100}}, {ll, {100, 400}}, {jj, {0, 3}}]];
+TableForm[{N[#["a"]], #["l"], #["j"], #["Lambda"], #["nmin"], #["nmax"], #["nzero"], N[#["lDr"], 3], N[#["z"], 4], N[#["eta"], 5], N[#["Qh"], 4], N[#["Qinf"], 4]} & /@ reQcases,
+  TableHeadings -> {None, {"a", "l", "j", "Lambda", "minima", "maxima", "zeros", "l (r_min - r0)/r0", "z_turn", "eta_num", "Re Q(r* = -60)", "Re Q(r = 500)"}}]
+Print["one minimum, no maximum, two zeros in every case: ", And @@ ((#["nmin"] == 1 && #["nmax"] == 0 && #["nzero"] == 2) & /@ reQcases),
+  ";  minimum at the light ring to O(1/l): max l |r_min - r0|/r0 = ", N[Max[Abs[#["lDr"]] & /@ reQcases], 3],
+  ";  Re Q > 0 at both ends: ", And @@ ((#["Qh"] > 0 && #["Qinf"] > 0) & /@ reQcases),
+  ";  max | |z_turn|/(2 Sqrt[eta_j]) - 1 | at l = 400: ", N[Max[Flatten[Abs[#["zratio"] - 1] & /@ Select[reQcases, #["l"] == 400 &]]], 3], " (at l = 100: ", N[Max[Flatten[Abs[#["zratio"] - 1] & /@ Select[reQcases, #["l"] == 100 &]]], 3], ")"];
+(* the stored table of kerr_py/check_barrier.py *)
+barrierTab = Select[ToExpression[StringReplace[StringSplit[#], "e" -> "*^"]] & /@ Select[ReadList[FileNameJoin[{repoDir, "kerr_py", "check_barrier_results.txt"}], String], ! StringStartsQ[#, "#"] &], Length[#] == 13 &];
+Print["stored check_barrier_results.txt: ", Length[barrierTab], " rows;  n_minima = 1 and n_zeros = 2 in every row: ", And @@ ((#[[5]] == 1 && #[[6]] == 2) & /@ barrierTab),
+  ";  max | |z_turn|/(2 Sqrt[eta_j]) - 1 | at l = 400: ", N[Max[Abs[Abs[Flatten[#[[{8, 9}]] & /@ Select[barrierTab, #[[3]] == 400 &]]]/(2 Sqrt[Flatten[{#[[11]], #[[11]]} & /@ Select[barrierTab, #[[3]] == 400 &]]]) - 1]], 3], " (within 10%: ",
+  Max[Abs[Abs[Flatten[#[[{8, 9}]] & /@ Select[barrierTab, #[[3]] == 400 &]]]/(2 Sqrt[Flatten[{#[[11]], #[[11]]} & /@ Select[barrierTab, #[[3]] == 400 &]]]) - 1]] < 0.1, ");  Re Q > 0 at both ends: ", And @@ ((#[[12]] > 0 && #[[13]] > 0) & /@ barrierTab)];
+barrierShrink = Table[With[{r1 = SelectFirst[barrierTab, #[[1]] == row[[1]] && #[[2]] == row[[2]] && #[[3]] == 100 && #[[4]] == row[[4]] &], r4 = row},
+    {r4[[1]] r4[[2]], r4[[4]], r1[[10]] - r1[[11]], r4[[10]] - r4[[11]], Abs[r1[[10]] - r1[[11]]]/Abs[r4[[10]] - r4[[11]]]}], {row, Select[barrierTab, #[[3]] == 400 &]}];
+Print["eta_num - eta_j at l = 100 and 400, and the shrink factor {a, j, l = 100, l = 400, factor}: ", barrierShrink];
+Print["   the deviation shrinks by more than 2.5 from l = 100 to 400 wherever it exceeds 0.02 (O(1/l): 4): ", And @@ (#[[5]] > 2.5 & /@ Select[barrierShrink, Abs[#[[3]]] > 0.02 &]),
+  ";  largest at a = 0.99 prograde, j = 3: ", SelectFirst[barrierShrink, #[[1]] == 0.99 && #[[2]] == 3 &][[{3, 4}]]];
+Print["eta_num of this cell against the stored table, Toolkit-Lambda cases (max |difference|): ",
+  N[Max[Table[With[{row = SelectFirst[barrierTab, #[[1]] #[[2]] == N[cc["a"]] && #[[3]] == cc["l"] && #[[4]] == cc["j"] &]}, Abs[row[[10]] - cc["eta"]]], {cc, Select[reQcases, #["Lambda"] == "Toolkit" &]}]], 3]];
 """)
 T("Subsubsection", "Eqs. (18)-(20): amplitude integrals, kappa_j(a) and the horizon/infinity ratio")
 T("Text", "Eqs. (18)-(20) evaluated numerically. The amplitude integrals J_inf and h_inf of Eq. (18) and the factor N = r0^(2s) E^(-2 s h_inf) E^(-2 J_inf), which tracks the WKB amplitude of the incident wave from infinity to the light ring, |Y_inc|^2 = |B_inc|^2 (omega/p) N; the factor omega/p is the usual WKB amplitude factor |Q|^(-1/2) referred to infinity, where p -> omega, and it is the same factor 1/p_B that normalizes the incident wave in the model equation of Section III B. "

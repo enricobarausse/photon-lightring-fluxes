@@ -47,9 +47,13 @@ Inputs: stored numerical data (never regenerated)
         exact Teukolsky fluxes of timelike orbits vs the 1973 formulae
   * ../notebook/toolkit_harmonics.m
         Toolkit spheroidal harmonics, rows {a, sign, l, j, Lambda, |S(pi/2)|^2, |S'(pi/2)|^2}
-  The last four are optional: a missing file produces NOT CHECKED lines instead of failures. The spectral
+  * ../kerr_py/check_barrier_results.txt
+        shape of Re Q along the resonant modes (check_barrier.py), rows {a, sign, l, j, n_minima, n_zeros,
+        rmin/r0, z_turn_1, z_turn_2, eta_num, eta_j, ReQ(r*=-60M), ReQ(r=500M)}
+  The last five are optional: a missing file produces NOT CHECKED lines instead of failures. The spectral
   spheroidal-harmonic solver of ../kerr_py/swsh.py (numpy + mpmath; validated against the Toolkit at
-  l <= 6) is imported for the Lambda and S(pi/2) asymptotics of Sec. IV.
+  l <= 6) is imported for the Lambda and S(pi/2) asymptotics of Sec. IV, and ../kerr_py/kerrflux.py (the
+  potential Q of Eq. (16)) for the shape of Re Q along the resonant modes.
 
 Numbers recomputed here rather than read from the repository, with a small independent
 Zerilli/Regge-Wheeler integrator (scipy DOP853 in the tortoise coordinate, iterated-Riccati WKB boundary
@@ -420,6 +424,15 @@ def _load_brtv(path):
             rows.append((float(p[0]), int(p[1]), p[2], float(p[3]), float(p[4]), float(p[5])))
     return rows or None
 BRTV_STORED = _optional(os.path.join(ROOT, 'kerr_py', 'check_odd_BRTV_results.txt'), _load_brtv)   # (r0, m, parity, exact, BRTV, ratio)
+def _load_barrier(path):
+    rows = []
+    for line in open(path):
+        p = line.split()
+        if len(p) == 13 and not line.startswith('#'):
+            rows.append(dict(a=float(p[0]), sign=int(p[1]), l=int(p[2]), j=int(p[3]), nmin=int(p[4]), nzero=int(p[5]), rmin_r0=float(p[6]),
+                             z1=float(p[7]), z2=float(p[8]), eta=float(p[9]), eta_j=float(p[10]), Qh=float(p[11]), Qinf=float(p[12])))
+    return rows or None
+BARRIER = _optional(os.path.join(ROOT, 'kerr_py', 'check_barrier_results.txt'), _load_barrier)   # Re Q shape along the resonant modes (check_barrier.py)
 try:
     sys.path.insert(0, os.path.join(ROOT, 'kerr_py'))
     from swsh import S_at_equator as SWSH_at_equator      # the spectral spheroidal-harmonic solver of kerr_py (numpy + mpmath)
@@ -697,6 +710,100 @@ def section_IIIB():
     rep.check('|T|^2 = 1/(1 + e^{2 pi eta}) from the same matching (max rel. dev.)', float(worst_T), '0', 2e-6, 'abs')
     rep.check('|T|^2 at eta = 1/2', float(1/(1 + mp.exp(mp.pi))), '0.041', 2e-2)
     rep.check('reflected fraction 1 - |T|^2 at eta = 1/2 (96%)', float(1 - 1/(1 + mp.exp(mp.pi))), '0.96', 2e-3)
+    # ---- why D_nu(-e^{-i pi/4} z) is the solution ingoing at the horizon (the two paragraphs after "We need the
+    # solution that is purely transmitted toward the horizon"). Step 1: transporting the boundary condition.
+    zP, etP, cP, nuP = sp.symbols('z eta c nu')
+    zq, etq = sp.symbols('z eta', positive=True)
+    tps_ = sorted(sp.solve(zP**2/4 - etq, zP), key=lambda e: float(sp.N(e.subs(etq, 1))))
+    rep.ident('"the two turning points, z^2 = 4 eta": roots of z^2/4 - eta = 0 are z = -2 sqrt(eta), +2 sqrt(eta)',
+              sp.Abs(tps_[0] + 2*sp.sqrt(etq)) + sp.Abs(tps_[1] - 2*sp.sqrt(etq)) + (len(tps_) - 2))
+    rep.ident('"inside the parabolic region |z| << l^{1/6}" (eta_j = j + 1/2 fixed): 2 sqrt(eta_j)/l^{1/6} -> 0 as l -> oo',
+              sp.limit(2*sp.sqrt(j + sp.Rational(1, 2))/l**sp.Rational(1, 6), l, sp.oo))
+    # the edge of the parabolic region in z is c_par l^{1/6} with c_par = (2k)^{1/4} (sqrt(k)/V3)^{1/3} l^{-1/6}
+    c_par = float(sp.limit(l**sp.Rational(-1, 6)*k2**sp.Rational(1, 4)*(sp.sqrt(k2/2)/(4*l**2/sp.Integer(6561)))**sp.Rational(1, 3), l, sp.oo))   # k2 = 2k
+    rep.info('  ... l at which 2 sqrt(eta_j) = l^{1/6}/10, j = 0..4 [(20 sqrt(eta_j))^6]',
+             ', '.join(f'{(20*math.sqrt(jv + 0.5))**6:.1e}' for jv in range(5)),
+             note=f'l at which 2 sqrt(eta_j) = l^(1/6): {", ".join(f"{(2*math.sqrt(jv + 0.5))**6:.0f}" for jv in range(5))}; '
+                  f'with the coefficient of the region, (2k)^(1/4)(sqrt(k)/V3)^(1/3) = {c_par:.3f} l^(1/6), the l for 2 sqrt(eta_j) = {c_par:.2f} l^(1/6)/10: '
+                  + ', '.join(f'{(20*math.sqrt(jv + 0.5)/c_par)**6:.1e}' for jv in range(5)))
+    # WKB phase and amplitude in the overlap region
+    pW = sp.sqrt(zq**2/4 - etq)
+    xq = sp.symbols('x', positive=True)
+    rep.ident('"with omega^2 - V0 = -eta sqrt(2k)": p dr* = sqrt(omega^2 - V0 + k x^2/2) dx = (z^2/4 - eta)^{1/2} dz, z = (2k)^{1/4} x',
+              sp.simplify(sp.sqrt(-etq*sp.sqrt(2*kk_) + kk_*xq**2/2).subs(xq, zq/(2*kk_)**sp.Rational(1, 4))/(2*kk_)**sp.Rational(1, 4) - pW))
+    Fz = zq**3/(4*sp.sqrt(zq**2 - 4*etq)) - etq*zq/sp.sqrt(zq**2 - 4*etq) - etq*sp.log(zq/(2*sp.sqrt(etq)) + sp.sqrt(zq**2/(4*etq) - 1))
+    rep.ident('WKB phase: F(z) = z^3/(4 sqrt(z^2-4eta)) - eta z/sqrt(z^2-4eta) - eta arccosh(z/(2 sqrt eta)) is a primitive of (z^2/4 - eta)^{1/2} (z > 2 sqrt eta)',
+              sp.simplify(sp.diff(Fz, zq) - pW))
+    GW = Fz - zq**2/4 + etq*sp.log(zq)
+    cW = sp.limit(GW, zq, sp.oo)
+    rep.ident('"int (z^2/4 - eta)^{1/2} dz = z^2/4 - eta ln|z| + const": F - z^2/4 + eta ln z -> eta (ln eta - 1)/2, finite', sp.simplify(cW - etq*(sp.log(etq) - 1)/2))
+    rep.ident('  ... the remainder is O(1/z^2): z^2 [F - z^2/4 + eta ln z - const] -> eta^2/2', sp.limit((GW - cW)*zq**2, zq, sp.oo) - etq**2/2)
+    rep.ident('  ... equivalently (z^2/4 - eta)^{1/2} = z/2 - eta/z - eta^2/z^3 + O(z^-5)  (series at z = oo)',
+              sp.series(pW, zq, sp.oo, 5).removeO() - (zq/2 - etq/zq - etq**2/zq**3))
+    rep.ident('  ... z < 0: the integrand is even, so the phase is -(z^2/4 - eta ln|z|) + const, i.e. z^2/4 - eta ln|z| up to the sign absorbed in exp(+-i int p)',
+              sp.simplify(sp.diff(zP**2/4 - etq*sp.log(-zP), zP).subs(zP, -zq) + (zq/2 - etq/zq)))
+    rep.ident('"the amplitude is p^{-1/2} propto |z|^{-1/2}": (z^2/4 - eta)^{-1/4} |z|^{1/2} -> sqrt2', sp.limit(pW**sp.Rational(-1, 2)*sp.sqrt(zq), zq, sp.oo) - sp.sqrt(2))
+    # Step 2: D_nu(c z), c^2 = -i, solves Weber's equation iff nu = -1/2 - i eta (Weber: D'' + (nu + 1/2 - zeta^2/4) D = 0)
+    # u(z) = D_nu(c z): by the chain rule u'' = c^2 D_nu''(c z) = c^2 (c^2 z^2/4 - nu - 1/2) D_nu(c z), so
+    # [u'' + (z^2/4 - eta) u]/u is the bracket below
+    weber_res = cP**2*(cP**2*zP**2/4 - nuP - sp.Rational(1, 2)) + zP**2/4 - etP
+    zeta_ = sp.symbols('zeta'); Dtest = sp.Function('D')
+    chain = sp.diff(Dtest(cP*zP), zP, 2).doit()
+    rep.ident("chain rule: d^2/dz^2 D(c z) = c^2 D''(c z)", sp.simplify(chain - cP**2*sp.diff(Dtest(zeta_), zeta_, 2).subs(zeta_, cP*zP)))
+    rep.ident('c^2 = -i (c = +-e^{-i pi/4}): the bracket vanishes for every z iff nu = -1/2 - i eta',
+              sp.Add(*[abs(sp.simplify(sp.solve(sp.expand(weber_res.subs(cP, cv)).coeff(zP, 0), nuP)[0] - (-sp.Rational(1, 2) - I*etP))) + abs(sp.simplify(sp.expand(weber_res.subs(cP, cv)).coeff(zP, 2)))
+                       for cv in (sp.exp(-I*pi/4), -sp.exp(-I*pi/4))]))
+    # DLMF 12.9.1: D_nu(zeta) = zeta^nu e^{-zeta^2/4} [1 - nu(nu-1)/(2 zeta^2) + O(zeta^-4)] for |arg zeta| < 3 pi/4
+    mp.mp.dps = 30
+    worst_dl = 0
+    for eta in (mp.mpf(1)/2, mp.mpf(7)/2):
+        nu = -mp.mpf(1)/2 - 1j*eta
+        for ph in (0, -mp.pi/4, mp.pi/2, -mp.mpf('0.7')*mp.pi):
+            zt = 40*mp.exp(1j*ph)
+            rat = mp.pcfd(nu, zt)/(zt**nu*mp.exp(-zt**2/4))
+            worst_dl = max(worst_dl, abs(rat - (1 - nu*(nu - 1)/(2*zt**2))))
+    rep.check('DLMF 12.9.1: D_nu(zeta)/[zeta^nu e^{-zeta^2/4}] = 1 - nu(nu-1)/(2 zeta^2) + O(zeta^-4), |zeta| = 40, arg = 0, -pi/4, pi/2, -0.7 pi (max)',
+              float(worst_dl), '0', 1e-4, 'abs', 'eta = 1/2, 7/2; the O(zeta^-4) term is nu(nu-1)(nu-2)(nu-3)/(8 zeta^4) ~ 2e-5 at eta = 7/2')
+    # z -> -oo: u = D_nu(-e^{-i pi/4} z) -> C_- |z|^{-1/2} e^{i(z^2/4 - eta ln|z|)}, C_- = e^{i pi/8 - pi eta/4}
+    eta = mp.mpf(1)/2; nu = -mp.mpf(1)/2 - 1j*eta
+    uR = lambda zz: mp.pcfd(nu, -mp.exp(-1j*mp.pi/4)*zz)
+    ratios = {Zv: uR(-mp.mpf(Zv))/(mp.mpf(Zv)**mp.mpf(-0.5)*mp.exp(1j*(mp.mpf(Zv)**2/4 - eta*mp.log(Zv)))) for Zv in (20, 40, 80)}
+    Cm = mp.exp(1j*mp.pi/8 - mp.pi*eta/4)
+    devs = {Zv: abs(ratios[Zv]/Cm - 1) for Zv in ratios}
+    rep.check('z -> -oo: u/[|z|^{-1/2} e^{i(z^2/4 - eta ln|z|)}] -> const = e^{i pi/8 - pi eta/4}: |ratio/const - 1| at z = -80 (eta = 1/2)',
+              float(devs[80]), '0', 1e-4, 'abs', note='at z = -20, -40, -80: ' + ', '.join(f'{float(v):.2e}' for v in devs.values()) + ' (falls as 1/z^2)')
+    rep.check('  ... O(1/z^2) approach: deviation(z=-40)/deviation(z=-80) = 4', float(devs[40]/devs[80]), '4', 0.02)
+    rep.check('  ... modulus and phase of the ratio separately: max |ln|ratio|/|const|| + |arg(ratio/const)| at z = -20, -40, -80',
+              float(max(abs(mp.log(abs(ratios[Zv]/Cm))) + abs(mp.arg(ratios[Zv]/Cm)) for Zv in ratios)), '0', 2e-3, 'abs')
+    dph = {Zv: mp.im(mp.diff(uR, -mp.mpf(Zv))/uR(-mp.mpf(Zv))) for Zv in (20, 40)}
+    rep.check('"a phase that decreases with increasing r_*": d arg(u)/dz = z/2 - eta/z + O(z^-3) at z = -20, -40 (max rel. dev.)',
+              float(max(abs(dph[Zv]/(-mp.mpf(Zv)/2 + eta/Zv) - 1) for Zv in dph)), '0', 1e-4, 'abs',
+              note=f'd arg u/dz = {float(dph[20]):.5f}, {float(dph[40]):.5f} < 0: ingoing, like e^(-i omega r*)')
+    rep.check('  ... sign: d arg(u)/dz < 0 at z = -20, -40', float(all(v < 0 for v in dph.values())), '1', 0)
+    # z -> +oo: both waves (WKB decomposition with the iterated-Riccati wavenumbers of the |C|^2 check above)
+    worstR = 0; worstRT = 0; worst_out = 0
+    for eta in (mp.mpf(1)/2, mp.mpf(3)/2, mp.mpf(5)/2):
+        uB = Dsol(eta, Zb); duB = mp.diff(lambda t: Dsol(eta, t), Zb)
+        Qp = riccati_model(eta, 0, +1, Zb); Qm = riccati_model(eta, 0, -1, Zb)
+        Ainc = (duB - 1j*Qp*uB)/(1j*(Qm - Qp)); Aref = (duB - 1j*Qm*uB)/(1j*(Qp - Qm))   # e^{-i int p} (incident), e^{+i int p} (reflected)
+        R2 = abs(Aref/Ainc)**2
+        worstR = max(worstR, abs(R2/(mp.exp(2*mp.pi*eta)/(1 + mp.exp(2*mp.pi*eta))) - 1))
+        worstRT = max(worstRT, abs(R2 + 1/(1 + mp.exp(2*mp.pi*eta)) - 1))
+        # the other solution D_nu(e^{-i pi/4} z): a single outgoing wave for z -> +oo
+        vo = lambda t: mp.pcfd(-mp.mpf(1)/2 - 1j*eta, mp.exp(-1j*mp.pi/4)*t)
+        vB = vo(Zb); dvB = mp.diff(vo, Zb)
+        Ain_o = (dvB - 1j*Qp*vB)/(1j*(Qm - Qp)); Aout_o = (dvB - 1j*Qm*vB)/(1j*(Qp - Qm))
+        worst_out = max(worst_out, abs(Ain_o/Aout_o))
+    rep.check('"for z -> +oo ... both e^{-+i(z^2/4 - eta ln z)}": reflected/incident |R|^2 = e^{2 pi eta}/(1 + e^{2 pi eta}) at z = 40 (max rel. dev., eta = 1/2, 3/2, 5/2)',
+              float(worstR), '0', 2e-6, 'abs', note=f'|R|^2 = {float(mp.exp(mp.pi)/(1 + mp.exp(mp.pi))):.4f} at eta = 1/2: both waves present')
+    rep.check('  ... |R|^2 + |T|^2 = 1 with |T|^2 = 1/(1 + e^{2 pi eta}) (max |dev|)', float(worstRT), '0', 2e-6, 'abs')
+    rep.check('  ... |T|^2 = 1/(1 + e^{2 pi eta}) at eta = 1/2 = 0.041', float(1/(1 + mp.exp(mp.pi))), '0.041', 2e-2)
+    ztp = mp.mpf(40)*mp.exp(3j*mp.pi/4); eta = mp.mpf(1)/2; nu = -mp.mpf(1)/2 - 1j*eta
+    rep.check('  ... arg zeta = 3 pi/4 is outside the sector: D_nu/[zeta^nu e^{-zeta^2/4}] - 1 is O(1) there (|zeta| = 40, eta = 1/2), not O(zeta^-2)',
+              float(abs(mp.pcfd(nu, ztp)/(ztp**nu*mp.exp(-ztp**2/4)) - 1) > 0.1), '1', 0,
+              note=f'|ratio - 1| = {float(abs(mp.pcfd(nu, ztp)/(ztp**nu*mp.exp(-ztp**2/4)) - 1)):.3f}')
+    rep.check('"D_nu(e^{-i pi/4} z) is a single outgoing wave for z -> +oo": |incident/outgoing| at z = 40 (max, eta = 1/2, 3/2, 5/2)',
+              float(worst_out), '0', 2e-6, 'abs')
     # Eqs. (8)-(9): values at z = 0
     worst8 = 0; worst9 = 0
     for eta in (mp.mpf(1)/2, mp.mpf(3)/2, mp.mpf(5)/2, mp.mpf(7)/2):
@@ -1194,6 +1301,80 @@ def section_IV():
         else: worst_h = max(worst_h, abs(sp.simplify(sp.diff(hj, xh).subs(xh, 0)**2*sp.sqrt(sp.pi)/2 - d_j(jv))))
     rep.check('|S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^{3/2}) and |S\'|^2 -> d_j (omega beta_b)^{3/2}/pi^{3/2}: c_j = sqrt(pi) h_j(0)^2, d_j = sqrt(pi) h_j\'(0)^2/2 (j <= 12)',
               float(worst_h), '0', 0, 'abs', note='normalised Hermite functions h_j; at a = 0, omega beta_b = l (the spherical limits of Sec. III C)')
+    # ---- "The two steps of Sec. III B still apply: Re Q ... has a single minimum, at the light ring, and is positive
+    # elsewhere ... inside it the radial equation is the same Weber equation with the same nu".
+    # (i) recomputed here with kerr_py's Mode (Q of Eq. (16), spheroidal eigenvalue from swsh.py), on a uniform grid in r*
+    # (r*(r) inverted by bisection) from r* = -60 M to r = 500 M; extrema located by the sign of d Re Q/dr (robust near
+    # the horizon, where Re Q is flat to round-off), refined with brentq; k = d^2 Re Q/dr*^2 at r0 (Weber form
+    # Q = Q0 + k x^2/2), z = (2k)^{1/4} x, eta_num = -Re Q(r0)/sqrt(2k).
+    # (ii) the stored table kerr_py/check_barrier_results.txt of check_barrier.py (same quantities, same cases).
+    try:
+        from kerrflux import Mode as KerrMode
+    except Exception:
+        KerrMode = None
+    if KerrMode is None:
+        rep.unavailable('Re Q along the resonant modes (one minimum, two turning points)', 'kerr_py/kerrflux.py could not be imported')
+    else:
+        from scipy.optimize import brentq
+        resQ = {}
+        for av in (0, 0.5, -0.5, 0.9, -0.9, 0.99, -0.99):
+            for lv in (100, 400):
+                for jv in (0, 3):
+                    Md = KerrMode(av, lv, jv); r0v = Md.d['r0']; wv = Md.w
+                    rsg = np.arange(-60.0, Md.rstar(500.0), 0.01)
+                    lo = Md.rp + np.zeros_like(rsg); hi = np.full_like(rsg, 600.0)
+                    for _ in range(80):
+                        mid = 0.5*(lo + hi); up = Md.rstar(mid) > rsg
+                        hi = np.where(up, mid, hi); lo = np.where(up, lo, mid)
+                    rrg = 0.5*(lo + hi)
+                    ReQ = Md.Q(rrg).real; sdQ = np.sign(Md.dQ(rrg).real)
+                    imin = np.where(np.diff(sdQ) > 0)[0]; imax = np.where(np.diff(sdQ) < 0)[0]; izer = np.where(np.diff(np.sign(ReQ)) != 0)[0]
+                    rmin = brentq(lambda x: Md.dQ(x).real, rrg[imin[0]], rrg[imin[0] + 1], xtol=1e-14) if len(imin) else float('nan')
+                    tps = [brentq(lambda x: Md.Q(x).real, rrg[i], rrg[i + 1], xtol=1e-14) for i in izer]
+                    gq = lambda x: Md.f(x)*Md.dQ(x).real
+                    kq = Md.f(r0v)*(gq(r0v + 1e-4) - gq(r0v - 1e-4))/2e-4
+                    OmH = av/(2*Md.rp)
+                    resQ[(av, lv, jv)] = dict(nmin=len(imin), nmax=len(imax), nzero=len(izer), dr=lv*(rmin - r0v)/r0v,
+                                              z=[(2*kq)**0.25*(Md.rstar(x) - Md.rstar(r0v)) for x in tps], eta=-Md.Q(r0v).real/math.sqrt(2*kq),
+                                              Qh=ReQ[0], Qinf=ReQ[-1], w2=wv**2, QH=(wv - Md.m*OmH)**2, depth=-Md.Q(r0v).real)
+        R_ = list(resQ.items())
+        rep.check('Kerr: Re Q(r*) has exactly one local minimum and no maximum (a = 0, +-1/2, +-9/10, +-0.99; l = 100, 400; j = 0, 3; 28 cases)',
+                  float(all(v['nmin'] == 1 and v['nmax'] == 0 for _, v in R_)), '1', 0, note='Re Q decreases monotonically to the minimum and increases beyond it')
+        rep.check('  ... the minimum is at the light ring to O(1/l): max l |r_min - r0|/r0 (paper: at the light ring)', max(abs(v['dr']) for _, v in R_), '3', 0, 'max',
+                  note='largest for j = 3 (the (2j+1) omega beta_b Delta term); max change of l (r_min - r0)/r0 from l = 100 to 400: '
+                       + f"{max(abs(resQ[(k[0], 400, k[2])]['dr'] - resQ[(k[0], 100, k[2])]['dr']) for k, _ in R_):.3f}")
+        rep.check('  ... exactly two zeros of Re Q (the turning points) in every case', float(all(v['nzero'] == 2 for _, v in R_)), '1', 0)
+        dz400 = max(abs(abs(zv)/(2*math.sqrt(k[2] + 0.5)) - 1) for k, v in R_ if k[1] == 400 for zv in v['z'])
+        dz100 = max(abs(abs(zv)/(2*math.sqrt(k[2] + 0.5)) - 1) for k, v in R_ if k[1] == 100 for zv in v['z'])
+        rep.check('  ... turning points at |z| = 2 sqrt(eta_j), z = (2k)^{1/4} x, k = Re Q\'\'(r0): max | |z|/(2 sqrt(eta_j)) - 1 | at l = 400', dz400, '0.05', 0, 'max',
+                  note=f'at l = 100: {dz100:.3f} (j = 3, a = 0.99 prograde, where eta_num = 5.4); the asymmetry of the pair is the O(l^-1/2) cubic term')
+        rep.check('  ... Re Q > 0 at r* = -60 M and at r = 500 M in every case', float(all(v['Qh'] > 0 and v['Qinf'] > 0 for _, v in R_)), '1', 0,
+                  note='min Re Q(-60M)/omega^2 = ' + f"{min(v['Qh']/v['w2'] for _, v in R_):.1e} (a = 0.99: (1 - b Omega_H)^2); min Re Q(500M)/omega^2 = {min(v['Qinf']/v['w2'] for _, v in R_):.4f}")
+        rep.check('  ... Re Q(-60 M) -> (omega - m Omega_H)^2 (no superradiance): max |ratio - 1|', max(abs(v['Qh']/v['QH'] - 1) for _, v in R_), '0.05', 0, 'max',
+                  note=f"and Re Q(-60M)/|Re Q(r0)| >= {min(v['Qh']/v['depth'] for _, v in R_):.1f}: positive and large compared with the depth of the well")
+        deta = {k: abs(v['eta'] - k[2] - 0.5) for k, v in R_}
+        rep.check('  ... eta_num = -Re Q(r0)/sqrt(2k) = j + 1/2 + O(1/l): max (eta_num(400) - eta_j)/(eta_num(100) - eta_j) (O(1/l): 1/4)',
+                  max(deta[(k[0], 400, k[2])]/deta[(k[0], 100, k[2])] for k, _ in R_), '0.35', 0, 'max',
+                  note='largest deviation j = 3, a = 0.99 prograde: ' + f"{resQ[(0.99, 100, 3)]['eta']:.3f} (l = 100), {resQ[(0.99, 400, 3)]['eta']:.3f} (l = 400)")
+        rep.check('  ... max |eta_num/eta_j - 1| at l = 400 (a = 0.99 j = 3 excluded: the slow regime of the Table I caption)',
+                  max(deta[k]/(k[2] + 0.5) for k, _ in R_ if k[1] == 400 and not (k[0] == 0.99 and k[2] == 3)), '0.05', 0, 'max',
+                  note=f"a = 0.99, j = 3: {deta[(0.99, 400, 3)]/3.5:.3f}")
+    if BARRIER is None:
+        rep.unavailable('stored Re Q table kerr_py/check_barrier_results.txt', 'file not found')
+    else:
+        B_ = BARRIER
+        rep.check('stored check_barrier_results.txt (28 rows): n_minima = 1 and n_zeros = 2 in every row', float(len(B_) == 28 and all(b_['nmin'] == 1 and b_['nzero'] == 2 for b_ in B_)), '1', 0)
+        rep.check('  ... |z_turn| = 2 sqrt(eta_j) within 10% at l = 400: max | |z|/(2 sqrt(eta_j)) - 1 |',
+                  max(abs(abs(zv)/(2*math.sqrt(b_['eta_j'])) - 1) for b_ in B_ if b_['l'] == 400 for zv in (b_['z1'], b_['z2'])), '0.1', 0, 'max')
+        rep.check('  ... Re Q > 0 at r* = -60 M and at r = 500 M in every row', float(all(b_['Qh'] > 0 and b_['Qinf'] > 0 for b_ in B_)), '1', 0)
+        bk = {(b_['a']*b_['sign'], b_['l'], b_['j']): b_ for b_ in B_}
+        shr = [abs(bk[(k[0], 100, k[2])]['eta'] - bk[(k[0], 100, k[2])]['eta_j'])/max(abs(bk[(k[0], 400, k[2])]['eta'] - bk[(k[0], 400, k[2])]['eta_j']), 1e-12)
+               for k in bk if k[1] == 100 and abs(bk[k]['eta'] - bk[k]['eta_j']) > 0.02]
+        rep.check('  ... eta_num -> j + 1/2 with O(1/l) corrections: |eta_num - eta_j| shrinks by more than 2.5 from l = 100 to 400 wherever it exceeds 0.02',
+                  float(min(shr) > 2.5), '1', 0, note=f'min factor {min(shr):.2f} over {len(shr)} cases; a = 0.99 prograde, j = 3: {bk[(0.99, 100, 3)]["eta"] - 3.5:.2f} -> {bk[(0.99, 400, 3)]["eta"] - 3.5:.2f}')
+        if KerrMode is not None:
+            dmax = max(abs(bk[k]['eta'] - resQ[k]['eta']) for k in resQ)
+            rep.check('  ... stored eta_num agrees with the recomputation above (max |difference|)', dmax, '0', 1e-3, 'abs')
     # ---- amplitude integrals, Eq. (18): numerics with mpmath at several r0, and the closed forms
     mp.mp.dps = 30
     def lr_num(rv):

@@ -22,7 +22,7 @@ results, the numbers, the table and the figures of the paper.
 | `schwarzschild/` | Mathematica code for the Schwarzschild light ring (Secs. II, III and VI A), with the stored `asym_check_results.m` (the cross term and the barrier asymmetry at ℓ = 100 … 6400, Sec. III D) |
 | `photon_big_results.m` | output of `schwarzschild/run_big.wls`: the photon fluxes for ℓ = 10 … 12800, j = ℓ − m = 0 … 4 (Sec. III D, Fig. 1) |
 | `timelike_results.m` | output of `schwarzschild/run_timelike.wls`: fluxes from massive particles near the light ring, γ = 5, 10, 20 (Sec. VI A) |
-| `kerr_py/` | Python Teukolsky solver for the photon on the Kerr light ring and its stored run `kerr_results.json` (Sec. IV, Table I, Fig. 2), plus `check_odd_BRTV_results.txt`, the exact Teukolsky fluxes of timelike orbits against the 1973 formulae (Sec. V) |
+| `kerr_py/` | Python Teukolsky solver for the photon on the Kerr light ring and its stored run `kerr_results.json` (Sec. IV, Table I, Fig. 2), plus `check_odd_BRTV_results.txt`, the exact Teukolsky fluxes of timelike orbits against the 1973 formulae (Sec. V), and `check_barrier_results.txt`, the shape of Re Q along the resonant modes (Sec. IV) |
 | `kerr_analytic/` | the analytic Kerr coefficients κ_j(a), g(a) and the stored tables `kerr_kappa_analytic.json`, `kerr_g_finegrid.json`, `kerr_g_curve.json` (Sec. IV, Table I) |
 | `figures/` | `make_fig1.py`, `make_fig2.py`: the two figures of the paper from the stored data |
 | `toolkit_checks/` | the cross-checks against the Black Hole Perturbation Toolkit quoted in Secs. II, III D and IV: the fluxes at ℓ ≤ 5 (`schwarzschild_toolkit_results.m`, `kerr_toolkit_results.m`) and the spheroidal harmonics at ℓ ≤ 800 (`kerr_harmonics_toolkit.wls`) |
@@ -123,6 +123,7 @@ which the notebook (Section IV, "Toolkit harmonics") and `sympy_check/` read.
     python run_production.py                 # -> kerr_results.json (a = 0, +-0.5, +-0.9; l = 10 ... 800; j <= 3), about ten minutes
     python run_production.py --cases 0.5 --ls 10 --jmax 0 --out test.json     # a single mode, a few seconds
     python summarize.py                      # table of the stored results, with the asymmetries sqrt(l)(I-H)/(I+H)
+    python check_barrier.py                  # -> check_barrier_results.txt: Re Q has one minimum and two turning points at |z| = 2 sqrt(eta_j) (Sec. IV), about a minute
 
 The Richardson extrapolation (agreement with 2g(a)Σ_{j≤3}κ_j to better than 1.5 × 10⁻⁵) and the
 asymmetries at ℓ = 800 (0.78, 1.10, 0.51, 0.45) are evaluated from `kerr_results.json` in the notebook
@@ -169,7 +170,7 @@ Conclusions. Every numbered equation and every statement of the text has a cell,
 recomputed value, the value of the paper and the agreement. It reads the stored results by relative path
 (the repository root is the parent of `notebook/`: `photon_big_results.m`, `timelike_results.m`,
 `notebook/kerr_mathematica_runL*.m`, `notebook/toolkit_harmonics.m`, `kerr_py/kerr_results.json`,
-`kerr_py/check_odd_BRTV_results.txt`, `schwarzschild/asym_check_results.m`,
+`kerr_py/check_odd_BRTV_results.txt`, `kerr_py/check_barrier_results.txt`, `schwarzschild/asym_check_results.m`,
 `toolkit_checks/schwarzschild_toolkit_results.m`), so the repository layout should be kept. The five
 cells that need the Toolkit are commented out and the rest does not depend on them. The notebook is
 generated from `notebook/make_notebook.py` (`python make_notebook.py` rewrites both files).
