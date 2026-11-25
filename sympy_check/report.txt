@@ -27,7 +27,13 @@ Sec. III D: production integrator (MP) vs Toolkit MST at l = 2 (paper: 10^-5)   
 Sec. III D: production integrator (MP) vs Toolkit MST at l = 5, both m, both fluxes: max rel. dev. (paper: 10^-7; bound 5e-7)      3.057791e-07          5e-7    0.0e+00  PASS   [3.06e-07]
   ... arbitrary-precision direct integration (NI) vs Toolkit MST, max rel. dev. over all stored (l, m) (not quoted)      8.464520e-06            --             info
 this script's integrator (zrw_mode, r* from -80 M to r = 120 M) vs Toolkit MST fluxes, l = [2, 3, 4, 5]: max rel. dev.      5.022788e-08             0    5.0e-08  PASS
-   [section time 0.8 s]
+revised version, Sec. II: (T_tt, T_tphi, T_phiphi) = (1, -b, b^2) f E/r0^2 x delta(r-r0) delta(cos th) delta(phi - Omega t)      0 (symbolic)      identity             PASS
+revised version: at the equator Y^{phiphi} = (l(l+1)/2 - m^2) Y and X^phi = d_th Y (sympy Ynm, l = 2..6, all m)                 0             0    0.0e+00  PASS
+revised version: conj Y_lm(pi/2, Omega t) = conj Y_lm(pi/2, 0) e^{-i m Omega t}: the delta(phi - Omega t) gives the factor e^{-i omega t}      0 (symbolic)      identity             PASS
+revised version: the projection defining A reproduces Eq. (2)       0 (symbolic)      identity             PASS
+revised version: the projection defining C reproduces Eq. (2)       0 (symbolic)      identity             PASS
+revised version: the projection defining F reproduces Eq. (2)  [(l-2)!/(l+2)! = 1/((l-1)l(l+1)(l+2))]      0 (symbolic)      identity             PASS
+   [section time 1.0 s]
 
 ==============================================================================================================
 Sec. III A  The source  [Eqs. (5)-(6)]
@@ -53,7 +59,20 @@ massive particle: the O(l^0) term -4 pi Y mu^2/(E r0) equals the photon term -8 
 [d_r Psi] ~ l^2 r0^2 F/(4 (r0-2M))  (F coefficient, leading)        0 (symbolic)      identity             PASS
 C sources only the Regge-Wheeler sector (even jumps independent of C)      0 (symbolic)      identity             PASS
 Zerilli jumps independent of dY; RW jumps independent of Y          0 (symbolic)      identity             PASS
-   [section time 0.9 s]
+revised version, Sec. III A: energy density contributes -4 pi E Y [1 - 4/(3 l^2 (l+1)^2)]/M (independent of m)      0 (symbolic)      identity             PASS
+revised version: the stress contributes +4 pi E Y (m^2 - k_th^2)/[(l-1)(l+2) M], k_th^2 = l(l+1) - m^2      0 (symbolic)      identity             PASS
+revised version: F carries l(l+1) - 2 m^2 = k_th^2 - m^2            0 (symbolic)      identity             PASS
+revised version: (l-1)(l+2) = m^2 + k_th^2 - 2 (so the azimuthal parts cancel exactly, the latitudinal ones add up)      0 (symbolic)      identity             PASS
+revised version: exact photon jump [d_r Psi] = -(8 pi E Y/M){(k_th^2 - 1)/[(l-1)(l+2)] - 2/[3 l^2 (l+1)^2]}      0 (symbolic)      identity             PASS
+revised version: k_th^2 = (2j+1) l - j^2 for m = l - j, so the exact jump reduces to Eq. (5)      0 (symbolic)      identity             PASS
+revised version: d_th^2 Y_lm = -k_th^2 Y_lm at the equator (sympy Ynm, l = 2..7, all m)                 0             0    0.0e+00  PASS
+revised version: trace of the circular-orbit source g^{mu nu} p_mu p_nu = -E^2/f + L^2/r0^2, and Eq. (6) combination = trace/r0      0 (symbolic)      identity             PASS
+revised version: dispersion relation f k_r^2 + k_th^2/r0^2 = m^2 (Omega^2/f - 1/r0^2)      0 (symbolic)      identity             PASS
+revised version: ... which vanishes on the light ring (r0 = 3M, Omega = 1/b)      0 (symbolic)      identity             PASS
+revised version: E/L = Omega on the circular null geodesic, so p_mu = (L/m)(-m Omega, 0, 0, m)      0 (symbolic)      identity             PASS
+revised version: k_th^2/k_phi^2 = k_th^2/m^2 ~ (2j+1)/l (relative order of what survives)      0 (symbolic)      identity             PASS
+revised version: for a transverse polarization (e^mu k_mu = 0) the coupling e.p reduces to -(L/m) e.q, q = (0, k_r, k_th, 0): O(k_th/m) of the naive one      0 (symbolic)      identity             PASS
+   [section time 1.4 s]
 
 ==============================================================================================================
 Sec. III B  The barrier top  [Eqs. (7)-(9)]
@@ -144,7 +163,7 @@ Eqs. (8)-(9): |u(0)|^2 = sqrt(l/2) pi F(eta)/sqrt2, |u'(0)|^2 = (sqrt2 l^{3/2}/2
 |v'(0)|^2 = |u'(0)|^2 (parabolic barrier, g = 0)                               1             1    0.0e+00  PASS
 d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 0.5      1.256745e-17             0    1.3e-17  PASS   [v'(0)/v(0) = -0.636225+0.132258j, u'(0)/u(0) = 0.636225-0.132258j]
 d_r* v(0) = -d_r* u(0): v'(0)/v(0) = -u'(0)/u(0) on the parabolic barrier (model ODE, complex ratio), eta = 1.5      2.082264e-19             0    2.1e-19  PASS   [v'(0)/v(0) = -1.182494+0.010623j, u'(0)/u(0) = 1.182494-0.010623j]
-   [section time 5.0 s]
+   [section time 4.1 s]
 
 ==============================================================================================================
 Sec. III C  The fluxes  [Eqs. (10)-(14)] and the O(l^-1/2) asymmetry
@@ -213,7 +232,7 @@ horizon fraction, asymptotic formulae, l_max = 140 (paper: 40% for l_max = 100-1
 horizon fraction with the asymptotic formulae at l_max = 1e3, 1e4, 1e6 (approaches 1/2 only logarithmically)0.427, 0.445, 0.463            --             info
 sum_{l>=2} l^{-3/2} = zeta(3/2) - 1                            0 (numeric<1e-30)      identity             PASS
 (1/2 - horizon fraction) x sum_{l<=l_max} 1/l -> sigma_bar (zeta(3/2)-1)/2 = 0.4918 at l_max = 1e6 (1/ln law; O(l_max^-1/2) corrections)        0.49116448    0.49177448    1.2e-03  PASS   [(1/2 - f_H) ln l_max at l_max = 1e3, 1e4, 1e6: 0.503, 0.509, 0.507]
-   [section time 28.5 s]
+   [section time 23.6 s]
 
 ==============================================================================================================
 Sec. III D  Numerical check: stored run photon_big_results.m (l = 10..12800, j <= 4)
@@ -262,7 +281,7 @@ l x mean flux / kappa at l = 100, 400, 12800 (Fig. 1: mean on the dashed line fr
 mean flux: fit of l x mean/kappa - 1 with {l^-1/2, 1/l, l^-3/2} over l >= 100: |coefficient of l^-1/2| negligible vs sigma_bar = 0.61 (bound 2e-3)      3.389245e-04          2e-3    0.0e+00  PASS   [coefficients: -3.4e-04 l^-1/2, +0.990/l, -0.118 l^-3/2]
 mean flux: l (l x mean/kappa - 1) is bounded, i.e. the relative corrections are O(1/l): max/min over 50 <= l <= 12800         1.0737001             1    7.4e-02  PASS   [50: 0.971, 100: 0.975, 200: 0.977, 400: 0.977, 800: 0.977, 1600: 0.975, 3200: 0.970, 6400: 0.954, 12800: 0.910]
    The production integrator is validated against the Toolkit to 1e-7 at l = 5 (1e-5 at l = 2) in the Sec. II block above (stored Toolkit run).
-   [section time 22.9 s]
+   [section time 18.7 s]
 
 ==============================================================================================================
 Sec. IV  Kerr  [Eqs. (15)-(21), Table I]   (M = 1; r0 parametrizes the light ring, a = sqrt(r0)(3-r0)/2)
@@ -323,6 +342,24 @@ horizon/infinity flux ratio = 1 (alpha_H kappa N_H/N, numerically, same 8 values
 footnote: the ratio is 1 "to better than 1e-17 at all the spins of Table I" (30-digit quadrature at a = 0, +-0.5, +-0.9, +-0.99)      1.048100e-26         1e-17    0.0e+00  PASS
 horizon/infinity ratio = 1 symbolically: 4(2 r+ - a b) = (r0-1)(r0^2 + r0 + 4 sqrt(4-r0) - 8) (reduces the ratio to 1 given e^{2J_H})      0 (symbolic)      identity             PASS
 sqrt(1 - a^2) = (r0-1) sqrt(4-r0)/2 (used above; r+ = 1 + sqrt(1-a^2))      0 (symbolic)      identity             PASS
+revised version, Sec. IV: q dr* = (s/2) d ln[(P + sqrt R~)^2/Delta] (generic a, b, using R~ = P^2 - Delta (b-a)^2)      0 (symbolic)      identity             PASS
+revised version: b - a = r0^{3/2} on the light ring                 0 (symbolic)      identity             PASS
+revised version: N = [(b-a)/2]^{2s} = 16/r0^6 (s = -2)              0 (symbolic)      identity             PASS
+revised version: J_inf = s ln[2 r0/(b-a)] - s h_inf vs quadrature (the 8 values of r0 above)      5.496783e-27             0    5.5e-27  PASS
+revised version (footnote): e^{2 J_H} = (2 P_+/P_0)^4, P_+ = P(r_+), vs quadrature      2.149468e-26             0    2.1e-26  PASS
+revised version (footnote): (2 P_+/P_0)^4 = [r0^2 + r0 + 4 sqrt(4-r0) - 8]^4/r0^8      1.608290e-28             0    1.6e-28  PASS
+revised version: Kinnersley n^mu = (r^2+a^2, -Delta, 0, a)/(2 Sigma) is null (equator)      0 (symbolic)      identity             PASS
+revised version: outgoing wave: k_mu n^mu = -omega (P + sqrt R~)/(2 Sigma)      0 (symbolic)      identity             PASS
+revised version: outgoing wave: k_mu is null (g^{mu nu} k_mu k_nu = 0 given R~ = P^2 - Delta (b-a)^2)      0 (symbolic)      identity             PASS
+revised version: ingoing wave: k_mu n^mu = -omega (P - sqrt R~)/(2 Sigma)      0 (symbolic)      identity             PASS
+revised version: ingoing wave: k_mu is null (g^{mu nu} k_mu k_nu = 0 given R~ = P^2 - Delta (b-a)^2)      0 (symbolic)      identity             PASS
+revised version: (P + sqrt R~)(P - sqrt R~) = Delta (b-a)^2         0 (symbolic)      identity             PASS
+revised version: p (r^2+a^2) |h|^2 is constant along the outgoing wave (s = -2)      0 (symbolic)      identity             PASS
+revised version: p (r^2+a^2) |h|^2 is constant along the ingoing wave (s = -2)      0 (symbolic)      identity             PASS
+revised version: the two branches differ by a constant: [(P+S)^2/Delta][(P-S)^2/Delta] = (b-a)^4      0 (symbolic)      identity             PASS
+revised version: outgoing wave, k.n -> -omega at large r: (P + sqrt R~)/(2 r^2) -> 1      0 (symbolic)      identity             PASS
+revised version: ingoing wave, k.n ~ -omega (b-a)^2/(4 r^2): P - sqrt R~ -> (b-a)^2/2      0 (symbolic)      identity             PASS
+revised version: plane wave, |psi4| = (1/2) |k.n|^2 |h_{mbar mbar}| in the gauge h_{mu nu} n^nu = 0 (5 random waves; gauge invariance included)      3.996803e-15             0    4.0e-15  PASS
 Omega - Omega_H > 0 on 1 < r0 < 4 (min over a grid)                            1             1    0.0e+00  PASS   [min = 5.823e-04; -> 0 only as r0 -> 1 (a -> 1)]
 Omega - Omega_H = (r0-1)[...]: vanishes at r0 = 1                   0 (symbolic)      identity             PASS
 Omega > Omega_H symbolically: 2 r+ - a b = (2-s)^2 (s+1)(s+3)(3-s^2)/4 with s = sqrt(4 - r0) (r+ = 1 + (r0-1) s/2)      0 (symbolic)      identity             PASS
@@ -390,6 +427,8 @@ sqrt(l)(I-H)/(I+H) at l = 800, a = 0.9 (paper: 1.10)                   1.0999775
 sqrt(l)(I-H)/(I+H) at l = 800, a = -0.5 (paper: 0.51)                 0.50703527          0.51    5.8e-03  PASS
 sqrt(l)(I-H)/(I+H) at l = 800, a = -0.9 (paper: 0.45)                 0.44558362          0.45    9.8e-03  PASS
 sqrt(l)(I-H)/(I+H) at l = 800, a = 0 (paper: 0.61; the asymptotic sigma_bar of Sec. III C)        0.60941255          0.61    9.6e-04  PASS
+revised version: Kerr asymmetry converged to the digits quoted: Richardson 2 A(800) - A(400) and A(800) both round to 0.78, 1.10, 0.51, 0.45, 0.61                 1             1    0.0e+00  PASS   [Richardson: a=0.5: 0.7764, a=0.9: 1.1026, a=-0.5: 0.5073, a=-0.9: 0.4457, a=0: 0.6100]
+revised version: approached more slowly for prograde orbits and faster for retrograde ones: A(0.5), A(0.9) > A(0) > A(-0.5), A(-0.9)                 1             1    0.0e+00  PASS
 Chrzanowski-Misner null limit: m P_m/E^2 = (12/sqrt(pi)) e^{-pi/2} (r0-M)/[r0^2 (r0+3M)]      0 (symbolic)      identity             PASS
 its spin dependence coincides with Eq. (21)                         0 (symbolic)      identity             PASS
 CM constant / kappa_0 (single-m kappa_0)                               1.8772806            --             info
@@ -455,7 +494,7 @@ Toolkit: |S(pi/2)|^2 -> c_j sqrt(omega beta_b)/(2 pi^3/2) (even j), |S'|^2 -> d_
   ... Richardson extrapolation in 1/l from l = 400, 800: max |ratio - 1|      0.0031867319             0    3.2e-03  PASS
 Toolkit vs spectral solver: eigenvalues (max rel. dev.)             2.220446e-15             0    2.2e-15  PASS
 Toolkit vs spectral solver: |S(pi/2)|^2 (even j), |S'(pi/2)|^2 (odd j) (max rel. dev.)      2.321525e-10             0    2.3e-10  PASS
-   [section time 152.5 s]
+   [section time 125.0 s]
 
 ==============================================================================================================
 Sec. V  Comparison with the geodesic synchrotron radiation literature  [Eqs. (22)-(23)]
@@ -495,7 +534,16 @@ stored: three-term fit rho_inf = 4.06                                  4.0621611
 stored: two-term fit rho_inf = 4.05                                    4.0468974          4.05    7.7e-04  PASS
 stored: even formula accurate to O(m^-1/2): |exact/Eq.(22) - 1| sqrt(m) at m = 400 bounded            0.0852             0    8.5e-02  PASS
   ... stored odd ratios at delta = 1e-3 (not quoted), m = 40, 100, 200, 4003.222, 3.610, 3.858, 4.122            --             info
-   [section time 5.1 s]
+revised version, Sec. V: the RW amplitude Z is proportional to R_odd = 8 pi L dY d_{r0*}[r0 G]/(r0^2 sqrt((l-1)l(l+1)(l+2))) (same factor for v and dv) 0 (numeric<1e-30)      identity             PASS
+revised version: c_- omega^2 |Z|^2 = (omega^2/4 pi) |R_odd|^2 (flux formula of Breuer et al., their Eq. 6) 0 (numeric<1e-30)      identity             PASS
+revised version: R_odd = 2 x the odd amplitude of Table I of Davis-Ruffini-Tiomno-Zerilli (4 pi -> 8 pi), every l, m, r0      0 (symbolic)      identity             PASS
+revised version: same angular factor: [l(l+1) - m(m+1)]^{1/2} Y_{l,m+1}(pi/2,0) = d_th Y_lm(pi/2,0) (l = 2..8)                 0             0    0.0e+00  PASS
+revised version: even parity, coefficient of d_r* v: Toolkit jumps = -(DRTZ Table I)      0 (symbolic)      identity             PASS
+revised version: even parity, coefficient of v: Toolkit jumps = -(DRTZ Table I) (the overall sign is irrelevant)      0 (symbolic)      identity             PASS
+revised version: |G|^2, |dG/dr0*|^2 of Breuer et al. [Eqs. (3)-(4)] = |u(0)|^2/(4 omega^2), |d_r* u(0)|^2/(4 omega^2) (eta = 1/2, 3/2, 3)      2.958228e-31             0    3.0e-31  PASS
+revised version: Eq. (13) of Breuer et al. with omega_0 (as in DRTZ) gives their Eq. (15) exactly at leading order      0 (symbolic)      identity             PASS
+revised version: ... without omega_0 it would be 1/omega_0^2 = 27 times larger                27            27    0.0e+00  PASS
+   [section time 4.6 s]
 
 ==============================================================================================================
 Sec. VI  Discussion: timelike orbits [Eq. (24)], cut-off, M87* estimate
@@ -554,8 +602,13 @@ M87*: l_max ~ E r0/hbar = 2 pi r0/lambda (paper: ~1e17)             1.391686e+17
 M87*: Delta E/E = 4.2 (E/M) ln l_max ~ 1e-77 per orbit              2.180912e-77         1e-77    1.2e+00  PASS   [recomputed 2.2e-77; with l_max = 1e18: 2.3e-77]
 l_max = E r0/(hbar c) with r0 = 3 G M/c^2 equals 3 (E/c^2) M/m_Pl^2, m_Pl^2 = hbar c/G      0 (symbolic)      identity             PASS
 ln l_max = ln(E M/m_Pl^2) + ln 3 (G = c = 1): the flux is proportional to ln(E M/m_Pl^2) up to an additive constant      0 (symbolic)      identity             PASS
-   [section time 86.2 s]
+revised version, Sec. VI B: at fixed eta the response |u(0)|^2 |Y_lm|^2 is a pure power law, proportional to l      0 (symbolic)      identity             PASS
+revised version: a source detuned by eta growing with l is suppressed as e^{-pi eta}: F(eta) e^{pi eta} pi sqrt(eta/2) at eta = 200         1.0000016             1    1.6e-06  PASS
+revised version: a flux per multipole growing like l gives a quadratically divergent sum: sum_{l<=L} l / L^2 -> 1/2      0 (symbolic)      identity             PASS
+revised version: the scalar radiation of a scalar charge grows like m below the cut-off: P_m/m at m = 10, 100, 1000 (m delta' <= 1e-5), max/min - 1      1.912272e-05             0    1.9e-05  PASS
+revised version: lambda = 2 pi hbar/E and l_max ~ r0/lambda ~ E r0/hbar up to 2 pi      0 (symbolic)      identity             PASS
+   [section time 68.6 s]
 
 ==============================================================================================================
-SUMMARY: 456 PASS, 0 FAIL, 27 info/not-checked lines; total time 301.9 s
+SUMMARY: 509 PASS, 0 FAIL, 27 info/not-checked lines; total time 247.0 s
 maximum relative deviation among passed quantitative checks (tolerance <= 5%) against a quoted paper value: 1.67e-02  (2 sigma_bar/sqrt(l) at l = 100 (12%))

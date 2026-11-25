@@ -234,6 +234,24 @@ checked against the stored Toolkit outputs listed above (a missing file gives `N
   with V0 = f (l(l+1)/r^2 + 2M/r^3) and S0 = 4 pi conj(Y_lm(pi/2,0))/(u^t r0), flux (1/4 pi) omega^2 |Z|^2,
   per q^2 and per single m.
 
+**Revised version of the paper.** The statements added in the revised version are checked in the
+sections where they appear (lines labelled `revised version`): in Sec. II, the definition of A, C, F
+as projections of T_{mu nu} on the scalar, odd-vector and even trace-free tensor harmonics (the
+components of T_{mu nu}, the angular factors at the equator with sympy's Ynm, and the three projections
+against Eq. (2)); in Sec. III A, the split of the exact even derivative jump into the energy density,
+-4 pi Y [1 - 4/(3 l^2 (l+1)^2)], and the stress, 4 pi Y (m^2 - k_th^2)/[(l-1)(l+2)] with
+k_th^2 = l(l+1) - m^2, the exact jump, the trace, the dispersion relation at the orbit, k_th^2/m^2 ~
+(2j+1)/l and the transverse coupling; in Sec. IV, q dr* = (s/2) d ln[(P + sqrt R~)^2/Delta] for generic
+a, b, J_inf = s ln[2 r0/(b-a)] - s h_inf, N = [(b-a)/2]^{2s}, e^{2 J_H} = (2 P_+/P_0)^4, the wave
+vectors and the Kinnersley n (k.n = -omega (P +- sqrt R~)/(2 Sigma), both null), p (r^2+a^2) |h|^2 =
+const along both waves, the large-r limits of k.n, |psi4| = |k.n|^2 |h_{mbar mbar}|/2 for random plane
+waves, and the convergence of the Kerr asymmetries at l = 800; in Sec. V, the odd-parity amplitude
+R_odd and the factor 2 with respect to Table I of Davis, Ruffini, Tiomno and Zerilli (1972), the
+angular identity, the even amplitude, the Green's function of Breuer et al. against |u(0)|^2/(4 omega^2)
+and |d u(0)|^2/(4 omega^2), and their Eq. (13) with and without omega_0; in Sec. VI B, the pure power
+law of the response, the e^{-pi eta} suppression, the quadratic divergence of a sum of fluxes growing
+like l, the scalar spectrum below the cut-off, and lambda = 2 pi hbar/E.
+
 ## Tolerances and the report
 
 Each numeric line shows the relative deviation (absolute when the paper value is 0) and PASS/FAIL
@@ -246,7 +264,7 @@ value, and the total runtime.
 
 ## Result of the saved run (`report.txt`)
 
-456 checks pass, 0 fail, 27 lines are informational (none `NOT CHECKED`); runtime about 240 s. Among the
+509 checks pass, 0 fail, 27 lines are informational (none `NOT CHECKED`); runtime about 250 s. Among the
 quantitative checks the largest relative deviation from a quoted value is 1.7e-2 (2 sigma_bar/sqrt(l) at
 l = 100, quoted as 12%: recomputed 12.2%); the others are at the level of the rounding of the quoted
 digits (e.g. kappa_j to 1e-6 ... 2e-4, Table I entries to < 6e-4, the cross term 1.0390 to 5e-5, the

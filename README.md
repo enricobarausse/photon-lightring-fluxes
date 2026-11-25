@@ -183,3 +183,7 @@ the paper (symbolic identities with sympy, numerics with mpmath and scipy), read
 files but never regenerating them. `cd sympy_check && ../venv/bin/python reproduce_paper.py` takes
 about four minutes and writes `report.txt`; the saved report and the list of checks are described in
 `sympy_check/README.md`.
+
+The statements added in the revised version of the paper are checked in both codes, in the cells and
+functions of the sections where they appear (labelled `Revised version` in the notebook and `revised version`
+in the SymPy report).

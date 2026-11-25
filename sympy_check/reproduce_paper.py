@@ -522,6 +522,36 @@ def section_II():
             md = zrw_mode(lv, mv, 3.0, 1.0, b, 1/b, rsA=-80.0, rB=120.0)
             w = max(w, abs(md['I']/TK[(lv, mv, 'RW-MST')][0] - 1), abs(md['H']/TK[(lv, mv, 'RW-MST')][1] - 1))
         rep.check(f'this script\'s integrator (zrw_mode, r* from -80 M to r = 120 M) vs Toolkit MST fluxes, l = {lvals}: max rel. dev.', w, '0', 1e-7, 'abs')
+    # ---- revised version: A, C, F defined as projections of T_{mu nu} on the harmonics:
+    #   A delta(r-r0) e^{-i w t} = -16 pi oint T_tt Ybar dOmega,
+    #   C delta(r-r0) e^{-i w t} = 16 pi/(r0 l(l+1)) oint T_tA Xbar^A dOmega,
+    #   F delta(r-r0) e^{-i w t} = -(32 pi/r0^2) (l-2)!/(l+2)! oint T_AB Ybar^AB dOmega,
+    # with X_A = (-d_phi Y/sin th, sin th d_th Y), Y_AB = [D_A D_B + l(l+1) Omega_AB/2] Y (Martel-Poisson)
+    Es_, bs_, rs0_ = sp.symbols('E b r_0', positive=True)
+    fs_ = 1 - 2/rs0_; ptu = Es_/fs_
+    Ttt, Ttph, Tpp = Es_**2/(ptu*rs0_**2), -Es_*(bs_*Es_)/(ptu*rs0_**2), (bs_*Es_)**2/(ptu*rs0_**2)   # p_mu p_nu/(p^t r^2), p_mu = (-E, 0, 0, b E)
+    rep.ident('revised version, Sec. II: (T_tt, T_tphi, T_phiphi) = (1, -b, b^2) f E/r0^2 x delta(r-r0) delta(cos th) delta(phi - Omega t)',
+              sp.simplify(Ttt - fs_*Es_/rs0_**2)**2 + sp.simplify(Ttph + bs_*fs_*Es_/rs0_**2)**2 + sp.simplify(Tpp - bs_**2*fs_*Es_/rs0_**2)**2)
+    th_, ph_ = sp.symbols('theta phi', real=True)
+    worstY = 0
+    for lv in range(2, 7):
+        for mv in range(-lv, lv + 1):
+            Yf = sp.expand_func(sp.Ynm(lv, mv, th_, ph_))
+            Yupp = (sp.diff(Yf, ph_, 2) + sp.sin(th_)*sp.cos(th_)*sp.diff(Yf, th_) + sp.Rational(lv*(lv + 1), 2)*sp.sin(th_)**2*Yf)/sp.sin(th_)**4
+            Xup = sp.diff(Yf, th_)/sp.sin(th_)
+            at = {th_: pi/2, ph_: 0}
+            worstY = max(worstY, abs(complex(sp.N((Yupp - (sp.Rational(lv*(lv + 1), 2) - mv**2)*Yf).subs(at), 30))),
+                         abs(complex(sp.N((Xup - sp.diff(Yf, th_)).subs(at), 30))))
+    rep.check('revised version: at the equator Y^{phiphi} = (l(l+1)/2 - m^2) Y and X^phi = d_th Y (sympy Ynm, l = 2..6, all m)', worstY, '0', 1e-25, 'abs')
+    rep.ident('revised version: conj Y_lm(pi/2, Omega t) = conj Y_lm(pi/2, 0) e^{-i m Omega t}: the delta(phi - Omega t) gives the factor e^{-i omega t}',
+              sp.simplify(sp.conjugate(sp.expand_func(sp.Ynm(4, 2, pi/2, sp.Symbol('Omt', real=True)))) - sp.conjugate(sp.expand_func(sp.Ynm(4, 2, pi/2, 0)))*sp.exp(-2*I*sp.Symbol('Omt', real=True))))
+    Aeq, Ceq, Feq = source_ACF(l, m, rs0_, Es_, bs_*Es_, Y, dY)
+    Apr = -16*pi*Ttt*Y
+    Cpr = 16*pi/(rs0_*l*(l + 1))*Ttph*dY
+    Fpr = -32*pi/rs0_**2*sp.gammasimp(sp.factorial(l - 2)/sp.factorial(l + 2))*Tpp*(l*(l + 1)/2 - m**2)*Y
+    rep.ident('revised version: the projection defining A reproduces Eq. (2)', sp.simplify(Apr - Aeq))
+    rep.ident('revised version: the projection defining C reproduces Eq. (2)', sp.simplify(Cpr - Ceq))
+    rep.ident('revised version: the projection defining F reproduces Eq. (2)  [(l-2)!/(l+2)! = 1/((l-1)l(l+1)(l+2))]', sp.simplify(Fpr - Feq))
 
 # =============================================================================================
 # Section III A
@@ -575,6 +605,41 @@ def section_IIIA():
     rep.ident('[d_r Psi] ~ l^2 r0^2 F/(4 (r0-2M))  (F coefficient, leading)', sp.limit(coefF/l**2, l, sp.oo) - r0**2/(4*(r0 - 2)))
     rep.ident('C sources only the Regge-Wheeler sector (even jumps independent of C)', sp.diff(dPsiGen, dY))
     rep.ident('Zerilli jumps independent of dY; RW jumps independent of Y', sp.diff(PsiO, Y) + sp.diff(dPsiO, Y))
+    # ---- revised version: what survives the cancellation, and why
+    kth2 = l*(l + 1) - m**2                                     # k_theta^2: latitudinal wavenumber squared at the equator
+    _, dPsiA = jumps(l, m, 3, 1, 0, Y, dY, True)                # L0 = 0 keeps the energy density A only
+    dPsiF = sp.simplify(dPsiE - dPsiA)                          # the stress F
+    rep.ident('revised version, Sec. III A: energy density contributes -4 pi E Y [1 - 4/(3 l^2 (l+1)^2)]/M (independent of m)',
+              sp.simplify(dPsiA + 4*pi*Y*(1 - sp.Rational(4, 3)/(l**2*(l + 1)**2))))
+    rep.ident('revised version: the stress contributes +4 pi E Y (m^2 - k_th^2)/[(l-1)(l+2) M], k_th^2 = l(l+1) - m^2', sp.simplify(dPsiF - 4*pi*Y*(m**2 - kth2)/((l - 1)*(l + 2))))
+    rep.ident('revised version: F carries l(l+1) - 2 m^2 = k_th^2 - m^2', l*(l + 1) - 2*m**2 - (kth2 - m**2))
+    rep.ident('revised version: (l-1)(l+2) = m^2 + k_th^2 - 2 (so the azimuthal parts cancel exactly, the latitudinal ones add up)', sp.expand((l - 1)*(l + 2) - (m**2 + kth2 - 2)))
+    rep.ident('revised version: exact photon jump [d_r Psi] = -(8 pi E Y/M){(k_th^2 - 1)/[(l-1)(l+2)] - 2/[3 l^2 (l+1)^2]}',
+              sp.simplify(dPsiE + 8*pi*Y*((kth2 - 1)/((l - 1)*(l + 2)) - sp.Rational(2, 3)/(l**2*(l + 1)**2))))
+    rep.ident('revised version: k_th^2 = (2j+1) l - j^2 for m = l - j, so the exact jump reduces to Eq. (5)', sp.expand(kth2.subs(m, l - j) - ((2*j + 1)*l - j**2)))
+    th_ = sp.symbols('theta', real=True)
+    worstk = 0
+    for lv in range(2, 8):
+        for mv in range(-lv, lv + 1):
+            Yf = sp.expand_func(sp.Ynm(lv, mv, th_, 0))
+            worstk = max(worstk, abs(complex(sp.N((sp.diff(Yf, th_, 2) + (lv*(lv + 1) - mv**2)*Yf).subs(th_, pi/2), 30))))
+    rep.check('revised version: d_th^2 Y_lm = -k_th^2 Y_lm at the equator (sympy Ynm, l = 2..7, all m)', worstk, '0', 1e-25, 'abs')
+    Esym, Lsym, rsym, Omsym, kr_, kth_ = sp.symbols('E L r_0 Omega k_r k_theta', positive=True)
+    fsym = 1 - 2/rsym
+    rep.ident('revised version: trace of the circular-orbit source g^{mu nu} p_mu p_nu = -E^2/f + L^2/r0^2, and Eq. (6) combination = trace/r0',
+              sp.simplify((Lsym**2/rsym**3 - Esym**2/(rsym - 2)) - (-Esym**2/fsym + Lsym**2/rsym**2)/rsym))
+    disp = -(m*Omsym)**2/fsym + fsym*kr_**2 + kth_**2/rsym**2 + m**2/rsym**2     # g^{mu nu} k_mu k_nu at the equator, k = (-m Omega, k_r, k_th, m)
+    rep.ident('revised version: dispersion relation f k_r^2 + k_th^2/r0^2 = m^2 (Omega^2/f - 1/r0^2)', sp.simplify(fsym*kr_**2 + kth_**2/rsym**2 - m**2*(Omsym**2/fsym - 1/rsym**2) - disp))
+    rep.ident('revised version: ... which vanishes on the light ring (r0 = 3M, Omega = 1/b)', sp.simplify((Omsym**2/fsym - 1/rsym**2).subs({rsym: 3, Omsym: 1/b})))
+    rep.ident('revised version: E/L = Omega on the circular null geodesic, so p_mu = (L/m)(-m Omega, 0, 0, m)', sp.simplify(1/b - 1/(3*sp.sqrt(3))))
+    rep.ident('revised version: k_th^2/k_phi^2 = k_th^2/m^2 ~ (2j+1)/l (relative order of what survives)', sp.limit(l*kth2.subs(m, l - j)/(l - j)**2, l, sp.oo) - (2*j + 1))
+    e0_, e1_, e2_, Lm_ = sp.symbols('e0 e1 e2 Lm')
+    kt_ = -m*Omsym
+    e3_ = -(e0_*kt_ + e1_*kr_ + e2_*kth_)/m                      # transverse polarization vector: e^mu k_mu = 0
+    ep = Lm_*(e0_*kt_ + e3_*m)                                   # e.p with p_mu = (L/m)(k_t, 0, 0, k_phi)
+    eq = -Lm_*(e1_*kr_ + e2_*kth_)                               # (L/m) e.(p m/L - k) = -(L/m) e.q, q = (0, k_r, k_th, 0)
+    rep.ident('revised version: for a transverse polarization (e^mu k_mu = 0) the coupling e.p reduces to -(L/m) e.q, q = (0, k_r, k_th, 0): O(k_th/m) of the naive one',
+              sp.simplify(ep - eq))
 
 # =============================================================================================
 # Section III B
@@ -1426,6 +1491,76 @@ def section_IV():
     rep.ident('horizon/infinity ratio = 1 symbolically: 4(2 r+ - a b) = (r0-1)(r0^2 + r0 + 4 sqrt(4-r0) - 8) (reduces the ratio to 1 given e^{2J_H})',
               sp.expand((4*(2*(1 + (r0 - 1)*sp.sqrt(4 - r0)/2) - aS*bS) - (r0 - 1)*(r0**2 + r0 + 4*sp.sqrt(4 - r0) - 8))))
     rep.ident('sqrt(1 - a^2) = (r0-1) sqrt(4-r0)/2 (used above; r+ = 1 + sqrt(1-a^2))', sp.simplify(1 - aS**2 - (r0 - 1)**2*(4 - r0)/4))
+    # ---- revised version: the gain q dr* is a total differential, and what Im Q represents
+    ag_, bg_, sg_ = sp.symbols('a b s', real=True)
+    Sg_ = sp.symbols('S', positive=True)                          # S stands for sqrt(R~)
+    Dg_ = r**2 - 2*r + ag_**2; Pg_ = r**2 + ag_**2 - ag_*bg_; Rg_ = Pg_**2 - Dg_*(bg_ - ag_)**2
+    lhs_ = sg_*(-2*(r - 1)*Pg_ + 4*r*Dg_)/(2*Dg_*Sg_)
+    rhs_ = (sg_/2)*(2*(sp.diff(Pg_, r) + sp.diff(Rg_, r)/(2*Sg_))/(Pg_ + Sg_) - sp.diff(Dg_, r)/Dg_)
+    numq = sp.expand(sp.numer(sp.together(lhs_ - rhs_)))
+    numq = sp.rem(sp.Poly(numq, Sg_), sp.Poly(Sg_**2 - Rg_, Sg_)).as_expr()
+    rep.ident('revised version, Sec. IV: q dr* = (s/2) d ln[(P + sqrt R~)^2/Delta] (generic a, b, using R~ = P^2 - Delta (b-a)^2)', sp.expand(numq))
+    rep.ident('revised version: b - a = r0^{3/2} on the light ring', sp.simplify(bS - aS - r0**sp.Rational(3, 2)))
+    rep.ident('revised version: N = [(b-a)/2]^{2s} = 16/r0^6 (s = -2)', sp.simplify(((bS - aS)/2)**(2*s) - 16/r0**6))
+    worstJ = 0; worstH2 = 0; worstH3 = 0
+    for rv in r0_table + [mp.mpf('1.3')]:
+        d = lr_num(rv)
+        worstJ = max(worstJ, abs(Jinf(d) - (s*mp.log(2*d['r0']/(d['b'] - d['a'])) - s*hinf(d))))
+        Pp_ = d['rp']**2 + d['a']**2 - d['a']*d['b']
+        worstH2 = max(worstH2, abs(mp.exp(2*JH(d))/(2*Pp_/d['P0'])**4 - 1))
+        worstH3 = max(worstH3, abs((2*Pp_/d['P0'])**4/((d['r0']**2 + d['r0'] + 4*mp.sqrt(4 - d['r0']) - 8)**4/d['r0']**8) - 1))
+    rep.check('revised version: J_inf = s ln[2 r0/(b-a)] - s h_inf vs quadrature (the 8 values of r0 above)', float(worstJ), '0', 1e-20, 'abs')
+    rep.check('revised version (footnote): e^{2 J_H} = (2 P_+/P_0)^4, P_+ = P(r_+), vs quadrature', float(worstH2), '0', 1e-18, 'abs')
+    rep.check('revised version (footnote): (2 P_+/P_0)^4 = [r0^2 + r0 + 4 sqrt(4-r0) - 8]^4/r0^8', float(worstH3), '0', 1e-25, 'abs')
+    # wave vector of the two WKB waves and the Kinnersley n at the equator
+    wq, Sig_ = sp.symbols('omega Sigma', positive=True)
+    nvec = sp.Matrix([r**2 + ag_**2, -Dg_, 0, ag_])/(2*Sig_)
+    # Kerr metric at the equator (theta = pi/2, Sigma = r^2)
+    gK = sp.zeros(4, 4)
+    gK[0, 0] = -(1 - 2/r); gK[0, 3] = gK[3, 0] = -2*ag_/r; gK[1, 1] = r**2/Dg_; gK[2, 2] = r**2
+    gK[3, 3] = r**2 + ag_**2 + 2*ag_**2/r
+    rep.ident('revised version: Kinnersley n^mu = (r^2+a^2, -Delta, 0, a)/(2 Sigma) is null (equator)', sp.simplify((nvec.T*gK*nvec)[0].subs(Sig_, r**2)))
+    for sgn, nm_ in ((1, 'outgoing'), (-1, 'ingoing')):
+        kvec = sp.Matrix([-wq, sgn*wq*Sg_/Dg_, 0, wq*bg_])              # k_mu, Delta k_r = +- omega sqrt(R~), m = omega b
+        kn = (kvec.T*nvec)[0]
+        rep.ident(f'revised version: {nm_} wave: k_mu n^mu = -omega (P {"+" if sgn > 0 else "-"} sqrt R~)/(2 Sigma)', sp.simplify(kn + wq*(Pg_ + sgn*Sg_)/(2*Sig_)))
+        kup = gK.inv()*kvec
+        rep.ident(f'revised version: {nm_} wave: k_mu is null (g^{{mu nu}} k_mu k_nu = 0 given R~ = P^2 - Delta (b-a)^2)',
+                  sp.simplify(sp.expand(sp.numer(sp.together((kvec.T*kup)[0]))).subs(Sg_**2, Rg_)))
+    rep.ident('revised version: (P + sqrt R~)(P - sqrt R~) = Delta (b-a)^2', sp.expand((Pg_ + Sg_)*(Pg_ - Sg_) - Dg_*(bg_ - ag_)**2).subs(Sg_**2, Rg_))
+    # |Y|^2 ~ p^{-1} exp(-+ 2 int q dr*) = p^{-1} [(P +- sqrt R~)^2/Delta]^{-s} (up to constants), and the metric amplitude
+    # |h| ~ |psi4|/(k.n)^2, |psi4| ~ |R|/r^4, R = Delta^{-s/2} (r^2+a^2)^{-1/2} Y: p (r^2+a^2) |h|^2 = const for s = -2
+    pq = sp.symbols('p', positive=True)
+    for sgn in (1, -1):
+        Ysq = (1/pq)*((Pg_ + sgn*Sg_)**2/Dg_)**2                         # s = -2
+        hsq = (Dg_**2/(r**2 + ag_**2)*Ysq/r**8)*((2*r**2/wq)**4)/(Pg_ + sgn*Sg_)**4
+        rep.ident(f'revised version: p (r^2+a^2) |h|^2 is constant along the {"outgoing" if sgn > 0 else "ingoing"} wave (s = -2)', sp.simplify(pq*(r**2 + ag_**2)*hsq - 16/wq**4))
+    rep.ident('revised version: the two branches differ by a constant: [(P+S)^2/Delta][(P-S)^2/Delta] = (b-a)^4',
+              sp.expand(sp.rem(sp.Poly(sp.expand((Pg_ + Sg_)**2*(Pg_ - Sg_)**2 - Dg_**2*(bg_ - ag_)**4), Sg_), sp.Poly(Sg_**2 - Rg_, Sg_)).as_expr()))
+    SS_lr = (r - r0)*sp.sqrt(r*(r + 2*r0))                               # sqrt(R~) on the light ring, r > r0
+    P_lr = r**2 + aS**2 - aS*bS
+    rep.ident('revised version: outgoing wave, k.n -> -omega at large r: (P + sqrt R~)/(2 r^2) -> 1', sp.limit((P_lr + SS_lr)/(2*r**2), r, sp.oo) - 1)
+    rep.ident('revised version: ingoing wave, k.n ~ -omega (b-a)^2/(4 r^2): P - sqrt R~ -> (b-a)^2/2', sp.simplify(sp.limit(P_lr - SS_lr, r, sp.oo) - (bS - aS)**2/2))
+    # |psi4| = (1/2) |k.n|^2 |h_{mbar mbar}| for a plane wave in a gauge with h_{mu nu} n^nu = 0 (local, flat-space check)
+    rng = np.random.default_rng(7)
+    eta_ = np.diag([-1.0, 1.0, 1.0, 1.0])
+    worstpsi = 0; worstgauge = 0
+    for _ in range(5):
+        kd = rng.normal(size=3); kup_ = np.concatenate([[np.linalg.norm(kd)], kd]); k_ = eta_ @ kup_
+        nup = np.array([1.0, 0, 0, -1.0])/np.sqrt(2); mbup = np.array([0, 1.0, -1j, 0])/np.sqrt(2)
+        H = rng.normal(size=(4, 4)) + 1j*rng.normal(size=(4, 4)); H = H + H.T
+        def riem(Hm):
+            return 0.5*(np.einsum('b,c,ad->abcd', k_, k_, Hm) + np.einsum('a,d,bc->abcd', k_, k_, Hm)
+                        - np.einsum('a,c,bd->abcd', k_, k_, Hm) - np.einsum('b,d,ac->abcd', k_, k_, Hm))
+        psi4 = np.einsum('abcd,a,b,c,d->', riem(H), nup, mbup, nup, mbup)
+        kn_ = k_ @ nup
+        xin = -(H @ nup) @ nup/(2*kn_)                                  # xi.n
+        xi = -((H @ nup) + k_*xin)/kn_                                  # xi_mu
+        H2 = H + np.outer(k_, xi) + np.outer(xi, k_)
+        worstgauge = max(worstgauge, np.max(np.abs(riem(H2) - riem(H))), np.max(np.abs(H2 @ nup)))
+        worstpsi = max(worstpsi, abs(abs(psi4) - 0.5*abs(kn_)**2*abs(mbup @ H2 @ mbup)))
+    rep.check('revised version: plane wave, |psi4| = (1/2) |k.n|^2 |h_{mbar mbar}| in the gauge h_{mu nu} n^nu = 0 (5 random waves; gauge invariance included)',
+              max(worstpsi, worstgauge), '0', 1e-12, 'abs')
     # no superradiance: Omega > Omega_H
     worstOm = min(float(1/sp.sqrt(rv)/(rv + 3)*2 - sp.sqrt(rv)*(3 - rv)/2/(2*(1 + (rv - 1)*sp.sqrt(4 - rv)/2))) for rv in [sp.Rational(k, 100) for k in range(101, 400)])
     rep.check('Omega - Omega_H > 0 on 1 < r0 < 4 (min over a grid)', float(worstOm > 0), '1', 0, note=f'min = {worstOm:.3e}; -> 0 only as r0 -> 1 (a -> 1)')
@@ -1592,6 +1727,18 @@ def section_IV():
         SI = sum(rw['FluxI'] for rw in kerr_rows(av, sg, 800)); SH = sum(rw['FluxH'] for rw in kerr_rows(av, sg, 800))
         rep.check(f'sqrt(l)(I-H)/(I+H) at l = 800, a = {av} (paper: {asym_paper[av]}{"; the asymptotic sigma_bar of Sec. III C" if av == 0 else ""})',
                   math.sqrt(800)*(SI - SH)/(SI + SH), asym_paper[av], 1e-2)
+    # revision: "at l = 800, where it has converged to the digits quoted"; prograde slower, retrograde faster
+    asy = {}
+    for av in (0.5, 0.9, -0.5, -0.9, 0):
+        sg = 1 if av >= 0 else -1
+        for lv in (400, 800):
+            SI = sum(rw['FluxI'] for rw in kerr_rows(av, sg, lv)); SH = sum(rw['FluxH'] for rw in kerr_rows(av, sg, lv))
+            asy[(av, lv)] = math.sqrt(lv)*(SI - SH)/(SI + SH)
+    same = all(round(2*asy[(av, 800)] - asy[(av, 400)], 2) == round(asy[(av, 800)], 2) == float(asym_paper[av]) for av in (0.5, 0.9, -0.5, -0.9, 0))
+    rep.check('revised version: Kerr asymmetry converged to the digits quoted: Richardson 2 A(800) - A(400) and A(800) both round to 0.78, 1.10, 0.51, 0.45, 0.61',
+              float(same), '1', 0, note='Richardson: ' + ', '.join(f'a={av}: {2*asy[(av, 800)] - asy[(av, 400)]:.4f}' for av in (0.5, 0.9, -0.5, -0.9, 0)))
+    rep.check('revised version: approached more slowly for prograde orbits and faster for retrograde ones: A(0.5), A(0.9) > A(0) > A(-0.5), A(-0.9)',
+              float(min(asy[(0.5, 800)], asy[(0.9, 800)]) > asy[(0, 800)] > max(asy[(-0.5, 800)], asy[(-0.9, 800)])), '1', 0)
     # ---- Chrzanowski-Misner null limit (their formulae transcribed as in Section V of the notebook)
     rr_, m_, g2 = sp.symbols('r m gamma2', positive=True)
     mcrit = (2*sp.sqrt(3)/pi)*(rr_ + 3)/sp.sqrt(rr_)*g2                                   # CM Eq. (2.35b)
@@ -1997,6 +2144,58 @@ def section_V():
         rep.check('stored: even formula accurate to O(m^-1/2): |exact/Eq.(22) - 1| sqrt(m) at m = 400 bounded', abs(st[(400, 'even')] - 1)*20, '0', 2.0, 'abs')
         oth = {(rw[1], rw[2]): rw[5] for rw in BRTV_STORED if abs(rw[0] - 3.003) < 1e-9}
         if oth: rep.info('  ... stored odd ratios at delta = 1e-3 (not quoted), m = 40, 100, 200, 400', ', '.join(f'{oth[(mv, "odd")]:.3f}' for mv in (40, 100, 200, 400) if (mv, 'odd') in oth))
+    # ---- revised version: the odd-parity factor is a factor of two in the odd source of the 1972 Letter
+    l_, m_, r0_, mu_, gam_, w0_, dY_, Y_, v_, dv_, W_ = sp.symbols('l m r0 mu gamma omega0 dY Y v dv W', positive=True)
+    f_ = 1 - 2/r0_
+    L_ = mu_*gam_*r0_**2*w0_                                      # L = mu u^t r0^2 Omega
+    E_ = mu_*gam_*f_
+    Po, dPo = jumps(l_, m_, r0_, E_, L_, Y_, dY_, False)
+    Zo = (v_*f_*dPo - Po*dv_)/W_                                  # Eq. (4) with Psi_in = v (BRTV's v), d_r* v = dv
+    Rours = 8*pi*L_*dY_/(r0_**2*sp.sqrt((l_ - 1)*l_*(l_ + 1)*(l_ + 2)))*(f_*v_ + r0_*dv_)/W_      # d_{r0*}[r0 G], G = v/W
+    RDRTZ = 4*pi*mu_*gam_*w0_*dY_/(sp.sqrt(l_*(l_ + 1))*sp.sqrt((l_ - 1)*(l_ + 2)))*(f_*v_ + r0_*dv_)/W_   # Table I of DRTZ (C^l_m Y^{m+1} = dY/sqrt(l(l+1)))
+    cm_ = l_*(l_ + 1)/(16*pi*(l_ - 1)*(l_ + 2))
+    rat_v = sp.simplify(Zo.coeff(v_)/Rours.coeff(v_)); rat_dv = sp.simplify(Zo.coeff(dv_)/Rours.coeff(dv_))
+    rep.ident('revised version, Sec. V: the RW amplitude Z is proportional to R_odd = 8 pi L dY d_{r0*}[r0 G]/(r0^2 sqrt((l-1)l(l+1)(l+2))) (same factor for v and dv)', sp.simplify(rat_v - rat_dv))
+    rep.ident('revised version: c_- omega^2 |Z|^2 = (omega^2/4 pi) |R_odd|^2 (flux formula of Breuer et al., their Eq. 6)', sp.simplify(cm_*rat_v**2 - 1/(4*pi)))
+    rep.ident('revised version: R_odd = 2 x the odd amplitude of Table I of Davis-Ruffini-Tiomno-Zerilli (4 pi -> 8 pi), every l, m, r0', sp.simplify(Rours/RDRTZ - 2))
+    th_ = sp.symbols('theta', real=True); worstC = 0
+    for lv in range(2, 9):
+        for mv in range(-lv, lv):
+            lhsC = sp.sqrt(lv*(lv + 1) - mv*(mv + 1))*sp.expand_func(sp.Ynm(lv, mv + 1, pi/2, 0))
+            rhsC = sp.diff(sp.expand_func(sp.Ynm(lv, mv, th_, 0)), th_).subs(th_, pi/2)
+            worstC = max(worstC, abs(complex(sp.N(lhsC - rhsC, 30))))
+    rep.check('revised version: same angular factor: [l(l+1) - m(m+1)]^{1/2} Y_{l,m+1}(pi/2,0) = d_th Y_lm(pi/2,0) (l = 2..8)', worstC, '0', 1e-25, 'abs')
+    # even parity: Table I of DRTZ (= Eq. (12) of Breuer et al.) vs the Toolkit jumps, timelike circular geodesic
+    gS_ = 1/sp.sqrt(1 - 3/r0_); w0S_ = r0_**sp.Rational(-3, 2)
+    EtS, LtS = mu_*gS_*f_, mu_*gS_*r0_**2*w0S_
+    Pe, dPe = jumps(l_, m_, r0_, EtS, LtS, Y_, dY_, True)
+    lam_ = (l_ - 1)*(l_ + 2)/2
+    alp = (r0_ - 2)/(r0_ + 3/lam_)**2*(1 + 1/lam_ + 1/(lam_*r0_) - 3/(lam_**2*r0_) + 6/(lam_**2*r0_**2)) - (2*m_**2 - l_*(l_ + 1))/(l_*(l_ + 1) - 2)*r0_*w0S_**2
+    bet = (1 - 2/r0_)/(1 + 3/(lam_*r0_))
+    cv = 4*pi*mu_*gS_*(alp + f_*sp.diff(bet, r0_)/lam_)*Y_; cdv = 4*pi*mu_*gS_*bet/lam_*Y_
+    rep.ident('revised version: even parity, coefficient of d_r* v: Toolkit jumps = -(DRTZ Table I)', sp.simplify(-Pe/cdv + 1))
+    rep.ident('revised version: even parity, coefficient of v: Toolkit jumps = -(DRTZ Table I) (the overall sign is irrelevant)', sp.simplify(f_*dPe/cv + 1))
+    # Green's function of Breuer et al., Eqs. (3)-(4), vs |u(0)|^2/(4 omega^2), |d u(0)|^2/(4 omega^2) of Eqs. (8)-(9)
+    worstG = 0
+    for eta in (mp.mpf('0.5'), mp.mpf('1.5'), mp.mpf(3)):
+        lv = mp.mpf(10)**6; mv = lv; w0v = 1/(3*mp.sqrt(3)); wv = mv*w0v; ev = 2*eta
+        G2 = mp.mpf(1)/16/w0v/mp.sqrt(lv)*mp.exp(-mp.pi*ev/4)/(mp.pi*mv*w0v)*abs(mp.gamma(mp.mpf(1)/4 + 1j*ev/4))**2
+        dG2 = 2/(8*mp.pi)*w0v*mp.sqrt(lv)*mp.exp(-mp.pi*ev/4)/(mv*w0v)*abs(mp.gamma(mp.mpf(3)/4 + 1j*ev/4))**2
+        u0sq = mp.sqrt(lv/2)*mp.pi*mp.exp(-mp.pi*eta/2)/(mp.sqrt(2)*mp.cosh(mp.pi*eta)*abs(mp.gamma(mp.mpf(3)/4 + 1j*eta/2))**2)
+        du0sq = mp.sqrt(2)*lv**mp.mpf(1.5)/27*mp.sqrt(2)*mp.pi*mp.exp(-mp.pi*eta/2)/(mp.cosh(mp.pi*eta)*abs(mp.gamma(mp.mpf(1)/4 + 1j*eta/2))**2)
+        worstG = max(worstG, abs(G2/(u0sq/(4*wv**2)) - 1), abs(dG2/(du0sq/(4*wv**2)) - 1))
+    rep.check('revised version: |G|^2, |dG/dr0*|^2 of Breuer et al. [Eqs. (3)-(4)] = |u(0)|^2/(4 omega^2), |d_r* u(0)|^2/(4 omega^2) (eta = 1/2, 3/2, 3)', float(worstG), '0', 1e-20, 'abs')
+    # Eq. (13) of Breuer et al. with the factor omega_0 of DRTZ reproduces their Eq. (15); without it the result is 27 times larger
+    mB, dB, X_ = sp.symbols('m delta_B X', positive=True)                 # X = e^{-pi eps/4} |Gamma(3/4 + i eps/4)|^2
+    w0n = 1/(3*sp.sqrt(3))
+    dG2s = sp.sqrt(mB)*X_/(4*pi*mB)                                      # |dG/dr0*|^2 from their Eq. (4), l = m at leading order
+    dYsq = mB**sp.Rational(3, 2)/pi**sp.Rational(3, 2)                   # |d_th Y_{m+1,m}|^2 -> d_1 l^{3/2}/pi^{3/2}, d_1 = 1
+    for withw0 in (True, False):
+        amp2 = (4*pi*mu_)**2*(3/dB)*(w0n**2 if withw0 else 1)*dYsq/mB**4*9*dG2s     # u0^2 = 3/delta_B, r0^2 = 9
+        Pod = (mB*w0n)**2/(4*pi)*amp2
+        ratio15 = sp.simplify(Pod/(mu_**2*X_*2/(54*pi**sp.Rational(3, 2)*mB*dB)))
+        if withw0: rep.ident('revised version: Eq. (13) of Breuer et al. with omega_0 (as in DRTZ) gives their Eq. (15) exactly at leading order', ratio15 - 1)
+        else: rep.check('revised version: ... without omega_0 it would be 1/omega_0^2 = 27 times larger', float(ratio15), '27', 1e-12)
 
 # =============================================================================================
 # Section VI  Discussion
@@ -2147,6 +2346,19 @@ def section_VI():
     rep.ident('l_max = E r0/(hbar c) with r0 = 3 G M/c^2 equals 3 (E/c^2) M/m_Pl^2, m_Pl^2 = hbar c/G', sp.simplify(Es*(3*Gs*Ms/cs_**2)/(hbs*cs_) - 3*(Es/cs_**2)*Ms/mPl2))
     rep.ident('ln l_max = ln(E M/m_Pl^2) + ln 3 (G = c = 1): the flux is proportional to ln(E M/m_Pl^2) up to an additive constant',
               sp.expand_log(sp.log(3*Es*Ms/mPl2.subs({hbs: hbs, cs_: 1, Gs: 1})), force=True) - sp.log(Es*Ms/(hbs)) - sp.log(3))
+    # ---- revised version, Sec. VI B
+    Fs_, cj_ = sp.symbols('F c_j', positive=True)
+    resp = sp.sqrt(l/2)*pi*Fs_/sp.sqrt(2)*cj_*sp.sqrt(l)/(2*pi**sp.Rational(3, 2))      # |u(0)|^2 |Y_{l,l-j}|^2, eta fixed
+    rep.ident('revised version, Sec. VI B: at fixed eta the response |u(0)|^2 |Y_lm|^2 is a pure power law, proportional to l', sp.simplify(sp.diff(resp/l, l)))
+    rep.check('revised version: a source detuned by eta growing with l is suppressed as e^{-pi eta}: F(eta) e^{pi eta} pi sqrt(eta/2) at eta = 200', Fpar(mp.mpf(200))*mp.exp(mp.pi*200)*mp.pi*mp.sqrt(100), '1', 2e-3)
+    Lm2 = sp.symbols('L', positive=True); ll_ = sp.symbols('ll', integer=True, positive=True)
+    rep.ident('revised version: a flux per multipole growing like l gives a quadratically divergent sum: sum_{l<=L} l / L^2 -> 1/2', sp.limit(sp.summation(ll_, (ll_, 1, Lm2))/Lm2**2, Lm2, sp.oo) - sp.Rational(1, 2))
+    # scalar charge below the cut-off (Breuer et al. 1973, BCHM Eq. 5.4): P_m ~ (m/m_crit) e^{-pi eps/4} |Gamma(1/4 + i eps/4)|^2, eps = 1 + m delta'
+    def Pscal(mv, dp): return mp.mpf(mv)*dp*mp.exp(-mp.pi*(1 + mv*dp)/4)*abs(mp.gamma(mp.mpf(1)/4 + 1j*(1 + mv*dp)/4))**2
+    vals = [Pscal(mv, mp.mpf('1e-8'))/mv for mv in (10, 100, 1000)]
+    rep.check('revised version: the scalar radiation of a scalar charge grows like m below the cut-off: P_m/m at m = 10, 100, 1000 (m delta\' <= 1e-5), max/min - 1', max(vals)/min(vals) - 1, '0', 1e-4, 'abs')
+    hb_, lam2_, E2_, r02_ = sp.symbols('hbar lambda E r0', positive=True)
+    rep.ident('revised version: lambda = 2 pi hbar/E and l_max ~ r0/lambda ~ E r0/hbar up to 2 pi', sp.simplify((r02_/(2*pi*hb_/E2_))*2*pi - E2_*r02_/hb_))
 
 # =============================================================================================
 def main():

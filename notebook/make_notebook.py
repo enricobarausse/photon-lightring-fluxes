@@ -76,6 +76,20 @@ In(r"""
 cpm[l_, m_] := If[EvenQ[l + m], (l - 1) (l + 2)/(l (l + 1))/(4 Pi), l (l + 1)/((l - 1) (l + 2))/(16 Pi)];
 fluxFromZ[l_, m_, w_, ZI_, ZH_] := <|"I" -> cpm[l, m] Abs[w ZI]^2, "H" -> cpm[l, m] Abs[w ZH]^2|>;
 """)
+T("Subsubsection", 'Revision: A, C, F as projections of the stress-energy tensor')
+T("Text", 'Revised version, Sec. II: A, C and F are the projections of the energy density T_tt on the scalar harmonics, of the momentum density T_tA on the odd-parity vector harmonics X_A = (-d_phi Y/Sin[theta], Sin[theta] d_theta Y), and of the tangential stresses T_AB on the even-parity trace-free tensor harmonics Y_AB = [D_A D_B + l(l+1) Omega_AB/2] Y: A delta(r-r0) e^(-I omega t) = -16 Pi Integral[T_tt Ybar], C delta(r-r0) e^(-I omega t) = 16 Pi/(r0 l(l+1)) Integral[T_tA Xbar^A], F delta(r-r0) e^(-I omega t) = -(32 Pi/r0^2) (l-2)!/(l+2)! Integral[T_AB Ybar^AB]. The cell computes the non-vanishing components of T_mu nu of the photon, (T_tt, T_tphi, T_phiphi) = (1, -b, b^2) f E/r0^2 times the delta functions, checks the two angular factors at the equator, X^phi = d_theta Y and Y^phiphi = (l(l+1)/2 - m^2) Y, and shows that the three projections reproduce Eq. (2).')
+In(r"""
+Module[{eP, bP, rP, fP, ptP, Ttt, Ttph, Tpp, ang, thV, phV, lS, mS, YS, dYS, prj, eq2},
+  fP = 1 - 2/rP; ptP = eP/fP;
+  {Ttt, Ttph, Tpp} = {eP^2, -eP (bP eP), (bP eP)^2}/(ptP rP^2);        (* p_mu p_nu/(p^t r^2) with p_mu = (-E, 0, 0, b E) *)
+  Print["(T_tt, T_tphi, T_phiphi)/(f E/r0^2) = ", Simplify[{Ttt, Ttph, Tpp}/(fP eP/rP^2)]];
+  ang = Flatten[Table[With[{Yf = SphericalHarmonicY[ll, mm, thV, phV]},
+     {(D[Yf, {phV, 2}] + Sin[thV] Cos[thV] D[Yf, thV] + ll (ll + 1)/2 Sin[thV]^2 Yf)/Sin[thV]^4 - (ll (ll + 1)/2 - mm^2) Yf, D[Yf, thV]/Sin[thV] - D[Yf, thV]} /. {thV -> Pi/2, phV -> 0}], {ll, 2, 7}, {mm, -ll, ll}]];
+  Print["at the equator, Y^{phi phi} - (l(l+1)/2 - m^2) Y and X^phi - d_theta Y for l = 2..7 and all m: ", Union[Simplify[ang]]];
+  prj = {-16 Pi Ttt YS, 16 Pi/(rP lS (lS + 1)) Ttph dYS, -32 Pi/rP^2 FunctionExpand[(lS - 2)!/(lS + 2)!] Tpp (lS (lS + 1)/2 - mS^2) YS};
+  eq2 = {-16 Pi (rP - 2) eP/rP^3 YS, -16 Pi (rP - 2) bP eP/rP^4/(lS (lS + 1)) dYS, -16 Pi (rP - 2) bP^2 eP/rP^5/((lS - 1) lS (lS + 1) (lS + 2)) (lS (lS + 1) - 2 mS^2) YS};
+  Print["(l-2)!/(l+2)! = ", Simplify[FunctionExpand[(lS - 2)!/(lS + 2)!]], ";  projections minus Eq. (2), for A, C, F: ", Simplify[prj - eq2]]];
+""")
 
 # ------------------------------------------------------------------ III A
 T("Section", "III. Fluxes from a photon on the Schwarzschild light ring")
@@ -110,6 +124,25 @@ coefA = Simplify[(dPsiGen /. L0 -> 0)/EAgen]; coefF = Simplify[(dPsiGen - (dPsiG
 Print["[Psi] = ", Simplify[psiGen/EAgen], " A  ~ ", Normal[Series[Simplify[psiGen/EAgen], {l, Infinity, 2}]], " A"];
 Print["[Psi'] = (", coefA, ") A + (", coefF, ") F  ~ ", Normal[Series[coefA, {l, Infinity, 0}]], " A + ", Normal[Series[coefF, {l, Infinity, -2}]], " F"];
 Print["for the photon (r0 = 3, E0 = 1, L0 = 3 Sqrt[3]): A term = ", leadA /. {r0 -> 3, E0 -> 1}, ",  F term = ", leadF /. {r0 -> 3, E0 -> 1, L0 -> 3 Sqrt[3]}, ",  sum = ", Simplify[(leadA + leadF) /. {r0 -> 3, E0 -> 1, L0 -> 3 Sqrt[3]}]];
+""")
+T("Subsubsection", 'Revision: what survives the cancellation, and why')
+T("Text", 'Revised version, Sec. III A. With k_theta^2 = l(l+1) - m^2, the square of the latitudinal wavenumber of the harmonic at the equator (d_theta^2 Y = -k_theta^2 Y there), the exact derivative jump of the photon splits into the energy density, -4 Pi E Y [1 - 4/(3 l^2 (l+1)^2)]/M, independent of m, and the stress, +4 Pi E Y (m^2 - k_theta^2)/[(l-1)(l+2) M], since F carries l(l+1) - 2 m^2 = k_theta^2 - m^2. Because (l-1)(l+2) = m^2 + k_theta^2 - 2, the azimuthal parts cancel exactly (Eq. 6) and the latitudinal ones add up, giving the exact jump -(8 Pi E Y/M){(k_theta^2 - 1)/[(l-1)(l+2)] - 2/[3 l^2 (l+1)^2]}, which reduces to Eq. (5) since k_theta^2 = (2j+1) l - j^2. The cell also checks that the combination of Eq. (6) is the trace p.p/r0, the dispersion relation f k_r^2 + k_theta^2/r0^2 = m^2 (Omega^2/f - 1/r0^2), which vanishes on the light ring, the relative order k_theta^2/m^2 ~ (2j+1)/l, and that for a transverse polarization (e.k = 0) the coupling e.p reduces to -(L/m) e.q with q = (0, k_r, k_theta, 0).')
+In(r"""
+Clear[l, m, j, Y, dY];
+kth2 = l (l + 1) - m^2;                                                   (* k_theta^2 at the equator *)
+dPsiA = jumpsZRW[l, m, 3, 1, 0, Y, dY, True][[2]];                        (* L0 = 0: the energy density A only *)
+dPsiF = Simplify[dPsiE - dPsiA];                                          (* the stress F *)
+Print["energy density: [Psi'] + 4 Pi Y (1 - 4/(3 l^2 (l+1)^2)) = ", Simplify[dPsiA + 4 Pi Y (1 - 4/(3 l^2 (l + 1)^2))], "  (independent of m)"];
+Print["stress: [Psi'] - 4 Pi Y (m^2 - k_th^2)/((l-1)(l+2)) = ", Simplify[dPsiF - 4 Pi Y (m^2 - kth2)/((l - 1) (l + 2))], ";  l(l+1) - 2 m^2 - (k_th^2 - m^2) = ", Simplify[l (l + 1) - 2 m^2 - (kth2 - m^2)], ";  (l-1)(l+2) - (m^2 + k_th^2 - 2) = ", Simplify[(l - 1) (l + 2) - (m^2 + kth2 - 2)]];
+Print["exact jump + 8 Pi Y [(k_th^2 - 1)/((l-1)(l+2)) - 2/(3 l^2 (l+1)^2)] = ", Simplify[dPsiE + 8 Pi Y ((kth2 - 1)/((l - 1) (l + 2)) - 2/(3 l^2 (l + 1)^2))], ";  k_th^2 for m = l - j: ", Expand[kth2 /. m -> l - j]];
+Print["d_theta^2 Y + k_th^2 Y at the equator, l = 2..8, all m: ", Union[Flatten[Table[Simplify[(D[SphericalHarmonicY[ll, mm, thV, 0], {thV, 2}] + (ll (ll + 1) - mm^2) SphericalHarmonicY[ll, mm, thV, 0]) /. thV -> Pi/2], {ll, 2, 8}, {mm, -ll, ll}]]]];
+Module[{eE, lL, rR, Om, kr, kth, disp, e0, e1, e2, e3, kt, Lm},
+  Print["Eq. (6) combination L^2/r0^3 - E^2/(r0-2) minus the trace (-E^2/f + L^2/r0^2)/r0: ", Simplify[(lL^2/rR^3 - eE^2/(rR - 2)) - (-eE^2/f[rR] + lL^2/rR^2)/rR]];
+  disp = -(m Om)^2/f[rR] + f[rR] kr^2 + kth^2/rR^2 + m^2/rR^2;          (* g^{mu nu} k_mu k_nu at the equator, k_mu = (-m Omega, k_r, k_theta, m) *)
+  Print["f k_r^2 + k_th^2/r0^2 - m^2 (Omega^2/f - 1/r0^2) - g^{mu nu} k_mu k_nu = ", Simplify[f[rR] kr^2 + kth^2/rR^2 - m^2 (Om^2/f[rR] - 1/rR^2) - disp], ";  Omega^2/f - 1/r0^2 on the light ring: ", Simplify[(Om^2/f[rR] - 1/rR^2) /. {rR -> 3, Om -> OmegaLR}], ";  E/L - Omega: ", Simplify[1/bLR - OmegaLR]];
+  Print["l k_th^2/m^2 -> ", Limit[l (kth2 /. m -> l - j)/(l - j)^2, l -> Infinity], "  (= 2j + 1)"];
+  kt = -m Om; e3 = -(e0 kt + e1 kr + e2 kth)/m;                          (* transverse polarization vector: e^mu k_mu = 0 *)
+  Print["e.p + (L/m) e.q for e.k = 0 [p = (L/m)(k_t, 0, 0, k_phi), q = (0, k_r, k_th, 0)]: ", Simplify[Lm (e0 kt + e3 m) + Lm (e1 kr + e2 kth)]]];
 """)
 T("Subsubsection", "Equatorial harmonics at large l: c_j and d_j")
 T("Text", "The equatorial harmonics at large l (Sec. III C): |Y_{l,l-j}(Pi/2,0)|^2 -> c_j Sqrt[l]/(2 Pi^(3/2)) with c_j = Binomial[j, j/2] 2^-j, and |d_theta Y_{l,l-j}|^2 -> d_j l^(3/2)/Pi^(3/2) with d_j = j Binomial[j-1, (j-1)/2] 2^(1-j). "
@@ -942,6 +975,40 @@ ratioHI = 256 (2 rpS)^5 kapS^5/(bS - aS)^8 kapS (2 rpS) D0S^s Exp[-2 JHS]/((2 rp
 Print["Exp[2 J_H] r0^8/(r0^2 + r0 + 4 Sqrt[4 - r0] - 8)^4 - 1, denested with r0 = 4 - u^2: prograde ", FullSimplify[(Exp[2 JHS] r0^8/(r0^2 + r0 + 4 Sqrt[4 - r0] - 8)^4 - 1) /. r0 -> 4 - u^2, 1 < u < Sqrt[3]], ", retrograde ", FullSimplify[(Exp[2 JHS] r0^8/(r0^2 + r0 + 4 Sqrt[4 - r0] - 8)^4 - 1) /. r0 -> 4 - u^2, 0 < u < 1]];
 Print["horizon/infinity ratio - 1: prograde ", FullSimplify[(ratioHI - 1) /. r0 -> 4 - u^2, 1 < u < Sqrt[3]], ", retrograde ", FullSimplify[(ratioHI - 1) /. r0 -> 4 - u^2, 0 < u < 1], ";  numerically at r0 = 23/10: ", N[ratioHI /. r0 -> 23/10, 30]];
 """)
+T("Subsubsection", 'Revision: the gain is a total differential, and what Im Q represents')
+T("Text", 'Revised version, Sec. IV. For the resonant modes q dr* = (s/2) d Log[(P + Sqrt[R~])^2/Delta] (it follows from R~ = P^2 - Delta (b-a)^2 for any a, b), so that J_inf = s Log[2 r0/(b-a)] - s h_inf, N = [(b-a)/2]^(2s) = 16/r0^6 with b - a = r0^(3/2), and E^(2 J_H) = (2 P_+/P_0)^4 with P_+ = P(r_+). The wave vector of the two WKB waves, k_mu = (-omega, +-omega Sqrt[R~]/Delta, 0, m) with m = omega b, is null, and P +- Sqrt[R~] = -2 Sigma k.n/omega with n the Kinnersley null vector; |Y|^2 ~ p^-1 (P +- Sqrt[R~])^4/Delta^2 (s = -2) then gives p (r^2 + a^2) |h|^2 = const for the metric amplitude |h| ~ |psi4|/(k.n)^2. At large r, k.n -> -omega for outgoing waves and ~ -omega (b-a)^2/(4 r^2) for ingoing ones; at the light ring R~ = 0 and the two coincide. The last part checks |psi4| = |k.n|^2 |h_{mbar mbar}|/2 for random plane waves in the gauge h_{mu nu} n^nu = 0.')
+In(r"""
+Module[{ag, bg, Dg, Pg, Rg, Sg, lhs, rhs},
+  Dg = r^2 - 2 r + ag^2; Pg = r^2 + ag^2 - ag bg; Rg = Pg^2 - Dg (bg - ag)^2;
+  lhs = s (-2 (r - 1) Pg + 4 r Dg)/(2 Dg Sg);                                   (* q dr*/dr, Sg = Sqrt[R~] *)
+  rhs = (s/2) (2 (D[Pg, r] + D[Rg, r]/(2 Sg))/(Pg + Sg) - D[Dg, r]/Dg);         (* d/dr (s/2) Log[(P + Sqrt[R~])^2/Delta] *)
+  Print["q dr*/dr - d/dr (s/2) Log[(P + Sqrt[R~])^2/Delta], generic a, b: ", Simplify[PolynomialRemainder[Numerator[Together[lhs - rhs]], Sg^2 - Rg, Sg]]]];
+Print["b - a - r0^(3/2) = ", Simplify[bS - aS - r0^(3/2), 1 < r0 < 4], ";  ((b-a)/2)^(2 s) - 16/r0^6 = ", Simplify[((bS - aS)/2)^(2 s) - 16/r0^6, 1 < r0 < 4], ";  J_inf - [s Log[2 r0/(b-a)] - s h_inf] = ", Simplify[JinfS - (s Log[2 r0/(bS - aS)] - s hinfS), 1 < r0 < 4]];
+PplusS = rpS^2 + aS^2 - aS bS;
+Print["max |E^(2 J_H) (P_0/(2 P_+))^4 - 1| at r0 = 1.3, 2.347, 3, 3.532, 3.91 (40-digit arithmetic): ", Max[Abs[Table[(Exp[2 JHS] (P0S/(2 PplusS))^4 - 1) /. r0 -> N[rv, 40], {rv, {13/10, 2347/1000, 3, 3532/1000, 391/100}}]]]];
+Print["max |(2 P_+/P_0)^4 r0^8/(r0^2 + r0 + 4 Sqrt[4 - r0] - 8)^4 - 1| at the same r0: ", Max[Abs[Table[((2 PplusS/P0S)^4 r0^8/(r0^2 + r0 + 4 Sqrt[4 - r0] - 8)^4 - 1) /. r0 -> N[rv, 40], {rv, {13/10, 2347/1000, 3, 3532/1000, 391/100}}]]]];
+Module[{ag, bg, w, Sig, Dg, Pg, Rg, Sg, nv, gK, kv, p, Ysq, hsq},
+  Dg = r^2 - 2 r + ag^2; Pg = r^2 + ag^2 - ag bg; Rg = Pg^2 - Dg (bg - ag)^2;
+  nv = {r^2 + ag^2, -Dg, 0, ag}/(2 Sig);                                         (* Kinnersley n^mu at the equator *)
+  gK = {{-(1 - 2/r), 0, 0, -2 ag/r}, {0, r^2/Dg, 0, 0}, {0, 0, r^2, 0}, {-2 ag/r, 0, 0, r^2 + ag^2 + 2 ag^2/r}};   (* Kerr metric at the equator *)
+  Print["n.n = ", Simplify[(nv . gK . nv) /. Sig -> r^2]];
+  Do[kv = {-w, sg w Sg/Dg, 0, w bg};
+    Print[If[sg > 0, "outgoing", "ingoing"], " wave: k.n + omega (P +- Sqrt[R~])/(2 Sigma) = ", Simplify[kv . nv + w (Pg + sg Sg)/(2 Sig)], ";  numerator of k.k with Sqrt[R~]^2 -> R~: ", Simplify[Expand[Numerator[Together[kv . Inverse[gK] . kv]]] /. Sg^2 -> Rg]], {sg, {1, -1}}];
+  Print["(P + Sqrt[R~])(P - Sqrt[R~]) - Delta (b-a)^2 = ", Simplify[Expand[(Pg + Sg) (Pg - Sg) - Dg (bg - ag)^2] /. Sg^2 -> Rg]];
+  Do[Ysq = (1/p) ((Pg + sg Sg)^2/Dg)^2; hsq = Dg^2/(r^2 + ag^2) Ysq/r^8 (2 r^2/w)^4/(Pg + sg Sg)^4;
+    Print["omega^4 p (r^2 + a^2) |h|^2 along the ", If[sg > 0, "outgoing", "ingoing"], " wave (s = -2): ", Simplify[w^4 p (r^2 + ag^2) hsq], "  (a constant)"], {sg, {1, -1}}]];
+Print["(P + Sqrt[R~])/(2 r^2) -> ", Limit[(r^2 + aS^2 - aS bS + (r - r0) Sqrt[r (r + 2 r0)])/(2 r^2), r -> Infinity, Assumptions -> 1 < r0 < 4], ";  lim (P - Sqrt[R~]) - (b-a)^2/2 = ", Simplify[Limit[r^2 + aS^2 - aS bS - (r - r0) Sqrt[r (r + 2 r0)], r -> Infinity, Assumptions -> 1 < r0 < 4] - (bS - aS)^2/2, 1 < r0 < 4]];
+SeedRandom[7];
+Module[{eta4 = DiagonalMatrix[{-1, 1, 1, 1}], kd, kk, nup, mb, H, H2, riem, psi4, kn, xin, xi, worst = 0},
+  riem[Hm_] := Table[1/2 (kk[[b2]] kk[[c2]] Hm[[a2, d2]] + kk[[a2]] kk[[d2]] Hm[[b2, c2]] - kk[[a2]] kk[[c2]] Hm[[b2, d2]] - kk[[b2]] kk[[d2]] Hm[[a2, c2]]), {a2, 4}, {b2, 4}, {c2, 4}, {d2, 4}];
+  Do[kd = RandomReal[NormalDistribution[], 3, WorkingPrecision -> 30]; kk = eta4 . Prepend[kd, Norm[kd]];
+    nup = {1, 0, 0, -1}/Sqrt[2]; mb = {0, 1, -I, 0}/Sqrt[2];
+    H = RandomReal[NormalDistribution[], {4, 4}, WorkingPrecision -> 30] + I RandomReal[NormalDistribution[], {4, 4}, WorkingPrecision -> 30]; H = H + Transpose[H];
+    psi4 = Total[riem[H] Outer[Times, nup, mb, nup, mb], 4];
+    kn = kk . nup; xin = -(H . nup) . nup/(2 kn); xi = -((H . nup) + kk xin)/kn; H2 = H + Outer[Times, kk, xi] + Outer[Times, xi, kk];
+    worst = Max[worst, Abs[Abs[psi4] - Abs[kn]^2 Abs[mb . H2 . mb]/2], Max[Abs[Flatten[riem[H2] - riem[H]]]], Max[Abs[H2 . nup]]], {5}];
+  Print["plane waves: max | |psi4| - |k.n|^2 |h_{mbar mbar}|/2 | in the gauge h.n = 0 (and gauge invariance of the curvature): ", worst]];
+""")
 T("Subsubsection", "Omega > Omega_H for every light ring (proof)")
 T("Text", "The remark after Eq. (20) that Omega > Omega_H for every light ring (no superradiance), checked on a grid of spins above, is proved here with the closed forms: Omega - Omega_H = 1/b - a/(2 r_+) with b = Sqrt[r0] (r0 + 3)/2, a = Sqrt[r0] (3 - r0)/2 and r_+ = 1 + (r0 - 1) Sqrt[4 - r0]/2 (since 1 - a^2 = (r0 - 1)^2 (4 - r0)/4). "
   "For retrograde orbits (3 <= r0 < 4) Omega_H <= 0 < Omega; for prograde ones the difference is positive on 1 < r0 < 3 and vanishes only in the extremal limit r0 -> 1 (a -> M), where the light ring frequency tends to Omega_H. The cell reduces the inequality symbolically and evaluates the difference on a dense grid that includes a -> +-M.")
@@ -1095,6 +1162,13 @@ pyIH[a_, l_] := With[{rows = Select[kerrPy, ("a" /. #) == N[Abs[a]] && ("sign" /
 TableForm[Table[Prepend[Table[With[{ih = pyIH[a, l]}, Sqrt[l] (ih[[1]] - ih[[2]])/(ih[[1]] + ih[[2]])], {l, {100, 200, 400, 800}}], a], {a, {0, 1/2, 9/10, -1/2, -9/10}}], TableHeadings -> {None, {"a", "l=100", "l=200", "l=400", "l=800"}}]
 Print["Sqrt[l] (I - H)/(I + H) at l = 800 for a = 0.5, 0.9, -0.5, -0.9: ", Table[With[{ih = pyIH[a, 800]}, N[Sqrt[800] (ih[[1]] - ih[[2]])/(ih[[1]] + ih[[2]]), 3]], {a, {1/2, 9/10, -1/2, -9/10}}], "  (paper: 0.78, 1.10, 0.51, 0.45);  a = 0: ", With[{ih = pyIH[0, 800]}, N[Sqrt[800] (ih[[1]] - ih[[2]])/(ih[[1]] + ih[[2]]), 3]], " against the asymptotic sigma_bar = ", N[sigBar, 3]];
 """)
+T("Subsubsection", 'Revision: convergence of the Kerr asymmetry')
+T("Text", 'Revised version, Sec. IV: Sqrt[l] (Edot_I - Edot_H)/(Edot_I + Edot_H) at l = 800 has converged to the digits quoted (its Richardson extrapolation in 1/l from l = 400 and 800 rounds to the same values), and the equality of the two fluxes is approached more slowly for prograde orbits and faster for retrograde ones than at a = 0.')
+In(r"""
+asyK[a_, l_] := With[{ih = pyIH[a, l]}, Sqrt[l] (ih[[1]] - ih[[2]])/(ih[[1]] + ih[[2]])];
+Print["{a, A(800), 2 A(800) - A(400)}: ", Table[{a, N[asyK[a, 800], 4], N[2 asyK[a, 800] - asyK[a, 400], 4]}, {a, {1/2, 9/10, -1/2, -9/10, 0}}], "  (paper: 0.78, 1.10, 0.51, 0.45; 0.61)"];
+Print["A(800) and its extrapolation round to the same two digits: ", And @@ Table[Round[asyK[a, 800], 1/100] == Round[2 asyK[a, 800] - asyK[a, 400], 1/100], {a, {1/2, 9/10, -1/2, -9/10, 0}}], ";  prograde > (a = 0) > retrograde: ", Min[asyK[1/2, 800], asyK[9/10, 800]] > asyK[0, 800] > Max[asyK[-1/2, 800], asyK[-9/10, 800]]];
+""")
 T("Subsubsection", "Fig. 2")
 T("Text", "Fig. 2 from the stored data: top, l (Edot_I + Edot_H)/2 summed over the four dominant m (j <= 3) and over +-m from kerr_results.json, with the analytic 2 g(a) Sum_{j<=3} kappa_j dashed; bottom, the spin factor g(a) with the five spins marked.")
 In(r"""
@@ -1241,6 +1315,36 @@ Print["null limit: CM scalar/BCHM = ", N[Limit[PCMs[0, m, d]/PBCHM[m, d] /. d ->
 """)
 
 # ------------------------------------------------------------------ VI A
+T("Subsubsection", 'Revision: the odd-parity factor of four is a factor of two in the odd source of 1972')
+T("Text", "Revised version, Sec. V. Eqs. (22)-(23) follow from the flux formula P = (omega^2/4 Pi)(|R_even|^2 + |R_odd|^2) of Breuer et al. [their Eq. (6)], from the Green's function of their Eqs. (3)-(4), and from the source amplitudes of their Eqs. (12)-(13), which are those of Table I of Davis, Ruffini, Tiomno and Zerilli (PRL 28, 1352, 1972). The cell shows: (i) the Regge-Wheeler amplitude of the paper is proportional to R_odd = 8 Pi L d_theta Ybar d_{r0*}[r0 G]/(r0^2 Sqrt[(l-1)l(l+1)(l+2)]) with c_- omega^2 |Z|^2 = (omega^2/4 Pi)|R_odd|^2, and R_odd is exactly twice the odd amplitude of the 1972 table, for every l, m and r0; (ii) the angular factors agree, [l(l+1) - m(m+1)]^(1/2) Y_{l,m+1}(Pi/2,0) = d_theta Y_lm(Pi/2,0); (iii) the even amplitude of the 1972 table coincides with the Toolkit jumps; (iv) their Green's function and its derivative coincide with |u(0)|^2/(4 omega^2) and |d_r* u(0)|^2/(4 omega^2) of Eqs. (8)-(9); (v) their Eq. (13), with the factor omega_0 present in the 1972 table, gives their Eq. (15) exactly, while without it the result would be 27 times larger.")
+In(r"""
+Module[{lS, mS, r0S, mu, gam, w0, dYS, YS, v, dv, W, fS, LS, ES, Po, dPo, Zo, Rours, RDRTZ, cm, rv, rdv},
+  fS = 1 - 2/r0S; LS = mu gam r0S^2 w0; ES = mu gam fS;
+  {Po, dPo} = jumpsZRW[lS, mS, r0S, ES, LS, YS, dYS, False];
+  Zo = (v fS dPo - Po dv)/W;                                                          (* Eq. (4), Psi_in = v, dv = d_r* v *)
+  Rours = 8 Pi LS dYS/(r0S^2 Sqrt[(lS - 1) lS (lS + 1) (lS + 2)]) (fS v + r0S dv)/W;   (* d_{r0*}[r0 G], G = v/W *)
+  RDRTZ = 4 Pi mu gam w0 dYS/(Sqrt[lS (lS + 1)] Sqrt[(lS - 1) (lS + 2)]) (fS v + r0S dv)/W;
+  cm = lS (lS + 1)/(16 Pi (lS - 1) (lS + 2));
+  rv = Simplify[Coefficient[Zo, v]/Coefficient[Rours, v], {lS > 1, r0S > 2}]; rdv = Simplify[Coefficient[Zo, dv]/Coefficient[Rours, dv], {lS > 1, r0S > 2}];
+  Print["Z/R_odd from the coefficient of v minus that from the coefficient of dv: ", Simplify[rv - rdv, lS > 1], ";  c_- omega^2 |Z|^2/((omega^2/4 Pi)|R_odd|^2) = ", Simplify[4 Pi cm rv^2, lS > 1], ";  R_odd/R_odd(1972) = ", Simplify[Rours/RDRTZ, {lS > 1, r0S > 2, mu > 0, gam > 0, w0 > 0, dYS > 0}]]];
+Print["[l(l+1) - m(m+1)]^(1/2) Y_{l,m+1} - d_theta Y_lm at the equator, l = 2..8: ", Union[Flatten[Table[Simplify[Sqrt[ll (ll + 1) - mm (mm + 1)] SphericalHarmonicY[ll, mm + 1, Pi/2, 0] - (D[SphericalHarmonicY[ll, mm, thV, 0], thV] /. thV -> Pi/2)], {ll, 2, 8}, {mm, -ll, ll - 1}]]]];
+Module[{lS, mS, r0S, mu, fS, gS, w0S, Et, Lt, Pe, dPe, lam, alp, bet, cv, cdv, YS},
+  fS = 1 - 2/r0S; gS = 1/Sqrt[1 - 3/r0S]; w0S = r0S^(-3/2); Et = mu gS fS; Lt = mu gS r0S^2 w0S;
+  {Pe, dPe} = jumpsZRW[lS, mS, r0S, Et, Lt, YS, 0, True];
+  lam = (lS - 1) (lS + 2)/2;
+  alp = (r0S - 2)/(r0S + 3/lam)^2 (1 + 1/lam + 1/(lam r0S) - 3/(lam^2 r0S) + 6/(lam^2 r0S^2)) - (2 mS^2 - lS (lS + 1))/(lS (lS + 1) - 2) r0S w0S^2;
+  bet = (1 - 2/r0S)/(1 + 3/(lam r0S));
+  cv = 4 Pi mu gS (alp + fS D[bet, r0S]/lam) YS; cdv = 4 Pi mu gS bet/lam YS;
+  Print["even parity, ratio of the Toolkit amplitude to that of the 1972 table: coefficient of d_r* v ", Simplify[-Pe/cdv, r0S > 3], ", of v ", Simplify[fS dPe/cv, r0S > 3], "  (a common sign)"]];
+Print["|G|^2 and |dG/dr0*|^2 of Breuer et al. over |u(0)|^2/(4 omega^2) and |d_r* u(0)|^2/(4 omega^2), eta = 1/2, 3/2, 3 (l = m = 10^6): ",
+  Table[With[{lv = 10^6, w0v = 1/(3 Sqrt[3]), ev = 2 eta}, N[{(1/16/w0v/Sqrt[lv] Exp[-Pi ev/4]/(Pi lv w0v) Abs[Gamma[1/4 + I ev/4]]^2)/(Sqrt[lv/2] Pi Fpar[eta]/Sqrt[2]/(4 (lv w0v)^2)),
+     (2/(8 Pi) w0v Sqrt[lv] Exp[-Pi ev/4]/(lv w0v) Abs[Gamma[3/4 + I ev/4]]^2)/(Sqrt[2] lv^(3/2)/27 Sqrt[2] Pi Exp[-Pi eta/2]/(Cosh[Pi eta] Abs[Gamma[1/4 + I eta/2]]^2)/(4 (lv w0v)^2))}, 20]], {eta, {1/2, 3/2, 3}}]];
+Module[{mB, dB, X, mu, w0n = 1/(3 Sqrt[3]), dG2, dYsq, amp2, Pod},
+  dG2 = Sqrt[mB] X/(4 Pi mB);                         (* |dG/dr0*|^2 from their Eq. (4), l = m, X = E^(-Pi eps/4) |Gamma[3/4 + I eps/4]|^2 *)
+  dYsq = mB^(3/2)/Pi^(3/2);                            (* |d_theta Y_{m+1,m}|^2 -> d_1 l^(3/2)/Pi^(3/2) *)
+  Print["their Eq. (13) with omega_0, over their Eq. (15): ", Simplify[((mB w0n)^2/(4 Pi) (4 Pi mu)^2 (3/dB) w0n^2 dYsq/mB^4 9 dG2)/(mu^2 X 2/(54 Pi^(3/2) mB dB)), mB > 0],
+    ";  without omega_0: ", Simplify[((mB w0n)^2/(4 Pi) (4 Pi mu)^2 (3/dB) dYsq/mB^4 9 dG2)/(mu^2 X 2/(54 Pi^(3/2) mB dB)), mB > 0]]];
+""")
 T("Section", "VI. Discussion")
 T("Subsection", "A. Timelike orbits near the light ring")
 T("Subsubsection", "Ingredients of Eq. (24)")
@@ -1330,6 +1434,15 @@ Clear[EE, M, G, c, hbar, mPl, lambda];
 lmaxPhys = (EE r0/(hbar c)) /. r0 -> 3 G M/c^2 /. G -> hbar c/mPl^2;
 Print["l_max = E r0/(hbar c) with r0 = 3 G M/c^2 and G = hbar c/m_Pl^2: ", Simplify[lmaxPhys], "  (= 3 E M/(m_Pl^2 c^2));  Log[l_max] - Log[E M/m_Pl^2] = ", Simplify[Log[lmaxPhys /. c -> 1] - Log[EE M/mPl^2], {EE > 0, M > 0, mPl > 0}]];
 Print["for a photon of wavelength lambda, E = 2 Pi hbar c/lambda: l_max = ", Simplify[(EE r0/(hbar c)) /. EE -> 2 Pi hbar c/lambda], "  (the 2 Pi r0/lambda of Sec. VII)"];
+""")
+T("Subsubsection", 'Revision: the roles of the resonance and of the cancellation; the cut-off')
+T("Text", 'Revised version, Sec. VI B. At fixed eta the response of the barrier top, |u(0)|^2 |Y_lm|^2, is a pure power law proportional to l; a detuning growing with l would suppress it as E^(-Pi eta). A flux per multipole growing like l, as for a generic source without the cancellation, would make the sum over multipoles diverge quadratically; the scalar radiation of a scalar charge grows like m below the cut-off (Breuer, Chrzanowski, Hughes and Misner 1973). For an actual photon, lambda = 2 Pi hbar/E and l_max ~ r0/lambda ~ E r0/hbar up to a factor 2 Pi.')
+In(r"""
+Module[{FF, cjS, lS}, Print["|u(0)|^2 |Y|^2/l at fixed eta: ", Simplify[(Sqrt[lS/2] Pi FF/Sqrt[2] cjS Sqrt[lS]/(2 Pi^(3/2)))/lS], "  (independent of l)"]];
+Print["F(eta) E^(Pi eta) Pi Sqrt[eta/2] at eta = 200: ", N[Fpar[200] Exp[Pi 200] Pi Sqrt[100], 10], "  (-> 1)"];
+Print["Sum_{l <= L} l / L^2 -> ", Limit[Sum[ll, {ll, 1, LLs}]/LLs^2, LLs -> Infinity]];
+Print["scalar charge, P_m/m at m = 10, 100, 1000 for delta' = 10^-8 (BCHM Eq. 5.4 up to constants): ", Table[N[mm 10^-8 Exp[-Pi (1 + mm 10^-8)/4] Abs[Gamma[1/4 + I (1 + mm 10^-8)/4]]^2/mm, 12], {mm, {10, 100, 1000}}]];
+Module[{hb, EE2, r02}, Print["(r0/lambda) 2 Pi - E r0/hbar with lambda = 2 Pi hbar/E: ", Simplify[(r02/(2 Pi hb/EE2)) 2 Pi - EE2 r02/hb]]];
 """)
 
 # ------------------------------------------------------------------ VII
