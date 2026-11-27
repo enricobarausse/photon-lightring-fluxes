@@ -240,17 +240,19 @@ as projections of T_{mu nu} on the scalar, odd-vector and even trace-free tensor
 components of T_{mu nu}, the angular factors at the equator with sympy's Ynm, and the three projections
 against Eq. (2)); in Sec. III A, the split of the exact even derivative jump into the energy density,
 -4 pi Y [1 - 4/(3 l^2 (l+1)^2)], and the stress, 4 pi Y (m^2 - k_th^2)/[(l-1)(l+2)] with
-k_th^2 = l(l+1) - m^2, the exact jump, the trace, the dispersion relation at the orbit, k_th^2/m^2 ~
-(2j+1)/l and the transverse coupling; in Sec. IV, q dr* = (s/2) d ln[(P + sqrt R~)^2/Delta] for generic
+k_th^2 = l(l+1) - m^2, the exact jump, the trace, the dispersion relation at the orbit (f k_r^2 = -k_th^2/r0^2 on the light ring),
+k_th^2/m^2 ~ (2j+1)/l, and the coupling of a source p_mu p_nu to a transverse wave, which is quadratic in
+(k_r, k_th); in Sec. IV, q dr* = (s/2) d ln[(P + sqrt R~)^2/Delta] for generic
 a, b, J_inf = s ln[2 r0/(b-a)] - s h_inf, N = [(b-a)/2]^{2s}, e^{2 J_H} = (2 P_+/P_0)^4, the wave
 vectors and the Kinnersley n (k.n = -omega (P +- sqrt R~)/(2 Sigma), both null), p (r^2+a^2) |h|^2 =
 const along both waves, the large-r limits of k.n, |psi4| = |k.n|^2 |h_{mbar mbar}|/2 for random plane
 waves, and the convergence of the Kerr asymmetries at l = 800; in Sec. V, the odd-parity amplitude
 R_odd and the factor 2 with respect to Table I of Davis, Ruffini, Tiomno and Zerilli (1972), the
-angular identity, the even amplitude, the Green's function of Breuer et al. against |u(0)|^2/(4 omega^2)
-and |d u(0)|^2/(4 omega^2), and their Eq. (13) with and without omega_0; in Sec. VI B, the pure power
-law of the response, the e^{-pi eta} suppression, the quadratic divergence of a sum of fluxes growing
-like l, the scalar spectrum below the cut-off, and lambda = 2 pi hbar/E.
+angular identity, the even amplitude, the weak-field limit (quadrupole formula for l = m = 2, current-quadrupole
+flux (8/45) v^12 for l = 2, m = 1, of which the 1972 table gives a quarter), the Green's function of Breuer et al.
+against |u(0)|^2/(4 omega^2) and |d u(0)|^2/(4 omega^2), and their Eq. (13) with and without omega_0; in Sec. VI B, the pure power
+law of the response, the e^{-pi eta} suppression, the scalar spectrum below the cut-off, and
+l_max ~ 2 pi r0/lambda = E r0/hbar.
 
 ## Tolerances and the report
 
@@ -264,7 +266,7 @@ value, and the total runtime.
 
 ## Result of the saved run (`report.txt`)
 
-509 checks pass, 0 fail, 27 lines are informational (none `NOT CHECKED`); runtime about 250 s. Among the
+511 checks pass, 0 fail, 27 lines are informational (none `NOT CHECKED`); runtime about 300 s. Among the
 quantitative checks the largest relative deviation from a quoted value is 1.7e-2 (2 sigma_bar/sqrt(l) at
 l = 100, quoted as 12%: recomputed 12.2%); the others are at the level of the rounding of the quoted
 digits (e.g. kappa_j to 1e-6 ... 2e-4, Table I entries to < 6e-4, the cross term 1.0390 to 5e-5, the

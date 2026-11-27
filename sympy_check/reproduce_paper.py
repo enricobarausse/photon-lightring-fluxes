@@ -633,13 +633,17 @@ def section_IIIA():
     rep.ident('revised version: ... which vanishes on the light ring (r0 = 3M, Omega = 1/b)', sp.simplify((Omsym**2/fsym - 1/rsym**2).subs({rsym: 3, Omsym: 1/b})))
     rep.ident('revised version: E/L = Omega on the circular null geodesic, so p_mu = (L/m)(-m Omega, 0, 0, m)', sp.simplify(1/b - 1/(3*sp.sqrt(3))))
     rep.ident('revised version: k_th^2/k_phi^2 = k_th^2/m^2 ~ (2j+1)/l (relative order of what survives)', sp.limit(l*kth2.subs(m, l - j)/(l - j)**2, l, sp.oo) - (2*j + 1))
-    e0_, e1_, e2_, Lm_ = sp.symbols('e0 e1 e2 Lm')
-    kt_ = -m*Omsym
-    e3_ = -(e0_*kt_ + e1_*kr_ + e2_*kth_)/m                      # transverse polarization vector: e^mu k_mu = 0
-    ep = Lm_*(e0_*kt_ + e3_*m)                                   # e.p with p_mu = (L/m)(k_t, 0, 0, k_phi)
-    eq = -Lm_*(e1_*kr_ + e2_*kth_)                               # (L/m) e.(p m/L - k) = -(L/m) e.q, q = (0, k_r, k_th, 0)
-    rep.ident('revised version: for a transverse polarization (e^mu k_mu = 0) the coupling e.p reduces to -(L/m) e.q, q = (0, k_r, k_th, 0): O(k_th/m) of the naive one',
-              sp.simplify(ep - eq))
+    # T ~ p p couples to a transverse wave (eps^{mu nu} k_nu = 0) only through q = (0, k_r, k_theta, 0), quadratically:
+    # eps^{mu nu} p_mu p_nu = (L/m)^2 eps^{mu nu} q_mu q_nu for p_mu = (L/m)(k_t, 0, 0, m), k_mu = (k_t, k_r, k_theta, m)
+    Lm_, kt_ = sp.symbols('Lm k_t')
+    es = sp.symbols('e00 e01 e02 e03 e11 e12 e13 e22 e23 e33')
+    epsm = sp.Matrix(4, 4, lambda a_, b_: es[{(0, 0): 0, (0, 1): 1, (0, 2): 2, (0, 3): 3, (1, 1): 4, (1, 2): 5, (1, 3): 6, (2, 2): 7, (2, 3): 8, (3, 3): 9}[(min(a_, b_), max(a_, b_))]])
+    kvec_ = sp.Matrix([kt_, kr_, kth_, m]); qvec_ = sp.Matrix([0, kr_, kth_, 0]); pvec_ = Lm_*sp.Matrix([kt_, 0, 0, m])
+    sol = sp.solve(list(epsm*kvec_), [es[3], es[6], es[8], es[9]], dict=True)[0]      # transversality
+    rep.ident('revised version: for a transverse polarization (eps^{mu nu} k_nu = 0), eps^{mu nu} p_mu p_nu = (L/m)^2 eps^{mu nu} q_mu q_nu, q = (0, k_r, k_theta, 0): the source couples only through k_r, k_theta, quadratically',
+              sp.simplify(((pvec_.T*epsm*pvec_)[0] - Lm_**2*(qvec_.T*epsm*qvec_)[0]).subs(sol)))
+    rep.ident('revised version: f k_r^2 = -k_theta^2/r0^2 at the light ring (dispersion relation with Omega^2/f = 1/r0^2), so both are O(l) for fixed j',
+              sp.simplify(disp.subs({rsym: 3, Omsym: 1/b}) - (kr_**2/3 + kth_**2/9)))
 
 # =============================================================================================
 # Section III B
@@ -1737,8 +1741,6 @@ def section_IV():
     same = all(round(2*asy[(av, 800)] - asy[(av, 400)], 2) == round(asy[(av, 800)], 2) == float(asym_paper[av]) for av in (0.5, 0.9, -0.5, -0.9, 0))
     rep.check('revised version: Kerr asymmetry converged to the digits quoted: Richardson 2 A(800) - A(400) and A(800) both round to 0.78, 1.10, 0.51, 0.45, 0.61',
               float(same), '1', 0, note='Richardson: ' + ', '.join(f'a={av}: {2*asy[(av, 800)] - asy[(av, 400)]:.4f}' for av in (0.5, 0.9, -0.5, -0.9, 0)))
-    rep.check('revised version: approached more slowly for prograde orbits and faster for retrograde ones: A(0.5), A(0.9) > A(0) > A(-0.5), A(-0.9)',
-              float(min(asy[(0.5, 800)], asy[(0.9, 800)]) > asy[(0, 800)] > max(asy[(-0.5, 800)], asy[(-0.9, 800)])), '1', 0)
     # ---- Chrzanowski-Misner null limit (their formulae transcribed as in Section V of the notebook)
     rr_, m_, g2 = sp.symbols('r m gamma2', positive=True)
     mcrit = (2*sp.sqrt(3)/pi)*(rr_ + 3)/sp.sqrt(rr_)*g2                                   # CM Eq. (2.35b)
@@ -2175,6 +2177,23 @@ def section_V():
     cv = 4*pi*mu_*gS_*(alp + f_*sp.diff(bet, r0_)/lam_)*Y_; cdv = 4*pi*mu_*gS_*bet/lam_*Y_
     rep.ident('revised version: even parity, coefficient of d_r* v: Toolkit jumps = -(DRTZ Table I)', sp.simplify(-Pe/cdv + 1))
     rep.ident('revised version: even parity, coefficient of v: Toolkit jumps = -(DRTZ Table I) (the overall sign is irrelevant)', sp.simplify(f_*dPe/cv + 1))
+    # weak-field limit (r0 >> M): flat-space radial functions psi_in = x j_l(x), unit outgoing wave, Wronskian omega;
+    # Newtonian E0 = mu, L0 = mu sqrt(r0), Omega = r0^-3/2. Fluxes summed over +-m, in units mu^2/M^2, v = (M/r0)^(1/2)
+    rw_, vv_, xx_ = sp.symbols('r_w v x', positive=True)
+    def weak_flux(lv, mv):
+        Yf = sp.expand_func(sp.Ynm(lv, mv, th_, 0))
+        Yv = sp.simplify(Yf.subs(th_, pi/2)); dYv = sp.simplify(sp.diff(Yf, th_).subs(th_, pi/2))
+        wv_ = mv*rw_**sp.Rational(-3, 2)
+        Pj, dPj = jumps(lv, mv, rw_, 1, sp.sqrt(rw_), Yv, dYv, (lv + mv) % 2 == 0)
+        lead = sp.series(sp.expand_func(xx_*sp.jn(lv, xx_)), xx_, 0, lv + 2).removeO()
+        Zw = (lead.subs(xx_, wv_*rw_)*dPj - Pj*(sp.diff(lead, xx_)*wv_).subs(xx_, wv_*rw_))/wv_
+        cw = (lv - 1)*(lv + 2)/(4*pi*lv*(lv + 1)) if (lv + mv) % 2 == 0 else lv*(lv + 1)/(16*pi*(lv - 1)*(lv + 2))
+        ser = sp.Poly(sp.series(sp.simplify((2*cw*wv_**2*Zw**2).subs(rw_, 1/vv_**2)), vv_, 0, 14).removeO(), vv_)
+        return ser.terms()[-1]                                   # lowest power of v: ((exponent,), coefficient)
+    (p22,), c22 = weak_flux(2, 2); (p21,), c21 = weak_flux(2, 1)
+    rep.ident('revised version: weak field, l = m = 2: the source used here (= Table I of Davis et al., even) gives the quadrupole formula (32/5) v^10', (c22 - sp.Rational(32, 5))**2 + (p22 - 10)**2)
+    rep.ident('revised version: weak field, l = 2, m = 1: the Regge-Wheeler source gives the current-quadrupole flux (8/45) v^12 = (1/36) v^2 x (32/5) v^10', (c21 - sp.Rational(8, 45))**2 + (p21 - 12)**2 + (sp.Rational(8, 45) - sp.Rational(32, 5)/36)**2)
+    rep.check('revised version: ... and Table I of Davis et al. (odd amplitude halved) gives a quarter of it, 2/45', float(c21/4), float(sp.Rational(2, 45)), 1e-15)
     # Green's function of Breuer et al., Eqs. (3)-(4), vs |u(0)|^2/(4 omega^2), |d u(0)|^2/(4 omega^2) of Eqs. (8)-(9)
     worstG = 0
     for eta in (mp.mpf('0.5'), mp.mpf('1.5'), mp.mpf(3)):
@@ -2351,14 +2370,12 @@ def section_VI():
     resp = sp.sqrt(l/2)*pi*Fs_/sp.sqrt(2)*cj_*sp.sqrt(l)/(2*pi**sp.Rational(3, 2))      # |u(0)|^2 |Y_{l,l-j}|^2, eta fixed
     rep.ident('revised version, Sec. VI B: at fixed eta the response |u(0)|^2 |Y_lm|^2 is a pure power law, proportional to l', sp.simplify(sp.diff(resp/l, l)))
     rep.check('revised version: a source detuned by eta growing with l is suppressed as e^{-pi eta}: F(eta) e^{pi eta} pi sqrt(eta/2) at eta = 200', Fpar(mp.mpf(200))*mp.exp(mp.pi*200)*mp.pi*mp.sqrt(100), '1', 2e-3)
-    Lm2 = sp.symbols('L', positive=True); ll_ = sp.symbols('ll', integer=True, positive=True)
-    rep.ident('revised version: a flux per multipole growing like l gives a quadratically divergent sum: sum_{l<=L} l / L^2 -> 1/2', sp.limit(sp.summation(ll_, (ll_, 1, Lm2))/Lm2**2, Lm2, sp.oo) - sp.Rational(1, 2))
     # scalar charge below the cut-off (Breuer et al. 1973, BCHM Eq. 5.4): P_m ~ (m/m_crit) e^{-pi eps/4} |Gamma(1/4 + i eps/4)|^2, eps = 1 + m delta'
     def Pscal(mv, dp): return mp.mpf(mv)*dp*mp.exp(-mp.pi*(1 + mv*dp)/4)*abs(mp.gamma(mp.mpf(1)/4 + 1j*(1 + mv*dp)/4))**2
     vals = [Pscal(mv, mp.mpf('1e-8'))/mv for mv in (10, 100, 1000)]
     rep.check('revised version: the scalar radiation of a scalar charge grows like m below the cut-off: P_m/m at m = 10, 100, 1000 (m delta\' <= 1e-5), max/min - 1', max(vals)/min(vals) - 1, '0', 1e-4, 'abs')
     hb_, lam2_, E2_, r02_ = sp.symbols('hbar lambda E r0', positive=True)
-    rep.ident('revised version: lambda = 2 pi hbar/E and l_max ~ r0/lambda ~ E r0/hbar up to 2 pi', sp.simplify((r02_/(2*pi*hb_/E2_))*2*pi - E2_*r02_/hb_))
+    rep.ident('revised version: l_max ~ 2 pi r0/lambda = E r0/hbar for lambda = 2 pi hbar/E (as in Sec. VII)', sp.simplify(2*pi*r02_/(2*pi*hb_/E2_) - E2_*r02_/hb_))
 
 # =============================================================================================
 def main():

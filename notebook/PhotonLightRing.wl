@@ -153,7 +153,7 @@ Print["for the photon (r0 = 3, E0 = 1, L0 = 3 Sqrt[3]): A term = ", leadA /. {r0
 (*Revision: what survives the cancellation, and why*)
 
 (* ::Text:: *)
-(*Revised version, Sec. III A. With k_theta^2 = l(l+1) - m^2, the square of the latitudinal wavenumber of the harmonic at the equator (d_theta^2 Y = -k_theta^2 Y there), the exact derivative jump of the photon splits into the energy density, -4 Pi E Y [1 - 4/(3 l^2 (l+1)^2)]/M, independent of m, and the stress, +4 Pi E Y (m^2 - k_theta^2)/[(l-1)(l+2) M], since F carries l(l+1) - 2 m^2 = k_theta^2 - m^2. Because (l-1)(l+2) = m^2 + k_theta^2 - 2, the azimuthal parts cancel exactly (Eq. 6) and the latitudinal ones add up, giving the exact jump -(8 Pi E Y/M){(k_theta^2 - 1)/[(l-1)(l+2)] - 2/[3 l^2 (l+1)^2]}, which reduces to Eq. (5) since k_theta^2 = (2j+1) l - j^2. The cell also checks that the combination of Eq. (6) is the trace p.p/r0, the dispersion relation f k_r^2 + k_theta^2/r0^2 = m^2 (Omega^2/f - 1/r0^2), which vanishes on the light ring, the relative order k_theta^2/m^2 ~ (2j+1)/l, and that for a transverse polarization (e.k = 0) the coupling e.p reduces to -(L/m) e.q with q = (0, k_r, k_theta, 0).*)
+(*Revised version, Sec. III A. With k_theta^2 = l(l+1) - m^2, the square of the latitudinal wavenumber of the harmonic at the equator (d_theta^2 Y = -k_theta^2 Y there), the exact derivative jump of the photon splits into the energy density, -4 Pi E Y [1 - 4/(3 l^2 (l+1)^2)]/M, independent of m, and the stress, +4 Pi E Y (m^2 - k_theta^2)/[(l-1)(l+2) M], since F carries l(l+1) - 2 m^2 = k_theta^2 - m^2. Because (l-1)(l+2) = m^2 + k_theta^2 - 2, the azimuthal parts cancel exactly (Eq. 6) and the latitudinal ones add up, giving the exact jump -(8 Pi E Y/M){(k_theta^2 - 1)/[(l-1)(l+2)] - 2/[3 l^2 (l+1)^2]}, which reduces to Eq. (5) since k_theta^2 = (2j+1) l - j^2. The cell also checks that the combination of Eq. (6) is the trace p.p/r0, the dispersion relation f k_r^2 + k_theta^2/r0^2 = m^2 (Omega^2/f - 1/r0^2), which vanishes on the light ring, the relative order k_theta^2/m^2 ~ (2j+1)/l, and that for a transverse polarization tensor (eps.k = 0) the coupling eps^{mu nu} p_mu p_nu equals (L/m)^2 eps^{mu nu} q_mu q_nu with q = (0, k_r, k_theta, 0): the source couples to the wave only through k_r and k_theta, quadratically (the geometric-optics argument of Chrzanowski and Misner 1974).*)
 
 Clear[l, m, j, Y, dY];
 kth2 = l (l + 1) - m^2;                                                   (* k_theta^2 at the equator *)
@@ -163,13 +163,17 @@ Print["energy density: [Psi'] + 4 Pi Y (1 - 4/(3 l^2 (l+1)^2)) = ", Simplify[dPs
 Print["stress: [Psi'] - 4 Pi Y (m^2 - k_th^2)/((l-1)(l+2)) = ", Simplify[dPsiF - 4 Pi Y (m^2 - kth2)/((l - 1) (l + 2))], ";  l(l+1) - 2 m^2 - (k_th^2 - m^2) = ", Simplify[l (l + 1) - 2 m^2 - (kth2 - m^2)], ";  (l-1)(l+2) - (m^2 + k_th^2 - 2) = ", Simplify[(l - 1) (l + 2) - (m^2 + kth2 - 2)]];
 Print["exact jump + 8 Pi Y [(k_th^2 - 1)/((l-1)(l+2)) - 2/(3 l^2 (l+1)^2)] = ", Simplify[dPsiE + 8 Pi Y ((kth2 - 1)/((l - 1) (l + 2)) - 2/(3 l^2 (l + 1)^2))], ";  k_th^2 for m = l - j: ", Expand[kth2 /. m -> l - j]];
 Print["d_theta^2 Y + k_th^2 Y at the equator, l = 2..8, all m: ", Union[Flatten[Table[Simplify[(D[SphericalHarmonicY[ll, mm, thV, 0], {thV, 2}] + (ll (ll + 1) - mm^2) SphericalHarmonicY[ll, mm, thV, 0]) /. thV -> Pi/2], {ll, 2, 8}, {mm, -ll, ll}]]]];
-Module[{eE, lL, rR, Om, kr, kth, disp, e0, e1, e2, e3, kt, Lm},
+Module[{eE, lL, rR, Om, kr, kth, disp, Lm},
   Print["Eq. (6) combination L^2/r0^3 - E^2/(r0-2) minus the trace (-E^2/f + L^2/r0^2)/r0: ", Simplify[(lL^2/rR^3 - eE^2/(rR - 2)) - (-eE^2/f[rR] + lL^2/rR^2)/rR]];
   disp = -(m Om)^2/f[rR] + f[rR] kr^2 + kth^2/rR^2 + m^2/rR^2;          (* g^{mu nu} k_mu k_nu at the equator, k_mu = (-m Omega, k_r, k_theta, m) *)
   Print["f k_r^2 + k_th^2/r0^2 - m^2 (Omega^2/f - 1/r0^2) - g^{mu nu} k_mu k_nu = ", Simplify[f[rR] kr^2 + kth^2/rR^2 - m^2 (Om^2/f[rR] - 1/rR^2) - disp], ";  Omega^2/f - 1/r0^2 on the light ring: ", Simplify[(Om^2/f[rR] - 1/rR^2) /. {rR -> 3, Om -> OmegaLR}], ";  E/L - Omega: ", Simplify[1/bLR - OmegaLR]];
   Print["l k_th^2/m^2 -> ", Limit[l (kth2 /. m -> l - j)/(l - j)^2, l -> Infinity], "  (= 2j + 1)"];
-  kt = -m Om; e3 = -(e0 kt + e1 kr + e2 kth)/m;                          (* transverse polarization vector: e^mu k_mu = 0 *)
-  Print["e.p + (L/m) e.q for e.k = 0 [p = (L/m)(k_t, 0, 0, k_phi), q = (0, k_r, k_th, 0)]: ", Simplify[Lm (e0 kt + e3 m) + Lm (e1 kr + e2 kth)]]];
+  Print["f k_r^2 + k_th^2/r0^2 on the light ring, i.e. f k_r^2 = -k_th^2/r0^2: ", Simplify[(disp /. {rR -> 3, Om -> OmegaLR}) - (kr^2/3 + kth^2/9)], "  (difference from k_r^2/3 + k_th^2/9)"];
+  Module[{ee, kv, qv, pv, sol, kt, epsT},
+    ee = Array[If[#1 <= #2, epsT[#1, #2], epsT[#2, #1]] &, {4, 4}];           (* symmetric polarization tensor *)
+    kv = {kt, kr, kth, m}; qv = {0, kr, kth, 0}; pv = Lm {kt, 0, 0, m};
+    sol = First[Solve[Thread[ee . kv == 0], {epsT[1, 4], epsT[2, 4], epsT[3, 4], epsT[4, 4]}]];   (* transversality *)
+    Print["eps^{mu nu} p_mu p_nu - (L/m)^2 eps^{mu nu} q_mu q_nu for eps.k = 0 [p = (L/m)(k_t, 0, 0, m), q = (0, k_r, k_th, 0)]: ", Simplify[(pv . ee . pv - Lm^2 qv . ee . qv) /. sol]]]];
 
 (* ::Subsubsection:: *)
 (*Equatorial harmonics at large l: c_j and d_j*)
@@ -1277,11 +1281,11 @@ Print["Sqrt[l] (I - H)/(I + H) at l = 800 for a = 0.5, 0.9, -0.5, -0.9: ", Table
 (*Revision: convergence of the Kerr asymmetry*)
 
 (* ::Text:: *)
-(*Revised version, Sec. IV: Sqrt[l] (Edot_I - Edot_H)/(Edot_I + Edot_H) at l = 800 has converged to the digits quoted (its Richardson extrapolation in 1/l from l = 400 and 800 rounds to the same values), and the equality of the two fluxes is approached more slowly for prograde orbits and faster for retrograde ones than at a = 0.*)
+(*Revised version, Sec. IV: Sqrt[l] (Edot_I - Edot_H)/(Edot_I + Edot_H) at l = 800 has converged to the digits quoted (its Richardson extrapolation in 1/l from l = 400 and 800 rounds to the same values).*)
 
 asyK[a_, l_] := With[{ih = pyIH[a, l]}, Sqrt[l] (ih[[1]] - ih[[2]])/(ih[[1]] + ih[[2]])];
 Print["{a, A(800), 2 A(800) - A(400)}: ", Table[{a, N[asyK[a, 800], 4], N[2 asyK[a, 800] - asyK[a, 400], 4]}, {a, {1/2, 9/10, -1/2, -9/10, 0}}], "  (paper: 0.78, 1.10, 0.51, 0.45; 0.61)"];
-Print["A(800) and its extrapolation round to the same two digits: ", And @@ Table[Round[asyK[a, 800], 1/100] == Round[2 asyK[a, 800] - asyK[a, 400], 1/100], {a, {1/2, 9/10, -1/2, -9/10, 0}}], ";  prograde > (a = 0) > retrograde: ", Min[asyK[1/2, 800], asyK[9/10, 800]] > asyK[0, 800] > Max[asyK[-1/2, 800], asyK[-9/10, 800]]];
+Print["A(800) and its extrapolation round to the same two digits: ", And @@ Table[Round[asyK[a, 800], 1/100] == Round[2 asyK[a, 800] - asyK[a, 400], 1/100], {a, {1/2, 9/10, -1/2, -9/10, 0}}]];
 
 (* ::Subsubsection:: *)
 (*Fig. 2*)
@@ -1444,7 +1448,7 @@ Print["null limit: CM scalar/BCHM = ", N[Limit[PCMs[0, m, d]/PBCHM[m, d] /. d ->
 (*Revision: the odd-parity factor of four is a factor of two in the odd source of 1972*)
 
 (* ::Text:: *)
-(*Revised version, Sec. V. Eqs. (22)-(23) follow from the flux formula P = (omega^2/4 Pi)(|R_even|^2 + |R_odd|^2) of Breuer et al. [their Eq. (6)], from the Green's function of their Eqs. (3)-(4), and from the source amplitudes of their Eqs. (12)-(13), which are those of Table I of Davis, Ruffini, Tiomno and Zerilli (PRL 28, 1352, 1972). The cell shows: (i) the Regge-Wheeler amplitude of the paper is proportional to R_odd = 8 Pi L d_theta Ybar d_{r0*}[r0 G]/(r0^2 Sqrt[(l-1)l(l+1)(l+2)]) with c_- omega^2 |Z|^2 = (omega^2/4 Pi)|R_odd|^2, and R_odd is exactly twice the odd amplitude of the 1972 table, for every l, m and r0; (ii) the angular factors agree, [l(l+1) - m(m+1)]^(1/2) Y_{l,m+1}(Pi/2,0) = d_theta Y_lm(Pi/2,0); (iii) the even amplitude of the 1972 table coincides with the Toolkit jumps; (iv) their Green's function and its derivative coincide with |u(0)|^2/(4 omega^2) and |d_r* u(0)|^2/(4 omega^2) of Eqs. (8)-(9); (v) their Eq. (13), with the factor omega_0 present in the 1972 table, gives their Eq. (15) exactly, while without it the result would be 27 times larger.*)
+(*Revised version, Sec. V. Eqs. (22)-(23) follow from the flux formula P = (omega^2/4 Pi)(|R_even|^2 + |R_odd|^2) of Breuer et al. [their Eq. (6)], from the Green's function of their Eqs. (3)-(4), and from the source amplitudes of their Eqs. (12)-(13), which are those of Table I of Davis, Ruffini, Tiomno and Zerilli (PRL 28, 1352, 1972). The cell shows: (i) the Regge-Wheeler amplitude of the paper is proportional to R_odd = 8 Pi L d_theta Ybar d_{r0*}[r0 G]/(r0^2 Sqrt[(l-1)l(l+1)(l+2)]) with c_- omega^2 |Z|^2 = (omega^2/4 Pi)|R_odd|^2, and R_odd is exactly twice the odd amplitude of the 1972 table, for every l, m and r0; (ii) the angular factors agree, [l(l+1) - m(m+1)]^(1/2) Y_{l,m+1}(Pi/2,0) = d_theta Y_lm(Pi/2,0); (iii) the even amplitude of the 1972 table coincides with the Toolkit jumps; (iv) their Green's function and its derivative coincide with |u(0)|^2/(4 omega^2) and |d_r* u(0)|^2/(4 omega^2) of Eqs. (8)-(9); (v) their Eq. (13), with the factor omega_0 present in the 1972 table, gives their Eq. (15) exactly, while without it the result would be 27 times larger; (vi) in the weak-field limit the source used here gives the quadrupole formula (32/5) v^10 for l = m = 2 and the current-quadrupole flux (8/45) v^12 for l = 2, m = 1, so that the 1972 table gives a quarter of the latter.*)
 
 Module[{lS, mS, r0S, mu, gam, w0, dYS, YS, v, dv, W, fS, LS, ES, Po, dPo, Zo, Rours, RDRTZ, cm, rv, rdv},
   fS = 1 - 2/r0S; LS = mu gam r0S^2 w0; ES = mu gam fS;
@@ -1464,6 +1468,15 @@ Module[{lS, mS, r0S, mu, fS, gS, w0S, Et, Lt, Pe, dPe, lam, alp, bet, cv, cdv, Y
   bet = (1 - 2/r0S)/(1 + 3/(lam r0S));
   cv = 4 Pi mu gS (alp + fS D[bet, r0S]/lam) YS; cdv = 4 Pi mu gS bet/lam YS;
   Print["even parity, ratio of the Toolkit amplitude to that of the 1972 table: coefficient of d_r* v ", Simplify[-Pe/cdv, r0S > 3], ", of v ", Simplify[fS dPe/cv, r0S > 3], "  (a common sign)"]];
+Module[{rw, vv, xx, weak},
+  weak[lv_, mv_] := Module[{Yv, dYv, wv, jp, lead, Zw, cw},
+    Yv = SphericalHarmonicY[lv, mv, Pi/2, 0]; dYv = D[SphericalHarmonicY[lv, mv, thV, 0], thV] /. thV -> Pi/2;
+    wv = mv rw^(-3/2); jp = jumpsZRW[lv, mv, rw, 1, Sqrt[rw], Yv, dYv];        (* Newtonian E0 = 1, L0 = Sqrt[r0] *)
+    lead = Normal[Series[xx SphericalBesselJ[lv, xx], {xx, 0, lv + 1}]];        (* flat-space psi_in; Wronskian with the unit outgoing wave = omega *)
+    Zw = ((lead /. xx -> wv rw) jp[[2]] - jp[[1]] (D[lead, xx] wv /. xx -> wv rw))/wv;
+    cw = cpm[lv, mv];
+    Normal[Series[Simplify[(2 cw wv^2 Zw^2) /. rw -> 1/vv^2, vv > 0], {vv, 0, If[EvenQ[lv + mv], 10, 12]}]]];
+  Print["weak field (r0 >> M), fluxes summed over +-m in units mu^2/M^2, v = (M/r0)^(1/2): (2,2) -> ", weak[2, 2], " (quadrupole formula 32/5 v^10);  (2,1) -> ", weak[2, 1], " (current quadrupole 8/45 v^12 = (1/36) v^2 x 32/5 v^10);  Table I of Davis et al. for (2,1): ", weak[2, 1]/4]];
 Print["|G|^2 and |dG/dr0*|^2 of Breuer et al. over |u(0)|^2/(4 omega^2) and |d_r* u(0)|^2/(4 omega^2), eta = 1/2, 3/2, 3 (l = m = 10^6): ",
   Table[With[{lv = 10^6, w0v = 1/(3 Sqrt[3]), ev = 2 eta}, N[{(1/16/w0v/Sqrt[lv] Exp[-Pi ev/4]/(Pi lv w0v) Abs[Gamma[1/4 + I ev/4]]^2)/(Sqrt[lv/2] Pi Fpar[eta]/Sqrt[2]/(4 (lv w0v)^2)),
      (2/(8 Pi) w0v Sqrt[lv] Exp[-Pi ev/4]/(lv w0v) Abs[Gamma[3/4 + I ev/4]]^2)/(Sqrt[2] lv^(3/2)/27 Sqrt[2] Pi Exp[-Pi eta/2]/(Cosh[Pi eta] Abs[Gamma[1/4 + I eta/2]]^2)/(4 (lv w0v)^2))}, 20]], {eta, {1/2, 3/2, 3}}]];
@@ -1588,13 +1601,12 @@ Print["for a photon of wavelength lambda, E = 2 Pi hbar c/lambda: l_max = ", Sim
 (*Revision: the roles of the resonance and of the cancellation; the cut-off*)
 
 (* ::Text:: *)
-(*Revised version, Sec. VI B. At fixed eta the response of the barrier top, |u(0)|^2 |Y_lm|^2, is a pure power law proportional to l; a detuning growing with l would suppress it as E^(-Pi eta). A flux per multipole growing like l, as for a generic source without the cancellation, would make the sum over multipoles diverge quadratically; the scalar radiation of a scalar charge grows like m below the cut-off (Breuer, Chrzanowski, Hughes and Misner 1973). For an actual photon, lambda = 2 Pi hbar/E and l_max ~ r0/lambda ~ E r0/hbar up to a factor 2 Pi.*)
+(*Revised version, Sec. VI B. At fixed eta the response of the barrier top, |u(0)|^2 |Y_lm|^2, is a pure power law proportional to l; a detuning growing with l would suppress it as E^(-Pi eta). The scalar radiation of a scalar charge grows like m below the cut-off (Breuer, Chrzanowski, Hughes and Misner 1973), as the flux per multipole would with a jump of order l^0. For an actual photon, lambda = 2 Pi hbar/E and l_max ~ 2 Pi r0/lambda = E r0/hbar.*)
 
 Module[{FF, cjS, lS}, Print["|u(0)|^2 |Y|^2/l at fixed eta: ", Simplify[(Sqrt[lS/2] Pi FF/Sqrt[2] cjS Sqrt[lS]/(2 Pi^(3/2)))/lS], "  (independent of l)"]];
 Print["F(eta) E^(Pi eta) Pi Sqrt[eta/2] at eta = 200: ", N[Fpar[200] Exp[Pi 200] Pi Sqrt[100], 10], "  (-> 1)"];
-Print["Sum_{l <= L} l / L^2 -> ", Limit[Sum[ll, {ll, 1, LLs}]/LLs^2, LLs -> Infinity]];
 Print["scalar charge, P_m/m at m = 10, 100, 1000 for delta' = 10^-8 (BCHM Eq. 5.4 up to constants): ", Table[N[mm 10^-8 Exp[-Pi (1 + mm 10^-8)/4] Abs[Gamma[1/4 + I (1 + mm 10^-8)/4]]^2/mm, 12], {mm, {10, 100, 1000}}]];
-Module[{hb, EE2, r02}, Print["(r0/lambda) 2 Pi - E r0/hbar with lambda = 2 Pi hbar/E: ", Simplify[(r02/(2 Pi hb/EE2)) 2 Pi - EE2 r02/hb]]];
+Module[{hb, EE2, r02}, Print["2 Pi r0/lambda - E r0/hbar with lambda = 2 Pi hbar/E: ", Simplify[2 Pi r02/(2 Pi hb/EE2) - EE2 r02/hb]]];
 
 (* ::Section:: *)
 (*VII. Conclusions: energy per orbit and the M87* estimate*)
